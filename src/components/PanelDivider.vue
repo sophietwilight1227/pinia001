@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {ref} from "vue";
+  import {ref, type Ref} from "vue";
   import { useLayoutStore } from "@/stores/layout";
     const props = defineProps<{
     order: number,
@@ -10,11 +10,16 @@
     const move = (e: DragEvent): void => {
         //layoutStore.widthLst[props.order] += (e.movementX * 5 / myElement.value?.offsetWidth);
         if( e.x != 0){
-            layoutStore.widthLst[props.order] = ( e.x * 0.3 / myElement.value?.offsetWidth);
+          if(myElement.value == null){
+            layoutStore.widthLst[props.order] = 0;
+          }else{
+            layoutStore.widthLst[props.order] = ( e.x * 0.3 / myElement.value.offsetWidth);
+          }
+            
             console.log(layoutStore.widthLst[props.order] );
         }
     }
-    const myElement = ref(null);
+    const myElement:Ref<HTMLElement | null> = ref(null);
 </script>
 
 <template>

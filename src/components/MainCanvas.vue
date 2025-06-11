@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, nextTick, computed } from "vue";
+import {ref, nextTick, computed, type Ref } from "vue";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 import type { CanvasMain } from "@/interfaces";
 import '@/assets/fonts/Saitamaar.ttf';
@@ -7,7 +7,7 @@ import '@/assets/fonts/Saitamaar.ttf';
 
 const text = ref("not");
 const width = ref(99);
-const myElement = ref(null);
+const myElement:Ref<HTMLElement | null> = ref(null);
 
 const mainCanvasAsciiArtStore = useMainCanvasStore();
 mainCanvasAsciiArtStore.initAsciiArt();
@@ -19,14 +19,24 @@ const onButtonClick = async () => {
   for (let i = 1; i < 100; i++){
     text.value += "_";
     await nextTick();
-    width.value = myElement.value?.offsetWidth;
+    if(myElement.value == null){
+      width.value = 0;
+    }else{
+      width.value = myElement.value.offsetWidth;
+    }
+   
     console.log(width.value);    
   }
 
 };
 
-const onChangeTextArea = (e) => {
-  mainCanvasAsciiArtStore.editAsciiArt(e.target.value, {value:e.data, start: 0, end: 0});
+const onChangeTextArea = (e: any) => {
+  if(e.target == null){
+    mainCanvasAsciiArtStore.editAsciiArt("", {value:e.data, start: 0, end: 0});
+  }else{
+    mainCanvasAsciiArtStore.editAsciiArt(e.target.value, {value:e.data, start: 0, end: 0});
+  }
+  
 }
 </script>
 
