@@ -7,7 +7,6 @@ import { useMainCanvasStore } from "@/stores/mainCanvas";
   const mainCanvasAsciiArtStore = useMainCanvasStore();
   mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
     asciiArt.value = state.asciiArt;
-    console.log(asciiArt.value);
   })
 
   const asciiArt = ref();
