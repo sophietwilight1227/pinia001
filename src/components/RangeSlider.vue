@@ -1,0 +1,49 @@
+<script setup lang="ts">
+  import {ref, watch} from "vue";
+    const props = defineProps<{
+    id: string,
+    name: string,
+    max: number,
+    min: number,
+    initialValue: number
+    }>()
+
+    const emit = defineEmits(['change']);
+
+    const currentValue = ref(props.initialValue)
+    watch(currentValue, (newValue) => {
+        console.log("emit " + newValue);
+        emit("change",props.id ,newValue);
+    })
+
+    const changeValue = (newValue: number):void => {
+        currentValue.value = newValue;
+    }
+    defineExpose({ changeValue });
+    
+    const increment = ():void => {
+      currentValue.value ++;
+    }
+    const decrement = ():void => {
+      currentValue.value --;
+    } 
+</script>
+
+<template>
+    <div class="menu_content">
+        <span>{{ props.name }}</span>
+        <button v-on:click="decrement">◀</button>
+        <input type="range" :min="props.min" :max="props.max" v-model="currentValue"/> 
+        <button v-on:click="increment">▶</button>
+        <input v-model="currentValue"/>
+    </div>
+</template>
+
+<style scoped>
+  .base {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+</style>
