@@ -3,6 +3,7 @@ import type { EditLog, Setting } from "@/interfaces";
 
 interface State {
     asciiArt: string;
+    caretPosition: {start: number, end: number};
     editLogs: Array<EditLog>;
     setting: Setting;
     charSizeDic: Map<string, number>;
@@ -14,6 +15,7 @@ export const useMainCanvasStore = defineStore(
         state: (): State => {
             return {
                 asciiArt: "",
+                caretPosition: {start:0, end: 0},
                 editLogs: [],
                 setting: {},
                 charSizeDic: new Map(),
@@ -29,6 +31,10 @@ export const useMainCanvasStore = defineStore(
             editAsciiArt(aa: string, log: EditLog):void {
                 this.asciiArt = aa;
                 this.editLogs.push(log);
+            },
+            editCaretPosition(start: number, end: number){
+                this.caretPosition.start = start;
+                this.caretPosition.end = end;
             },
             addCharSizeDic(char: string, size: number):void {
                 if(!this.charSizeDic.has(char)){

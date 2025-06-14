@@ -73,6 +73,7 @@ const onSelectionChange = (e:any) => {
   const targetStr:string = strs[strs.length-1];
   //ドット数
   const dot = mainCanvasAsciiArtStore.calcStrWidth(targetStr);
+  mainCanvasAsciiArtStore.editCaretPosition(startPos, endPos);
 }
 
 </script>

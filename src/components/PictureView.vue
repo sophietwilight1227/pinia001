@@ -80,7 +80,6 @@ import { useMainCanvasStore } from "@/stores/mainCanvas";
 
 <template>
   <div class="base">
-    <div v-for="n in 1">{{ params.get(constPictureView.PARAM_LIST.ROTE_ANGLE.id) }}</div>
     <div class="asciiArt">{{ asciiArt }}</div>
     <img :src="imgSource" class="mainImage"/>
     <div class="menu">
