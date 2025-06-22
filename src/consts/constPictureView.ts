@@ -59,6 +59,5 @@ export default {
                 initialValue: 0
     },
   },
-
 };
 

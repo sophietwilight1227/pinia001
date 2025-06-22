@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
-
+import layoutList from '../assets/data/layout.json'
 interface State {
-    widthLst: number[];
+    widthDic: Map<string, Array<number>>
 };
 
 export const useLayoutStore = defineStore(
@@ -9,7 +9,7 @@ export const useLayoutStore = defineStore(
     {
         state: (): State => {
             return {
-                widthLst: [],
+                widthDic: new Map(),
             };
         },
         getters: {
@@ -17,9 +17,17 @@ export const useLayoutStore = defineStore(
         },
         actions: {
             initLayout(): void {
-                this.widthLst.push(45);
-                this.widthLst.push(90);
+
+                console.log(layoutList.length);
+
+                for(let i=0; i < layoutList.length; i++){
+                    this.widthDic.set(layoutList[i].layoutName, layoutList[i].values);
+                }
             },
+            editLayout(layoutName: string, index: number, value: number){
+                this.widthDic.get(layoutName)![index] = value;
+                console.log(this.widthDic.get(layoutName)![index]);
+            }
         },        
     }
 );

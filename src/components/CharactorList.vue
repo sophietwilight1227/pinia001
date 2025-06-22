@@ -16,8 +16,8 @@ import { ref } from 'vue';
 <template>
   <div class="base">    
     <span v-for="(data, i) in testList">
-        <div class="charChip" v-on:mouseover="onMouseOver(i)" v-on:mouseout="onMouseOut(i)" >
-          <span>a</span>
+        <div class="charChip asciiArt" v-on:mouseover="onMouseOver(i)" v-on:mouseout="onMouseOut(i)" >
+          <span>{{ i + "a" }}</span>
           <p class="baloon" :style="{display: data}">tip</p>
         </div>
     </span>
@@ -29,6 +29,7 @@ import { ref } from 'vue';
 .base {
   background-color: white;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
 }
 .charChip {
@@ -42,4 +43,19 @@ import { ref } from 'vue';
     filter: drop-shadow(0px 1px 4px #aaa);
 }
 
+.asciiArt {
+  font-size:16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height:18px;
+  letter-spacing: 0;
+  text-shadow: none;
+  font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
+  white-space: pre-wrap;
+}
+
+@font-face {
+  font-family: 'Saitamaar';
+  src: url('@/assets/fonts/Saitamaar.ttf') format('truetype');
+}
 </style>

@@ -1,12 +1,19 @@
 import {defineStore} from "pinia";
 import type { EditLog, Setting } from "@/interfaces";
 
+
 interface State {
     asciiArt: string;
     caretPosition: {start: number, end: number};
     editLogs: Array<EditLog>;
     setting: Setting;
     charSizeDic: Map<string, number>;
+    charPalette: Array<{indexName: string,
+                    charList: Array<{
+                        value: string,
+                        width: number
+                    }>
+                }>
 };
 
 export const useMainCanvasStore = defineStore(
@@ -19,6 +26,7 @@ export const useMainCanvasStore = defineStore(
                 editLogs: [],
                 setting: {},
                 charSizeDic: new Map(),
+                charPalette: []
             };
         },
         getters: {
@@ -52,6 +60,12 @@ export const useMainCanvasStore = defineStore(
                     }
                 }
                 return width;
+            },
+            addCharPaletteIndex(indexNo: number, indexName: string): void{
+                this.charPalette.splice(indexNo,0, {indexName: indexName, charList: []});
+            },
+            addCharPalette(indexNo: number, charNo: number, charValue: string, width: number): void {
+                this.charPalette[indexNo].charList.splice(charNo, 0, {value: charValue, width: width})
             }
         },        
     }

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import constLayout from "@/consts/constLayout";
+import MenuBar from "./components/MenuBar.vue";
+import FilesTab from "./components/FilesTab.vue";
 import MainCanvas from './components/MainCanvas.vue'
 import CharctorPalette from './components/CharactorPalette.vue'
 import PictureView from './components/PictureView.vue'
@@ -13,18 +16,20 @@ import { useLayoutStore } from "@/stores/layout";
 
 <template>
   <main>
+    <MenuBar/>
+    <FilesTab/>
     <div class="container">
-      <PanelContainer :order="0">
-        <PictureView/>
-      </PanelContainer>
-      <PanelDivider :order="0"></PanelDivider>
-      <PanelContainer :order="1">
-        <MainCanvas/>
-      </PanelContainer>
-      <PanelDivider :order="1"></PanelDivider>
-      <PanelContainer :order="2">
-        <CharctorPalette/> 
-      </PanelContainer>
+        <PanelContainer :order="0" :name="'main'">
+          <PictureView/>
+        </PanelContainer>
+        <PanelDivider :order="0" :layout-name="'main'"/>
+        <PanelContainer :order="1" :name="'main'">
+          <MainCanvas/>
+        </PanelContainer>
+        <PanelDivider :order="1" :layout-name="'main'"/>
+        <PanelContainer :order="2" :name="'main'">
+          <CharctorPalette/> 
+        </PanelContainer>        
     </div>
   </main>
 </template>
