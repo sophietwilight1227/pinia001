@@ -1,39 +1,77 @@
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
-const testList: Ref<Array<string>> = ref([])
+import { ref, watch, type Ref } from "vue";
+import { useMainCanvasStore } from "@/stores/mainCanvas";
 
-const initFiles = ():void => {
-    for(let i=0; i < 3; i++){
-        testList.value.push(" test" + i + " ")
-    }
-}   
+const mainCanvasAsciiArtStore = useMainCanvasStore();
+const fileNameList: Ref<Array<{name:string}>> = ref([]);
+const aaNameList: Ref<Array<{name:string}>> = ref([]);
+
+const selectFile = (index: number):void => {
+    mainCanvasAsciiArtStore.selectFile(index);
+}
 const addFile = ():void => {
-    testList.value.push(" test" + (testList.value.length + 1) + " ")
+    mainCanvasAsciiArtStore.addFile("new file" , [{aaName: "aa1", asciiArt: ""}]);
+}
+const selectAa = (index: number):void => {
+    mainCanvasAsciiArtStore.selectAa(index);
+}
+const addAa = ():void => {
+    mainCanvasAsciiArtStore.addAa("new aa", "");
 }
 const deleteFile = (index: number):void => {
-    testList.value.splice(index, 1);
+    fileNameList.value.splice(index, 1);
 }
 
-initFiles();
+watch(
+    () => mainCanvasAsciiArtStore.fileNameList,
+    (newValue) => {
+        const newList:Array<{name:string}> = [];
+        for(let i=0; i < newValue.length; i++){
+            newList.push({name: newValue[i]});
+        }
+        fileNameList.value = newList;
+    }
+)
+watch(
+    () => mainCanvasAsciiArtStore.aaNameList,
+    (newValue) => {
+        const newList:Array<{name:string}> = [];
+        for(let i=0; i < newValue.length; i++){
+            newList.push({name: newValue[i]});
+        }
+        aaNameList.value = newList;
+    }
+)
 
 </script>
 
 <template>
   <div class="base">    
-    <span v-for="(data, i) in testList" class="tab">
+    <div v-for="(data, i) in fileNameList" class="tab">
         <span class="tab">
-            <span>{{ data }}</span>
+            <span v-on:click="selectFile(i)">{{ data.name }}</span>
             <span class="button" v-on:click="deleteFile(i)"> _delete_ </span>
         </span>
-    </span>
-    <span class="button" v-on:click="addFile"> _add_ </span>
+    </div>
+    <div class="button" v-on:click="addFile"> _add_ </div>
+    <div v-for="(data, i) in aaNameList" class="tab">
+        <span class="tab">
+            <span v-on:click="selectAa(i)">{{ data.name }}</span>
+            <span class="button" v-on:click="deleteFile(i)"> _delete_ </span>
+        </span>
+    </div>
+    <div class="button" v-on:click="addAa"> _add_ </div>
   </div>
 </template>
 
 <style scoped>
 
 .base {
+    height: 100%;
     background-color: antiquewhite;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .tab {

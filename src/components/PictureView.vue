@@ -3,13 +3,7 @@ import {computed, ref, type Ref} from "vue";
 import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
-
-  const mainCanvasAsciiArtStore = useMainCanvasStore();
-  mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
-    asciiArt.value = state.asciiArt;
-  })
-
-  const asciiArt = ref();
+import MainCanvas from "./MainCanvas.vue";
 
   const lineRed = ref();
   const lineGreen = ref();
@@ -80,7 +74,7 @@ import { useMainCanvasStore } from "@/stores/mainCanvas";
 
 <template>
   <div class="base">
-    <div class="asciiArt">{{ asciiArt }}</div>
+    <MainCanvas/>
     <img :src="imgSource" class="mainImage"/>
     <div class="menu">
       <div>

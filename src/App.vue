@@ -16,27 +16,34 @@ import { useLayoutStore } from "@/stores/layout";
 
 <template>
   <main>
-    <MenuBar/>
-    <FilesTab/>
-    <div class="container">
-        <PanelContainer :order="0" :name="'main'">
-          <PictureView/>
-        </PanelContainer>
-        <PanelDivider :order="0" :layout-name="'main'"/>
-        <PanelContainer :order="1" :name="'main'">
-          <MainCanvas/>
-        </PanelContainer>
-        <PanelDivider :order="1" :layout-name="'main'"/>
-        <PanelContainer :order="2" :name="'main'">
-          <CharctorPalette/> 
-        </PanelContainer>        
+    <div class="main">
+      <MenuBar/>
+      <div class="container">
+          <PanelContainer :order="0" :name="'main'">
+            <FilesTab/>
+          </PanelContainer>
+          <PanelDivider :order="0" :layout-name="'main'"/>
+          <PanelContainer :order="1" :name="'main'">
+            <PictureView/>
+          </PanelContainer>
+          <PanelDivider :order="1" :layout-name="'main'"/>
+          <PanelContainer :order="2" :name="'main'">
+            <MainCanvas/>
+          </PanelContainer>
+          <PanelDivider :order="2" :layout-name="'main'"/>
+          <PanelContainer :order="3" :name="'main'">
+            <CharctorPalette/> 
+          </PanelContainer>        
+      </div>
     </div>
   </main>
 </template>
 
 <style scoped>
-  .container {
+  .main {
     height: 100vh;
+  }
+  .container {
     display: flex;
     max-width: none;
   }

@@ -1,24 +1,36 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { useCharSetStore } from '@/stores/charSet';
+import { ref, watch, type Ref } from 'vue';
 
-  const testList = ref(["none"]);
-  for(let i=0; i < 100; i++){
-    testList.value.push("none");
-  }
+const charSetStore = useCharSetStore();
+
+const charList: Ref<Array<{value:string, width: number, isMouseOver: string}>> = ref([])
+watch(
+    () => charSetStore.charList,
+    (newValue) => {
+        const newList:Array<{value:string, width: number, isMouseOver: string}> = [];
+        for(let i=0; i < newValue.length; i++){
+            newList.push({value: newValue[i].value, width: newValue[i].width, isMouseOver: "none"});
+        }
+        console.log("char list update")
+        charList.value = newList;
+    }
+)
+
   const onMouseOver = (index: number):void => {
-    testList.value[index] = "block";
+    charList.value[index].isMouseOver = "block";
   }
   const onMouseOut = (index: number):void => {
-    testList.value[index] = "none";
+    charList.value[index].isMouseOver = "none";
   }
 </script>
 
 <template>
   <div class="base">    
-    <span v-for="(data, i) in testList">
+    <span v-for="(data, i) in charList">
         <div class="charChip asciiArt" v-on:mouseover="onMouseOver(i)" v-on:mouseout="onMouseOut(i)" >
-          <span>{{ i + "a" }}</span>
-          <p class="baloon" :style="{display: data}">tip</p>
+          <span>{{ data.value }}</span>
+          <p class="baloon" :style="{display: data.isMouseOver}">tip</p>
         </div>
     </span>
   </div>

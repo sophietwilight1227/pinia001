@@ -1,7 +1,7 @@
 [
     {
         "layoutName": "main",
-        "values": [45, 90, 100]
+        "values": [10, 50, 90, 100]
     },
     {
         "layoutName": "charList",

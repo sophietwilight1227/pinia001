@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref, nextTick, computed, type Ref } from "vue";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
+import { useCharSetStore } from "@/stores/charSet";
 import type { CanvasMain } from "@/interfaces";
 import '@/assets/fonts/Saitamaar.ttf';
 
@@ -9,9 +10,24 @@ const text = ref("not");
 const width = ref(99);
 const myElement:Ref<HTMLElement | null> = ref(null);
 
+const charSetStore = useCharSetStore();
 const mainCanvasAsciiArtStore = useMainCanvasStore();
 mainCanvasAsciiArtStore.initAsciiArt();
 const mainCanvasAA = ref("");
+
+
+  mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
+    mainCanvasAA.value = state.asciiArt;
+    updateRowIndex(state.asciiArt);
+  })
+//mainCanvasAsciiArtStore.$onAction(
+//  ({name, store, args, after, onError}) => {
+//    if(name == "editAsciiArt" || name == "selectAa"){
+//      mainCanvasAA.value = store.$state.asciiArt;
+//      updateRowIndex(store.$state.asciiArt);
+//    }
+//  }
+//)
 
 const onButtonClick = async () => {
   console.log("pushed");
@@ -50,7 +66,7 @@ const onChangeTextArea = async (e: any) => {
       if(myElement.value != null){
         await nextTick();
         console.log(char + " : " + myElement.value.offsetWidth);
-        mainCanvasAsciiArtStore.addCharSizeDic(char, myElement.value.offsetWidth);
+        charSetStore.addCharSizeDic(char, myElement.value.offsetWidth);
       }
     }
     mainCanvasAsciiArtStore.editAsciiArt(str, {value:e.data, start: 0, end: 0});
@@ -72,7 +88,8 @@ const onSelectionChange = (e:any) => {
   //キャレットの左側の文字列
   const targetStr:string = strs[strs.length-1];
   //ドット数
-  const dot = mainCanvasAsciiArtStore.calcStrWidth(targetStr);
+  const dot = charSetStore.calcStrWidth(targetStr);
+  
   mainCanvasAsciiArtStore.editCaretPosition(startPos, endPos);
 }
 
@@ -82,7 +99,7 @@ const onSelectionChange = (e:any) => {
   <div class="base">  
     <div class="mainCanvas">
       <div class="asciiArt">{{ rowIndex }}</div>
-      <textarea class="asciiArt" v-on:input="onChangeTextArea" v-on:selectionchange="onSelectionChange">{{ mainCanvasAA }}</textarea>
+      <textarea class="asciiArt" v-on:input="onChangeTextArea" v-on:selectionchange="onSelectionChange" v-model="mainCanvasAA"></textarea>
     </div>
     <div class="menu">
       <span class="asciiArt" ref="myElement">{{ text }}</span>
@@ -93,7 +110,6 @@ const onSelectionChange = (e:any) => {
 <style scoped>
 
 .base {
-  height: 100vh;
   background-color: paleturquoise;
   display: flex;
   flex-direction: column;

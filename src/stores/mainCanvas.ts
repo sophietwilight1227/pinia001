@@ -3,17 +3,18 @@ import type { EditLog, Setting } from "@/interfaces";
 
 
 interface State {
+    allData: Array<{fileName: string,
+                    aaList: Array<{
+                                    aaName: string,
+                                    asciiArt: string,
+                                }>,
+                    }>,
     asciiArt: string;
     caretPosition: {start: number, end: number};
     editLogs: Array<EditLog>;
+    currentFileNamePosition: number,
+    currentAaNamePosition: number,
     setting: Setting;
-    charSizeDic: Map<string, number>;
-    charPalette: Array<{indexName: string,
-                    charList: Array<{
-                        value: string,
-                        width: number
-                    }>
-                }>
 };
 
 export const useMainCanvasStore = defineStore(
@@ -21,52 +22,72 @@ export const useMainCanvasStore = defineStore(
     {
         state: (): State => {
             return {
+                allData: [],
                 asciiArt: "",
                 caretPosition: {start:0, end: 0},
                 editLogs: [],
+                currentFileNamePosition:0,
+                currentAaNamePosition: 0,
                 setting: {},
-                charSizeDic: new Map(),
-                charPalette: []
             };
         },
         getters: {
-
+            fileNameList(state: State):Array<string> {
+                const fileNameList = [];
+                for(let i=0; i < this.allData.length; i++){
+                    fileNameList.push(this.allData[i].fileName);
+                }
+                return fileNameList;
+            },
+            aaNameList(state: State): Array<string> {
+                const aaNameList = [];
+                if(this.allData[this.currentFileNamePosition] == null){
+                    return [""];
+                }
+                if(this.allData[this.currentFileNamePosition].aaList == null){
+                    return [""];
+                }
+                for(let i=0; i < this.allData[this.currentFileNamePosition].aaList.length; i++){
+                    aaNameList.push(this.allData[this.currentFileNamePosition].aaList[i].aaName);
+                }
+                return aaNameList;
+            },
         },
         actions: {
             initAsciiArt(): void {
                 this.asciiArt = "testAA";
+                this.allData.splice(0);
+                this.allData.push({fileName: "file1", aaList: [{aaName: "aa1", asciiArt: "test1"}]})
             },
             editAsciiArt(aa: string, log: EditLog):void {
                 this.asciiArt = aa;
+                this.allData[this.currentFileNamePosition].aaList[this.currentAaNamePosition].asciiArt = this.asciiArt;
                 this.editLogs.push(log);
             },
             editCaretPosition(start: number, end: number){
                 this.caretPosition.start = start;
                 this.caretPosition.end = end;
             },
-            addCharSizeDic(char: string, size: number):void {
-                if(!this.charSizeDic.has(char)){
-                    this.charSizeDic.set(char, size);
+            selectFile(index: number):void {
+                if(index == null){
+                    return;
                 }
+                this.currentFileNamePosition = index;
             },
-            calcStrWidth(str: string): number {
-                let width = 0;
-                for(let i=0; i < str.length; i++){
-                    if(this.charSizeDic.has(str.charAt(i))){
-                        const charWidth = this.charSizeDic.get(str.charAt(i));
-                        if(charWidth != undefined){
-                            width += charWidth; 
-                        }
-                    }
+            addFile(fileName: string, aaList: Array<{aaName: string, asciiArt: string}>):void {
+                this.allData.push({fileName: fileName, aaList: aaList});
+            },
+            selectAa(index: number){
+                if(index == null){
+                    return;
                 }
-                return width;
+                this.currentAaNamePosition = index;
+                this.asciiArt = this.allData[this.currentFileNamePosition].aaList[index].asciiArt;
+                console.log(this.allData);
             },
-            addCharPaletteIndex(indexNo: number, indexName: string): void{
-                this.charPalette.splice(indexNo,0, {indexName: indexName, charList: []});
+            addAa(aaName: string, asciiArt: string): void {
+                this.allData[this.currentFileNamePosition].aaList.push({aaName: aaName, asciiArt: asciiArt});
             },
-            addCharPalette(indexNo: number, charNo: number, charValue: string, width: number): void {
-                this.charPalette[indexNo].charList.splice(charNo, 0, {value: charValue, width: width})
-            }
         },        
     }
 );
