@@ -15,16 +15,13 @@ import { useLayoutStore } from "@/stores/layout";
   const myElement:Ref<HTMLElement | null> = ref(null);
   const width = ref("0vw");
   const calcWidth = (): void => {
-    let dividerWidth = 1;
+    const dividerWidth = 5; //5px
     if(props.order == 0){
-      width.value = layoutStore.widthDic.get(props.name)![0] - dividerWidth + "%"; 
-    }else if(props.order < layoutStore.widthDic.get(props.name)!.length){
-      width.value = (layoutStore.widthDic.get(props.name)![props.order] - layoutStore.widthDic.get(props.name)![props.order - 1])- dividerWidth + "%";
-    }else if(props.order == layoutStore.widthDic.get(props.name)!.length){
-      width.value = (100 - layoutStore.widthDic.get(props.name)![props.order - 1])  + "%";
+      width.value = "calc(" + layoutStore.widthDic.get(props.name)![0] + "vw - " + dividerWidth + "px )"; 
     }else{
-      width.value = "0vw";
+      width.value = "calc(" + (layoutStore.widthDic.get(props.name)![props.order] - layoutStore.widthDic.get(props.name)![props.order - 1]) + "vw - " + (dividerWidth * (props.order + 1)) + "px )";
     }
+    console.log(width.value);
   }
   calcWidth();
 

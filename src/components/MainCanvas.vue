@@ -20,14 +20,6 @@ const mainCanvasAA = ref("");
     mainCanvasAA.value = state.asciiArt;
     updateRowIndex(state.asciiArt);
   })
-//mainCanvasAsciiArtStore.$onAction(
-//  ({name, store, args, after, onError}) => {
-//    if(name == "editAsciiArt" || name == "selectAa"){
-//      mainCanvasAA.value = store.$state.asciiArt;
-//      updateRowIndex(store.$state.asciiArt);
-//    }
-//  }
-//)
 
 const onButtonClick = async () => {
   console.log("pushed");
@@ -73,13 +65,17 @@ const onChangeTextArea = async (e: any) => {
     updateRowIndex(str);
     onSelectionChange(e);
   }
-  
 }
 
 const onSelectionChange = (e:any) => {
+  if(e.target != document.activeElement){
+    return;
+  }
+  console.log("caret : " + e.target.selectionStart);
+
   const rawStr:string = e.target.value;
   const endPos = e.target.selectionEnd;
-  const startPos:number = e.target.selectionEnd;
+  const startPos:number = e.target.selectionStart;
   const frontStr:string = rawStr.substring(0, startPos);
   const strs = frontStr.split("\n");
 
@@ -99,7 +95,10 @@ const onSelectionChange = (e:any) => {
   <div class="base">  
     <div class="mainCanvas">
       <div class="asciiArt">{{ rowIndex }}</div>
-      <textarea class="asciiArt" v-on:input="onChangeTextArea" v-on:selectionchange="onSelectionChange" v-model="mainCanvasAA"></textarea>
+      <textarea class="asciiArt textarea" 
+                v-on:input="onChangeTextArea" 
+                v-on:selectionchange="onSelectionChange"
+                v-model="mainCanvasAA"></textarea>
     </div>
     <div class="menu">
       <span class="asciiArt" ref="myElement">{{ text }}</span>
@@ -110,21 +109,23 @@ const onSelectionChange = (e:any) => {
 <style scoped>
 
 .base {
-  background-color: paleturquoise;
+  background-color: transparent;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow-x: scroll;
-  overflow-y: scroll;
 }
 .mainCanvas {
   display: flex;
   flex-direction: row;
+  height: 100%;
 }
 .menu{
   background-color: aqua;
 }
 .asciiArt {
+  z-index: 10;
+  background-color: transparent;
   font-size:16px;
   font-style: normal;
   font-weight: 400;
@@ -133,6 +134,15 @@ const onSelectionChange = (e:any) => {
   text-shadow: none;
   font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
   white-space: pre-wrap;
+}
+
+.textarea {
+  height: 100%;
+  width: 100%;
+  overflow-x: scroll;
+  overflow-y: scroll;
+  white-space: pre;
+  resize: none;
 }
 
 @font-face {

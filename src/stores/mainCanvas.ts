@@ -64,6 +64,13 @@ export const useMainCanvasStore = defineStore(
                 this.allData[this.currentFileNamePosition].aaList[this.currentAaNamePosition].asciiArt = this.asciiArt;
                 this.editLogs.push(log);
             },
+            insertCharToAsciiArt(char: string){
+                const strStart = this.asciiArt.slice(0, this.caretPosition.start);
+                const strEnd = this.asciiArt.slice(this.caretPosition.end);
+                const newAa = strStart + char + strEnd;
+                this.editAsciiArt(newAa, {value: char, start: this.caretPosition.start, end: this.caretPosition.end});
+                this.editCaretPosition(this.caretPosition.start + 1, this.caretPosition.start + 1);
+            },
             editCaretPosition(start: number, end: number){
                 this.caretPosition.start = start;
                 this.caretPosition.end = end;

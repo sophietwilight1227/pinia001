@@ -27,7 +27,6 @@ initCharPalette();
 const selectIndex = (index: number):void => {
   charSetStore.selectIndex(index);
 }
-selectIndex(0);
 
 </script>
 

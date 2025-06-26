@@ -6,38 +6,26 @@
     layoutName: string,
     }>()
 
+    const myElement: Ref<HTMLElement | null> = ref(null);
     const layoutStore = useLayoutStore();
-    //const emit = defineEmits(['dragDivider']);
 
     const move = (e: DragEvent): void => {
-       
-        //layoutStore.widthLst[props.order] += (e.movementX * 5 / myElement.value?.offsetWidth);
-        if( e.x != 0){
-          //console.log(props)
-          layoutStore.editLayout(props.layoutName, props.order, e.x / window.innerWidth * 100);
+        if( e.x != 0 && myElement.value != null){
+          if(myElement.value.parentElement != null){
+            layoutStore.editLayout(props.layoutName, props.order, (e.x - myElement.value?.parentElement.getBoundingClientRect().x ) / myElement.value?.parentElement.offsetWidth * 100);
+          }
         }
     }
 
-    const onMouseDown = (e: MouseEvent): void => {
-
-    }
-    const onMouseUp = (e: MouseEvent): void => {
-
-    }
-    const onMouseMove = (e: MouseEvent): void => {
-    }
-    const onMouseOut = (e:MouseEvent):void => {
-      console.log("out: " + e.movementX);
-    }
 </script>
 
 <template>
-    <div class="divider" v-on:mousedown="onMouseDown" v-on:mouseup="onMouseUp" v-on:mousemove="onMouseMove" v-on:drag="move" v-on:mouseout="onMouseOut"></div>
+    <span class="divider" v-on:drag="move"  ref="myElement"></span>
 </template>
 
 <style scoped>
   .divider {
-    width: 5px;
+    width: 10px;
     background-color: lightgray;
     cursor:w-resize;
     z-index: 500;
