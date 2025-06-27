@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
 import PictureEditer from "./PictureEditer.vue";
+import IconFile from "@/assets/icons/icon_file.vue";
+import IconFolder from "@/assets/icons/icon_folder.vue";
+import IconBase from "@/assets/icons/icon_base.vue";
+import IconImage from "@/assets/icons/icon_image.vue";
+import { usePictureViewStore } from "@/stores/pictureView";
+
+const pictureViewSrtore = usePictureViewStore();
+
 const visibleList: Ref<Map<string, boolean>> = ref(new Map())
 
 const initSetting = ():void => {
@@ -16,6 +24,9 @@ const changeMenu = (id: string): void => {
     visibleList.value.set(id, true);
 }
 
+const openImage = () => {
+    pictureViewSrtore.setImage('https://ap1.sozaitamago.com/common/img/tamago/sample/image/Sisk0111.jpg');
+}
 </script>
 
 <template>
@@ -24,12 +35,28 @@ const changeMenu = (id: string): void => {
         <span v-on:click="changeMenu('file')">ファイル</span>
         <span v-on:click="changeMenu('image')">画像</span>
     </div>
-    <div v-show="visibleList.get('file')">
-        <span>開く</span>
-        <span>メニュー1</span>
-        <span>メニュー2</span>
+    <div v-show="visibleList.get('file')" class="hasSubMenu">
+        <div>
+            <IconBase>
+                <IconFile/>
+            </IconBase>
+            <span>新規</span>
+        </div>
+        <div>
+            <IconBase >
+                <IconFolder/>
+            </IconBase>
+            <span>開く</span>
+        </div>
+
     </div>
-    <div v-show="visibleList.get('image')">
+    <div v-show="visibleList.get('image')" class="hasSubMenu">
+        <div v-on:click="openImage">
+            <IconBase>
+                <IconImage/>
+            </IconBase>
+            <span>開く</span>
+        </div>
         <PictureEditer/>
     </div>
   </div>
@@ -56,5 +83,6 @@ const changeMenu = (id: string): void => {
 }
 .hasSubMenu{
     display: flex;
+    flex-direction: row;
 }
 </style>

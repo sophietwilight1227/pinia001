@@ -1,7 +1,8 @@
 import {defineStore} from "pinia";
 import layoutList from '../assets/data/layout.json'
 interface State {
-    widthDic: Map<string, Array<number>>
+    widthDic: Map<string, Array<number>>,
+    canvasSize: {height: string, width: string} //単位つき
 };
 
 export const useLayoutStore = defineStore(
@@ -10,6 +11,7 @@ export const useLayoutStore = defineStore(
         state: (): State => {
             return {
                 widthDic: new Map(),
+                canvasSize: {height: '100%', width: '100%'}
             };
         },
         getters: {
@@ -27,6 +29,10 @@ export const useLayoutStore = defineStore(
             editLayout(layoutName: string, index: number, value: number){
                 this.widthDic.get(layoutName)![index] = value;
                 console.log(this.widthDic.get(layoutName)![index]);
+            },
+            updateCanvasSize(height: string, width: string) {
+                this.canvasSize.height = height;
+                this.canvasSize.width = width;
             }
         },        
     }

@@ -37,8 +37,11 @@ import { useLayoutStore } from "@/stores/layout";
 <style scoped>
 
 .base {
+  height: 90vh;
   width: v-bind(width);
   background-color: palegoldenrod;
+  position: relative;
+  overflow: scroll;
 }
 
 </style>

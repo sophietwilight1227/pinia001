@@ -7,6 +7,7 @@ import CharctorPalette from './components/CharactorPalette.vue'
 import PictureView from './components/PictureView.vue'
 import PanelContainer from './components/PanelContainer.vue'
 import PanelDivider from './components/PanelDivider.vue'
+import EditablePreview from "./components/EditablePreview.vue";
 
 import { useLayoutStore } from "@/stores/layout";
   const layoutStore = useLayoutStore();
@@ -28,7 +29,7 @@ import { useLayoutStore } from "@/stores/layout";
           </PanelContainer>
           <PanelDivider :order="1" :layout-name="'main'"/>
           <PanelContainer :order="2" :name="'main'">
-            <MainCanvas/>
+            <EditablePreview/>
           </PanelContainer>
           <PanelDivider :order="2" :layout-name="'main'"/>
           <PanelContainer :order="3" :name="'main'">
@@ -46,5 +47,6 @@ import { useLayoutStore } from "@/stores/layout";
   .container {
     display: flex;
     max-width: none;
+    overflow: hidden;
   }
 </style>
