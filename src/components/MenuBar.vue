@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
+import { ref, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type Ref } from "vue";
 import PictureEditer from "./PictureEditer.vue";
 import IconFile from "@/assets/icons/icon_file.vue";
 import IconFolder from "@/assets/icons/icon_folder.vue";
@@ -9,7 +9,10 @@ import { usePictureViewStore } from "@/stores/pictureView";
 
 const pictureViewSrtore = usePictureViewStore();
 
-const visibleList: Ref<Map<string, boolean>> = ref(new Map())
+const visibleList: Ref<Map<string, boolean>> = ref(new Map());
+const visibleModalMenu: Ref<boolean> = ref(false);
+const imageUrl: Ref<string> = ref("");
+const inputLocalImageButton: any = ref(null);
 
 const initSetting = ():void => {
     visibleList.value.set("file", false);
@@ -25,8 +28,27 @@ const changeMenu = (id: string): void => {
 }
 
 const openImage = () => {
-    pictureViewSrtore.setImage('https://ap1.sozaitamago.com/common/img/tamago/sample/image/Sisk0111.jpg');
+    //pictureViewSrtore.setImage('https://ap1.sozaitamago.com/common/img/tamago/sample/image/Sisk0111.jpg');
+    pictureViewSrtore.setImage(imageUrl.value);
+    hideModalMenu();
 }
+
+const showModalMenu = ():void => {
+    visibleModalMenu.value = true;
+}
+const hideModalMenu = ():void => {
+    visibleModalMenu.value = false;
+}
+const onClickOpenLocalImage = ():void => {
+    inputLocalImageButton.value!.click();
+}
+const openLocalFileImage = (e: Event):void => {
+    if(inputLocalImageButton.value != null){
+        imageUrl.value = URL.createObjectURL(inputLocalImageButton.value.files[0]);
+        openImage();
+    } 
+}
+
 </script>
 
 <template>
@@ -51,7 +73,7 @@ const openImage = () => {
 
     </div>
     <div v-show="visibleList.get('image')" class="hasSubMenu">
-        <div v-on:click="openImage">
+        <div v-on:click="showModalMenu">
             <IconBase>
                 <IconImage/>
             </IconBase>
@@ -59,6 +81,20 @@ const openImage = () => {
         </div>
         <PictureEditer/>
     </div>
+  </div>
+  <div v-show="visibleModalMenu" class="modalMenu">
+    <div>URLまたはファイルパス</div>
+    <input type="text" v-model="imageUrl"/>
+    <input
+        style="display: none;"
+      ref="inputLocalImageButton"
+      type="file"
+      accept="image/jpeg, image/jpg, image/png"
+      v-on:change="openLocalFileImage"
+    >
+    <button v-on:click="onClickOpenLocalImage">参照</button>
+    <button v-on:click="openImage">開く</button>
+    <button v-on:click="hideModalMenu">キャンセル</button>
   </div>
 </template>
 
@@ -84,5 +120,12 @@ const openImage = () => {
 .hasSubMenu{
     display: flex;
     flex-direction: row;
+}
+.modalMenu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 2000;
+    background-color: aqua;
 }
 </style>
