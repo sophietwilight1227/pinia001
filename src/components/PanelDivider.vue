@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import {ref, type Ref} from "vue";
+  import {onMounted, ref, type Ref} from "vue";
   import { useLayoutStore } from "@/stores/layout";
     const props = defineProps<{
     order: number,
@@ -8,6 +8,20 @@
 
     const myElement: Ref<HTMLElement | null> = ref(null);
     const layoutStore = useLayoutStore();
+
+    const initSize = ():void => {
+      if( myElement.value != null){
+        if(myElement.value.parentElement != null){
+          const width:number = myElement.value?.parentElement.getBoundingClientRect().width;
+          const height: number = myElement.value?.parentElement.getBoundingClientRect().height;
+          layoutStore.initSize(height, width, props.order);        
+        }
+      }
+    }
+    onMounted(() => {
+      initSize();
+    })
+   
 
     const move = (e: DragEvent): void => {
         if( e.x != 0 && myElement.value != null){

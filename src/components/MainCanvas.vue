@@ -46,8 +46,8 @@ const onButtonClick = async () => {
 const updateTextAreaWidth = () => {
   //const newHeight: string = compareLength(textAreaElem.value?.scrollHeight, sizeRef100.value?.clientHeight) + "px"
   //const newWidth: string =  compareLength(textAreaElem.value?.scrollWidth, sizeRef100.value?.clientWidth) + "px"
-  const newHeight: string = textAreaElem.value?.scrollHeight + "px";
-  const newWidth: string = textAreaElem.value?.scrollWidth + "px"
+  const newHeight: number = textAreaElem.value?.scrollHeight!;
+  const newWidth: number = textAreaElem.value?.scrollWidth!;
   layoutStore.updateCanvasSize(newHeight, newWidth);
 }
 const compareLength = (value: number | undefined, reference: number | undefined): number => {
@@ -179,14 +179,14 @@ const onSelectionChange = (e:any) => {
 }
 
 .textarea {
-  height: v-bind(canvasSize.height);
-  width: v-bind(canvasSize.width);
   white-space: pre;
-  field-sizing: content;
   min-height: 100%;
+  min-width: 100%;
   z-index: 10;
   resize: none;
   overflow: hidden;
+  height: v-bind(canvasSize.height);
+  width: v-bind(canvasSize.width);
 }
 
 .sizeRef100 {
