@@ -6,11 +6,11 @@ import type { CanvasMain } from "@/interfaces";
 import '@/assets/fonts/Saitamaar.ttf';
 import { useLayoutStore } from "@/stores/layout";
 
-const rowIndex = ref("1");
 const text = ref("not");
 const width = ref(99);
 const spanElem:Ref<HTMLElement | null> = ref(null);
 const textAreaElem:Ref<HTMLElement | null> = ref(null);
+const sizeRef100:Ref<HTMLElement | null> = ref(null);
 
 const charSetStore = useCharSetStore();
 const mainCanvasAsciiArtStore = useMainCanvasStore();
@@ -18,17 +18,16 @@ mainCanvasAsciiArtStore.initAsciiArt();
 const mainCanvasAA = ref("");
 
 
-  mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
-    mainCanvasAA.value = state.asciiArt;
-    updateRowIndex(state.asciiArt);
-  })
+mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
+  mainCanvasAA.value = state.asciiArt;
+})
 
 const layoutStore = useLayoutStore();
 const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", width: "100%"})
-  layoutStore.$subscribe((mutation, state) => {
-    canvasSize.value.height = state.canvasSize.height;
-    canvasSize.value.width = state.canvasSize.width;
-  })
+layoutStore.$subscribe((mutation, state) => {
+  canvasSize.value.height = state.canvasSize.height;
+  canvasSize.value.width = state.canvasSize.width;
+})
 
 const onButtonClick = async () => {
   console.log("pushed");
@@ -42,33 +41,40 @@ const onButtonClick = async () => {
       width.value = spanElem.value.scrollWidth;
     }   
   }
-
 };
 
-const updateRowIndex = (str: string) => {
-  const lineCount = str.length - str.replace(/\n/g, "").length + 1
-  let index = "1";
-  for(let i=1; i<lineCount; i++){
-    index += ("\r\n" + (i+1));
+const updateTextAreaWidth = () => {
+  //const newHeight: string = compareLength(textAreaElem.value?.scrollHeight, sizeRef100.value?.clientHeight) + "px"
+  //const newWidth: string =  compareLength(textAreaElem.value?.scrollWidth, sizeRef100.value?.clientWidth) + "px"
+  const newHeight: string = textAreaElem.value?.scrollHeight + "px";
+  const newWidth: string = textAreaElem.value?.scrollWidth + "px"
+  layoutStore.updateCanvasSize(newHeight, newWidth);
+}
+const compareLength = (value: number | undefined, reference: number | undefined): number => {
+  if(value != null && reference != null){
+    if(value > reference){
+      return value;
+    }else{
+      return reference;
+    }
+  }else{
+    return 0;
   }
-  rowIndex.value = index;
 }
 
-const updateTextAreaWidth = () => {
-  const newHeight = textAreaElem.value?.scrollHeight + "px";
-  const newWidth = textAreaElem.value?.scrollWidth + "px";
-  //const newWidth = "100%"
-  //canvasSize.value.height = newHeight;
-  //canvasSize.value.width = newWidth;
-  layoutStore.updateCanvasSize(newHeight, newWidth);
-  console.log("w / h update")
+const decodeNumericEntity = (str: string) => {
+    var re = /&#([0-9a-fA-F]+);/g;
+    return str.replace(re, function(m) {
+      var cp = parseInt(arguments[1], 10);
+      return String.fromCodePoint(cp);
+    }); 
 }
 
 const onChangeTextArea = async (e: any) => {
   if(e.target == null){
     mainCanvasAsciiArtStore.editAsciiArt("", {value:e.data, start: 0, end: 0});
   }else{
-    const str:string = e.target.value
+    const str:string = decodeNumericEntity(e.target.value);
     for(let i=0; i < str.length; i++){
       const char = str.charAt(i);
       text.value = char;
@@ -78,12 +84,12 @@ const onChangeTextArea = async (e: any) => {
         charSetStore.addCharSizeDic(char, spanElem.value.offsetWidth);
       }
     }
-    mainCanvasAsciiArtStore.editAsciiArt(str, {value:e.data, start: 0, end: 0});
-    updateRowIndex(str);
+    mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: 0});
     onSelectionChange(e);
     updateTextAreaWidth();
   }
 }
+
 
 const onSelectionChange = (e:any) => {
   if(e.target != document.activeElement){
@@ -111,36 +117,38 @@ const onSelectionChange = (e:any) => {
 
 <template>
   <div class="base">  
-    <div class="mainCanvas">
-      <div class="asciiArt">{{ rowIndex }}</div>
-      <textarea class="asciiArt textarea" 
+    <textarea class="asciiArt textarea" 
                 v-on:input="onChangeTextArea" 
                 v-on:selectionchange="onSelectionChange"
                 v-model="mainCanvasAA"
-                ref="textAreaElem"></textarea>
-    </div>
-    <div class="menu">
+                ></textarea>
+    <textarea class="measureAA asciiArt" ref="textAreaElem">{{ mainCanvasAA }}</textarea>
+    <div class="measure">
       <span class="asciiArt" ref="spanElem">{{ text }}</span>
+      
     </div>
+    <span class="sizeRef100" ref="sizeRef100">　</span>
   </div>
+  
 </template>
 
 <style scoped>
 
 .base {
+  position: absolute;
   top: 0px;
-  height: v-bind(canvasSize.height);
-  width: v-bind(canvasSize.width);
   min-height: 100%;
-  background-color: red;
+  background-color: transparent;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  position: relative;
+  height: v-bind(canvasSize.height);
+  width: v-bind(canvasSize.width);  
 }
-.mainCanvas {
+.mainFrame {
   overflow: hidden;
+  min-height: 100%;
   height: v-bind(canvasSize.height);
   width: v-bind(canvasSize.width);
   background-color: transparent;
@@ -148,9 +156,14 @@ const onSelectionChange = (e:any) => {
   flex-direction: row;
   position: absolute;
 }
-.menu{
+.measure{
   background-color: aqua;
   position: absolute;
+}
+.measureAA {
+  width: fit-content;
+  height: fit-content;
+  field-sizing: content;
 }
 .asciiArt {
   white-space: pre;
@@ -176,6 +189,11 @@ const onSelectionChange = (e:any) => {
   overflow: hidden;
 }
 
+.sizeRef100 {
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+}
 
 @font-face {
   font-family: 'Saitamaar';

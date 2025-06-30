@@ -12,7 +12,10 @@
     const move = (e: DragEvent): void => {
         if( e.x != 0 && myElement.value != null){
           if(myElement.value.parentElement != null){
-            layoutStore.editLayout(props.layoutName, props.order, (e.x - myElement.value?.parentElement.getBoundingClientRect().x ) / myElement.value?.parentElement.offsetWidth * 100);
+            const percentage: number = (e.x - myElement.value?.parentElement.getBoundingClientRect().x ) / myElement.value?.parentElement.getBoundingClientRect().width * 100;
+            const width:number = myElement.value?.parentElement.getBoundingClientRect().width;
+            const height: number = myElement.value?.parentElement.getBoundingClientRect().height;
+            layoutStore.editLayout(props.layoutName, props.order, percentage, height, width);
           }
         }
     }

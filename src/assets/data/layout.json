@@ -1,10 +1,10 @@
 [
     {
         "layoutName": "main",
-        "values": [10, 50, 90, 100]
+        "values": [10, 45, 80, 100]
     },
     {
         "layoutName": "charList",
-        "values": [50, 100]
+        "values": [30, 100]
     }
 ]

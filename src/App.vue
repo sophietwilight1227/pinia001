@@ -25,11 +25,18 @@ import { useLayoutStore } from "@/stores/layout";
           </PanelContainer>
           <PanelDivider :order="0" :layout-name="'main'"/>
           <PanelContainer :order="1" :name="'main'">
-            <PictureView/>
+            <EditablePreview>
+              <div>
+                <MainCanvas/>
+                <PictureView/>                
+              </div>
+            </EditablePreview>
           </PanelContainer>
           <PanelDivider :order="1" :layout-name="'main'"/>
           <PanelContainer :order="2" :name="'main'">
-            <EditablePreview/>
+            <EditablePreview>
+              <MainCanvas/>
+            </EditablePreview>
           </PanelContainer>
           <PanelDivider :order="2" :layout-name="'main'"/>
           <PanelContainer :order="3" :name="'main'">

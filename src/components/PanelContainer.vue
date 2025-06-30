@@ -17,11 +17,10 @@ import { useLayoutStore } from "@/stores/layout";
   const calcWidth = (): void => {
     const dividerWidth = 5; //5px
     if(props.order == 0){
-      width.value = "calc(" + layoutStore.widthDic.get(props.name)![0] + "vw - " + dividerWidth + "px )"; 
+      width.value = "calc(" + layoutStore.widthDic.get(props.name)![0].widthRatio + "vw - " + dividerWidth + "px )"; 
     }else{
-      width.value = "calc(" + (layoutStore.widthDic.get(props.name)![props.order] - layoutStore.widthDic.get(props.name)![props.order - 1]) + "vw - " + (dividerWidth * (props.order + 1)) + "px )";
+      width.value = "calc(" + (layoutStore.widthDic.get(props.name)![props.order].widthRatio - layoutStore.widthDic.get(props.name)![props.order - 1].widthRatio) + "vw - " + (dividerWidth * (props.order + 1)) + "px )";
     }
-    console.log(width.value);
   }
   calcWidth();
 
@@ -40,8 +39,8 @@ import { useLayoutStore } from "@/stores/layout";
   height: 90vh;
   width: v-bind(width);
   background-color: palegoldenrod;
-  position: relative;
-  overflow: scroll;
+  /*position: relative;*/
+  overflow: hidden;
 }
 
 </style>

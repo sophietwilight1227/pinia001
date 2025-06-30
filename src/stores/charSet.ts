@@ -52,6 +52,9 @@ export const useCharSetStore = defineStore(
             },
             addCharPalette(indexNo: number, charNo: number, charValue: string, width: number): void {
                 this.charPalette[indexNo].charList.splice(charNo, 0, {value: charValue, width: width})
+            },
+            addCharToCurrentPalette(charNo: number, charValue: string, width: number): void {
+                this.charPalette[this.currentIndex].charList.splice(charNo, 0, {value: charValue, width: width})
             }
         },        
     }

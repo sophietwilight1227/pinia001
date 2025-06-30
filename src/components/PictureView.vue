@@ -58,7 +58,6 @@ const layoutStore = useLayoutStore();
 
 <template>
   <div class="base">
-    <MainCanvas/>
     <div class="imageFlame">
       <img :src="imgSource" class="mainImage"/>   
     </div>
@@ -68,13 +67,12 @@ const layoutStore = useLayoutStore();
 <style scoped>
 
 .base {     
-  height: v-bind(canvasSize.height);
-  width: v-bind(canvasSize.width);
-  /*background-color: rgb(255, 214, 227);*/
+  width: 100%;
+  height: 100%;
+  /*height: v-bind(canvasSize.height);*/
   background-color: v-bind(backgroundColor);
   overflow:hidden;
-  position: relative;
-  background-color: darkgreen;
+  position: absolute;
 }
 
 .imageFlame {
@@ -82,8 +80,6 @@ const layoutStore = useLayoutStore();
   width: 100%;
   overflow:hidden;
   background-color: brown;
-  height: v-bind(canvasSize.height);
-  width: v-bind(canvasSize.width);
 }
 
 .mainImage {

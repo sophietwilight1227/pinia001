@@ -47,20 +47,25 @@ watch(
 
 <template>
   <div class="base">    
-    <div v-for="(data, i) in fileNameList" class="tab">
-        <span class="tab">
-            <span v-on:click="selectFile(i)">{{ data.name }}</span>
-            <span class="button" v-on:click="deleteFile(i)"> _delete_ </span>
-        </span>
+    <div class="filelist">
+        <div v-for="(data, i) in fileNameList" class="tab">
+            <span class="tab">
+                <span v-on:click="selectFile(i)">{{ data.name }}</span>
+                <span class="button" v-on:click="deleteFile(i)"> _delete_ </span>
+            </span>
+        </div>
+        <div class="button" v-on:click="addFile"> _add_ </div>        
     </div>
-    <div class="button" v-on:click="addFile"> _add_ </div>
-    <div v-for="(data, i) in aaNameList" class="tab">
-        <span class="tab">
-            <span v-on:click="selectAa(i)">{{ data.name }}</span>
-            <span class="button" v-on:click="deleteFile(i)"> _delete_ </span>
-        </span>
+    <div class="filelist">
+        <div v-for="(data, i) in aaNameList" class="tab">
+            <span class="tab">
+                <span v-on:click="selectAa(i)">{{ data.name }}</span>
+                <span class="button" v-on:click="deleteFile(i)"> _delete_ </span>
+            </span>
+        </div>
+        <div class="button" v-on:click="addAa"> _add_ </div>        
     </div>
-    <div class="button" v-on:click="addAa"> _add_ </div>
+
   </div>
 </template>
 
@@ -69,13 +74,16 @@ watch(
 .base {
     height: 100%;
     background-color: antiquewhite;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+}
+.filelist {
+    height: 50%;
 }
 
 .tab {
     background-color: aqua;
+    align-content: flex-start;
 }
 
 .button{

@@ -10,6 +10,8 @@ interface State {
                                 }>,
                     }>,
     asciiArt: string;
+    rowIndex: string;
+    maxRow: number;
     caretPosition: {start: number, end: number};
     editLogs: Array<EditLog>;
     currentFileNamePosition: number,
@@ -24,6 +26,8 @@ export const useMainCanvasStore = defineStore(
             return {
                 allData: [],
                 asciiArt: "",
+                rowIndex: "1",
+                maxRow: 1,
                 caretPosition: {start:0, end: 0},
                 editLogs: [],
                 currentFileNamePosition:0,
@@ -63,6 +67,17 @@ export const useMainCanvasStore = defineStore(
                 this.asciiArt = aa;
                 this.allData[this.currentFileNamePosition].aaList[this.currentAaNamePosition].asciiArt = this.asciiArt;
                 this.editLogs.push(log);
+
+                this.updateRowIndex(aa);
+            },
+            updateRowIndex(str: string): void {
+                const lineCount = str.length - str.replace(/\n/g, "").length + 1
+                let index = "1";
+                for(let i=1; i<lineCount; i++){
+                    index += ("\r\n" + (i+1));
+                }
+                this.rowIndex = index;
+                this.maxRow = lineCount;
             },
             insertCharToAsciiArt(char: string){
                 const strStart = this.asciiArt.slice(0, this.caretPosition.start);
