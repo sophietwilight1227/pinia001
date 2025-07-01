@@ -72,6 +72,7 @@ initCharPalette();
     flex-direction: row;
     max-width: none;
     overflow: hidden;
+    height: 100%;
 }
 .charIndexList {
     display: flex;

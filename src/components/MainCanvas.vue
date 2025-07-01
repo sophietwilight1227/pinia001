@@ -157,7 +157,8 @@ const onSelectionChange = (e:any) => {
   position: absolute;
 }
 .measure{
-  background-color: aqua;
+  background-color: transparent;
+  color: transparent;
   position: absolute;
 }
 .measureAA {

@@ -27,7 +27,7 @@ import { useLayoutStore } from "@/stores/layout";
 
 </script>
 
-<template>
+<template >
   <div class="base" ref="myElement">     
     <slot></slot>
   </div>
@@ -36,11 +36,12 @@ import { useLayoutStore } from "@/stores/layout";
 <style scoped>
 
 .base {
-  height: 90vh;
+  min-height: 100%;
   width: v-bind(width);
   background-color: palegoldenrod;
   /*position: relative;*/
   overflow: hidden;
+  flex-grow: 1;
 }
 
 </style>

@@ -51,10 +51,20 @@ import { useLayoutStore } from "@/stores/layout";
 
 <style scoped>
   .main {
+    background-color: darkcyan;
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
   .container {
     display: flex;
+    flex-direction: row;
     max-width: none;
     overflow: hidden;
+    height: 100%;
+    flex-grow: 1;
+    align-items: stretch;
   }
 </style>
