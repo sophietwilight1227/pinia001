@@ -43,6 +43,7 @@
 <style scoped>
   .divider {
     width: 10px;
+    height: 100%;
     background-color: lightgray;
     cursor:w-resize;
     z-index: 500;

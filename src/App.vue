@@ -54,7 +54,7 @@ import { useLayoutStore } from "@/stores/layout";
     background-color: darkcyan;
     position: relative;
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
   }

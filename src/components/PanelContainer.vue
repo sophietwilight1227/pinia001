@@ -36,7 +36,7 @@ import { useLayoutStore } from "@/stores/layout";
 <style scoped>
 
 .base {
-  min-height: 100%;
+  max-height: 100%;
   width: v-bind(width);
   background-color: palegoldenrod;
   /*position: relative;*/
