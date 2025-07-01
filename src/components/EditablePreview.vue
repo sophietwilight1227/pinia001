@@ -67,13 +67,13 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
   position: sticky;
   background-color: white;
   text-align: right;
-  height: fit-content;
   width: 30px;
   white-space: pre-wrap;
   font-size:16px;
   line-height:18px;
   overflow: hidden;
   z-index: 100;
+  height: v-bind(canvasSize.height);
 }
 .sticky_row {
   position: sticky;

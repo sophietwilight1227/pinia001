@@ -39,21 +39,21 @@ export default {
     },
     SIZE_RATE: {
                 id: "sizeRate",
-                name: "size",
+                name: "倍率",
                 max: 300,
                 min: 0,
                 initialValue: 100
     },
     ROTE_ANGLE: {
                 id: "roteAngle",
-                name: "angle",
+                name: "角度",
                 max: 360,
                 min: 0,
                 initialValue: 0
     },
     ALPHA: {
                 id: "aplha",
-                name: "aplha",
+                name: "透過",
                 max: 100,
                 min: -100,
                 initialValue: 0

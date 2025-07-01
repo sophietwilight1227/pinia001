@@ -22,9 +22,12 @@ initSetting();
 
 const changeMenu = (id: string): void => {
     for (let [key, value] of visibleList.value){
-        visibleList.value.set(key, false);
+        if(key == id){
+            visibleList.value.set(id, !visibleList.value.get(id));
+        }else{
+            visibleList.value.set(key, false);
+        }
     }
-    visibleList.value.set(id, true);
 }
 
 const openImage = () => {
@@ -83,17 +86,24 @@ const openLocalFileImage = (e: Event):void => {
     </div>
   </div>
   <div v-show="visibleModalMenu" class="modalMenu">
-    <div>URLまたはファイルパス</div>
-    <input type="text" v-model="imageUrl"/>
-    <input
+    <div>画像選択</div>
+    <div>
+        <div>ウェブ</div>
+        <input type="text" v-model="imageUrl"/>
+        <input
         style="display: none;"
-      ref="inputLocalImageButton"
-      type="file"
-      accept="image/jpeg, image/jpg, image/png"
-      v-on:change="openLocalFileImage"
-    >
-    <button v-on:click="onClickOpenLocalImage">参照</button>
-    <button v-on:click="openImage">開く</button>
+        ref="inputLocalImageButton"
+        type="file"
+        accept="image/jpeg, image/jpg, image/png"
+        v-on:change="openLocalFileImage"
+        >
+        <button v-on:click="openImage">開く</button>        
+    </div>
+    <div>
+        <div>ローカル</div>
+        <button v-on:click="onClickOpenLocalImage">参照(ローカル)</button>
+    </div>
+    
     <button v-on:click="hideModalMenu">キャンセル</button>
   </div>
 </template>

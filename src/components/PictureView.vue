@@ -58,9 +58,7 @@ const layoutStore = useLayoutStore();
 
 <template>
   <div class="base">
-    <div class="imageFlame">
-      <img :src="imgSource" class="mainImage"/>   
-    </div>
+    <img :src="imgSource" class="mainImage"/>   
   </div>
 </template>
 
@@ -75,31 +73,15 @@ const layoutStore = useLayoutStore();
   position: absolute;
 }
 
-.imageFlame {
-  height: 200vh;
-  width: 100%;
-  overflow:hidden;
-  background-color: brown;
-}
-
 .mainImage {
-  left:0px;
-  top:0px;
+  left: v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_X.id));
+  top: v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_Y.id));
   background: url(v-bind(imgSource));
   position: absolute;
   z-index: 1;
   opacity: v-bind(cssParams.get(constPictureView.PARAM_LIST.ALPHA.id));
-  object-position: v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_X.id)) v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_Y.id));
   rotate: v-bind(cssParams.get(constPictureView.PARAM_LIST.ROTE_ANGLE.id));
   transform: scale(v-bind(cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id)));
-}
-
-.asciiArt {
-  position: absolute;
-  background-color: transparent;
-  z-index: 10;
-  overflow: hidden;
-  width: 100%;
 }
 
 </style>

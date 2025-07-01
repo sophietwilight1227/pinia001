@@ -8,6 +8,7 @@ import PictureView from './components/PictureView.vue'
 import PanelContainer from './components/PanelContainer.vue'
 import PanelDivider from './components/PanelDivider.vue'
 import EditablePreview from "./components/EditablePreview.vue";
+import InfoBar from "./components/InfoBar.vue";
 
 import { useLayoutStore } from "@/stores/layout";
   const layoutStore = useLayoutStore();
@@ -43,13 +44,13 @@ import { useLayoutStore } from "@/stores/layout";
             <CharctorPalette/> 
           </PanelContainer>        
       </div>
+      <InfoBar/>
     </div>
   </main>
 </template>
 
 <style scoped>
   .main {
-    height: 100vh;
   }
   .container {
     display: flex;

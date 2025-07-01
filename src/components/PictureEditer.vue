@@ -11,7 +11,7 @@ import { usePictureViewStore } from "@/stores/pictureView";
   const lineGreen = ref();
   const lineBlue = ref();
 
-  //changeValue で必要
+  //changeValue (子要素のメソッドの実行) で必要
   const componentRefs = (id: string):Ref => {
     switch(id){
       case constPictureView.PARAM_LIST.LINE_RED.id:
@@ -57,20 +57,10 @@ import { usePictureViewStore } from "@/stores/pictureView";
 
   const backgroundColor = ref("white");
   const imgSource = ref("");
-
-  const draw = ():void => {
-    //img
-    imgSource.value = 'https://ap1.sozaitamago.com/common/img/tamago/sample/image/Sisk0111.jpg';
-    pictureViewSrtore.setImage('https://ap1.sozaitamago.com/common/img/tamago/sample/image/Sisk0111.jpg');
-  }
   
   const changeSliderValue = (id: string, newValue: number):void => {
     console.log("catch: " + id + " / " + newValue);
     pictureViewSrtore.setValue(id, newValue);
-  }
-  const testClick = ():void => {
-    //componentRefs("lineRed").value.changeValue(100);
-    draw();
   }
 
 </script>
@@ -80,7 +70,7 @@ import { usePictureViewStore } from "@/stores/pictureView";
     <div class="menu">
       <div>
         <div>
-          <span>line color</span>
+          <span>線色</span>
           <input type="color"/>
         </div>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.LINE_RED" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.LINE_RED.id"/>
@@ -88,14 +78,17 @@ import { usePictureViewStore } from "@/stores/pictureView";
         <RangeSlider v-bind="constPictureView.PARAM_LIST.LINE_BLUE" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.LINE_BLUE.id"/>
       </div>
       <div>
-        <button v-on:click="testClick">input</button>
+        <div>位置</div>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.POS_X" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.POS_X.id"/>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.POS_Y" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.POS_Y.id"/>
+
+      </div>
+      <div>
+        <div>その他</div>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.SIZE_RATE" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.SIZE_RATE.id"/>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.ROTE_ANGLE" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.ROTE_ANGLE.id"/>
-        <RangeSlider v-bind="constPictureView.PARAM_LIST.ALPHA" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.ALPHA.id"/>
+        <RangeSlider v-bind="constPictureView.PARAM_LIST.ALPHA" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.ALPHA.id"/>        
       </div>
-      
     </div>
   </div>
 </template>
