@@ -3,7 +3,7 @@ import { useSettingStore } from "@/stores/settings";
 import CharactorList from './CharactorList.vue';
 import PanelContainer from './PanelContainer.vue'
 import PanelDivider from './PanelDivider.vue'
-import charPalette from '../assets/data/charPalette.json'
+import charPalette from '../assets/data/charPalette_new.json'
 import { useCharSetStore } from "@/stores/charSet";
 import { nextTick, onMounted, onUpdated, ref, type Ref } from "vue";
 import FileTab from "./FileTab.vue";
@@ -54,13 +54,15 @@ initCharPalette();
 
 const updateCharPalette = async (list: Array<{indexName: string, charList: Array<{value: string,width: number}>}>) => {
   charIndexList.value = [];
-  await nextTick();
-  //charIndexList.value.splice(0);
+  //await nextTick();
   for(let i=0; i < list.length; i++){
     charIndexList.value.push(list[i].indexName);
   }
-  await nextTick();
-  nameListRef.value[charSetStore.currentIndex].select(true);
+  //await nextTick();
+
+  if(nameListRef.value[charSetStore.currentIndex] != null){
+    nameListRef.value[charSetStore.currentIndex].select(true);
+  }
 }
 charSetStore.$subscribe((mutation, state) => {
     updateCharPalette(state.charPalette);

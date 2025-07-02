@@ -8,6 +8,7 @@ import IconImage from "@/assets/icons/icon_image.vue";
 import { usePictureViewStore } from "@/stores/pictureView";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 import { useCharSetStore } from "@/stores/charSet";
+import CharactorPalette from "./CharactorPalette.vue";
 
 const mainCanvasStore = useMainCanvasStore();
 const pictureViewSrtore = usePictureViewStore();
@@ -153,6 +154,28 @@ const calcCharWidth = async (str: string): Promise<number> => {
     await nextTick();
     return sizeRefElem.value.offsetWidth;
 }
+const writeAaListAsJson = async () => {
+    const list: Array<{indexName: string, charList: Array<string>}> = [];
+    for(let i=0; i < charSetStore.charPalette.length; i++){
+        list.push({indexName: charSetStore.charPalette[i].indexName, charList: []});
+        for(let j=0; j < charSetStore.charPalette[i].charList.length; j++){
+            list[i].charList.push(charSetStore.charPalette[i].charList[j].value);
+        }
+    }
+    const saveFileOptions: any = {
+        suggestedName: "aalist",
+        types: [
+            {
+            description: "Text Files",
+            accept: {
+                "text/plain": [".json"],
+            },
+            },
+        ],
+    };
+    const handle = await (window as any).showSaveFilePicker(saveFileOptions);
+    await writeFile(handle, JSON.stringify(list));
+}
 
 </script>
 
@@ -199,6 +222,12 @@ const calcCharWidth = async (str: string): Promise<number> => {
                 <IconImage/>
             </IconBase>
             <span>aalist読み込み</span>
+        </div>
+        <div v-on:click="writeAaListAsJson">
+            <IconBase>
+                <IconImage/>
+            </IconBase>
+            <span>aalist出力</span>
         </div>
     </div>
   </div>
