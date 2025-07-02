@@ -1,3 +1,28 @@
+
+
+.misspelled {
+  color: red;
+  border-bottom: 2px solid red;
+  z-index: 3000;
+}
+.asciiArt {
+  white-space: pre;
+  z-index: 10;
+  background-color: transparent;
+  font-size:16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height:18px;
+  letter-spacing: 0;
+  text-shadow: none;
+  font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
+}
+
+@font-face {
+  font-family: 'Saitamaar';
+  src: url('@/assets/fonts/Saitamaar.ttf') format('truetype');
+}
+
 /* color palette from <https://github.com/vuejs/theme> */
 /*
 :root {

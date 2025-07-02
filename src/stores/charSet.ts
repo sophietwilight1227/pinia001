@@ -55,6 +55,13 @@ export const useCharSetStore = defineStore(
             },
             addCharToCurrentPalette(charNo: number, charValue: string, width: number): void {
                 this.charPalette[this.currentIndex].charList.splice(charNo, 0, {value: charValue, width: width})
+            },
+            readAaList(list: Array<{name: string, list: Array<{value: string, width: number}>}>): void {
+                //this.charPalette.splice(0);
+                this.charPalette = [];
+                for(let i=0; i < list.length; i++){
+                    this.charPalette.push({indexName: list[i].name, charList: list[i].list});
+                }
             }
         },        
     }

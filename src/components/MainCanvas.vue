@@ -9,7 +9,8 @@ import { useLayoutStore } from "@/stores/layout";
 const text = ref("not");
 const width = ref(99);
 const spanElem:Ref<HTMLElement | null> = ref(null);
-const textAreaElem:Ref<HTMLElement | null> = ref(null);
+const textAreaElem:any = ref(null);
+const textAreRefElem: any = ref(null);
 const sizeRef100:Ref<HTMLElement | null> = ref(null);
 
 const charSetStore = useCharSetStore();
@@ -46,8 +47,8 @@ const onButtonClick = async () => {
 const updateTextAreaWidth = () => {
   //const newHeight: string = compareLength(textAreaElem.value?.scrollHeight, sizeRef100.value?.clientHeight) + "px"
   //const newWidth: string =  compareLength(textAreaElem.value?.scrollWidth, sizeRef100.value?.clientWidth) + "px"
-  const newHeight: number = textAreaElem.value?.scrollHeight!;
-  const newWidth: number = textAreaElem.value?.scrollWidth!;
+  const newHeight: number = textAreRefElem.value?.scrollHeight!;
+  const newWidth: number = textAreRefElem.value?.scrollWidth!;
   layoutStore.updateCanvasSize(newHeight, newWidth);
 }
 const compareLength = (value: number | undefined, reference: number | undefined): number => {
@@ -69,6 +70,35 @@ const decodeNumericEntity = (str: string) => {
       return String.fromCodePoint(cp);
     }); 
 }
+const checkSpace = (text: string): void => {
+  if(!text.includes("  ")){
+    return;
+  }
+  const words = text.split(/ {1}/); // スペースで分割
+  let html = '';
+  let prevSpace: number = 0;
+
+  words.forEach(word => {
+    // ここにスペルチェックロジックを実装 (例: 辞書データと照合)
+    if(word == ""){
+      prevSpace ++;
+    }else{
+      if(prevSpace == 0){
+        if(html == ""){
+          html += `<span class="asciiArt">${word}</span> `;
+        }else{
+          html += `<span class="asciiArt">${" "}</span> `;
+          html += `<span class="asciiArt">${word}</span> `;          
+        }
+      }else{
+        html += `<span class="misspelled asciiArt">${" ".repeat(prevSpace + 1)}</span> `;
+        html += `<span class="asciiArt">${word}</span> `;
+        prevSpace = 0;
+      }
+    }
+  });
+  textAreRefElem.value!.innerHTML = html;
+}
 
 const onChangeTextArea = async (e: any) => {
   if(e.target == null){
@@ -77,16 +107,19 @@ const onChangeTextArea = async (e: any) => {
     const str:string = decodeNumericEntity(e.target.value);
     for(let i=0; i < str.length; i++){
       const char = str.charAt(i);
-      text.value = char;
-      if(spanElem.value != null){
-        await nextTick();
-        console.log(char + " : " + spanElem.value.offsetWidth);
-        charSetStore.addCharSizeDic(char, spanElem.value.offsetWidth);
+      if(!charSetStore.$state.charSizeDic.has(char)){
+        text.value = char;
+        if(spanElem.value != null){
+          await nextTick();
+          charSetStore.addCharSizeDic(char, spanElem.value.offsetWidth);
+        }
       }
     }
     mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: 0});
     onSelectionChange(e);
     updateTextAreaWidth();
+
+    checkSpace(str);
   }
 }
 
@@ -95,7 +128,6 @@ const onSelectionChange = (e:any) => {
   if(e.target != document.activeElement){
     return;
   }
-  console.log("caret : " + e.target.selectionStart);
 
   const rawStr:string = e.target.value;
   const endPos = e.target.selectionEnd;
@@ -112,17 +144,39 @@ const onSelectionChange = (e:any) => {
   
   mainCanvasAsciiArtStore.editCaretPosition(startPos, endPos);
 }
+const changeDot = async (delta: number) => {
+        mainCanvasAsciiArtStore.changeDot(delta);
+        await nextTick();
+        textAreaElem.value.setSelectionRange(mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);  
+        checkSpace(mainCanvasAA.value);
+}
+const onKeyDown = async (e: KeyboardEvent) => {
+  if(e.altKey){
+    switch(e.key){
+      case 'ArrowLeft':
+        changeDot(-1);
+        break;
+      case 'ArrowRight':
+        changeDot(1);
+        break;
+    }
+  }
+}
 
 </script>
 
 <template>
   <div class="base">  
+    <div class="measureAA asciiArt" ref="textAreRefElem">{{ mainCanvasAA }}</div>
     <textarea class="asciiArt textarea" 
+                spellcheck=false
                 v-on:input="onChangeTextArea" 
                 v-on:selectionchange="onSelectionChange"
+                v-on:keydown="onKeyDown"
                 v-model="mainCanvasAA"
+                ref="textAreaElem"
                 ></textarea>
-    <textarea class="measureAA asciiArt" ref="textAreaElem">{{ mainCanvasAA }}</textarea>
+    
     <div class="measure">
       <span class="asciiArt" ref="spanElem">{{ text }}</span>
       
@@ -162,9 +216,13 @@ const onSelectionChange = (e:any) => {
   position: absolute;
 }
 .measureAA {
+  display: table; 
+  color: transparent;
+  position: absolute;
   width: fit-content;
   height: fit-content;
   field-sizing: content;
+  z-index: 9;
 }
 .asciiArt {
   white-space: pre;
@@ -180,6 +238,7 @@ const onSelectionChange = (e:any) => {
 }
 
 .textarea {
+  background-color: transparent;
   white-space: pre;
   min-height: 100%;
   min-width: 100%;

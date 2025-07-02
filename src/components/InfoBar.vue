@@ -1,9 +1,36 @@
 <script setup lang="ts">
+import { useCharSetStore } from '@/stores/charSet';
+import { useMainCanvasStore } from '@/stores/mainCanvas';
+import { ref, type Ref } from 'vue';
+
+
+const currentRow: Ref<number> = ref(1);
+const maxRow: Ref<number> = ref(1);
+const currentDot: Ref<number> = ref(0);
+const mainCanvasStore = useMainCanvasStore();
+const charSetStore = useCharSetStore();
+
+mainCanvasStore.$subscribe((mutation, state) => {
+  currentRow.value = mainCanvasStore.currentRow;
+  maxRow.value = state.maxRow;
+  currentDot.value = charSetStore.calcStrWidth(mainCanvasStore.halfStrCurrentRow);
+})
 
 </script>
 
 <template>
-    <div class="base">ingo bar</div>
+    <div class="base">
+        <span>
+            <span>[row]: </span>
+            <span>
+                {{ currentRow + " / " + maxRow }}
+            </span>
+        </span>
+        <span>
+            <span>[dot]: </span>
+            <span>{{ currentDot }}</span>
+        </span>
+    </div>
 </template>
 
 <style scoped>

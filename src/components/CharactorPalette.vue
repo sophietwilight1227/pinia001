@@ -6,7 +6,9 @@ import PanelDivider from './PanelDivider.vue'
 import charPalette from '../assets/data/charPalette.json'
 import { useCharSetStore } from "@/stores/charSet";
 import { nextTick, onMounted, onUpdated, ref, type Ref } from "vue";
+import FileTab from "./FileTab.vue";
 
+const nameListRef: any = ref(null);
 const spanElem: Ref<HTMLElement | null> = ref(null);
 const text: Ref<string> = ref("");
 const settingStore = useSettingStore();
@@ -38,22 +40,39 @@ const initCharPalette = async () => {
 }
 
 const selectIndex = (index: number):void => {
-  charSetStore.selectIndex(index);
+    if(nameListRef.value != null){
+        for(let i=0; i < nameListRef.value.length; i++){
+            nameListRef.value[i].select(false);
+        }
+        nameListRef.value[index].select(true);
+    }
+
+    charSetStore.selectIndex(index);
 }
 
 initCharPalette();
 
-
+const updateCharPalette = async (list: Array<{indexName: string, charList: Array<{value: string,width: number}>}>) => {
+  charIndexList.value = [];
+  await nextTick();
+  //charIndexList.value.splice(0);
+  for(let i=0; i < list.length; i++){
+    charIndexList.value.push(list[i].indexName);
+  }
+  await nextTick();
+  nameListRef.value[charSetStore.currentIndex].select(true);
+}
+charSetStore.$subscribe((mutation, state) => {
+    updateCharPalette(state.charPalette);
+})
 </script>
 
 <template>
   <div class="base">    
     <PanelContainer :order="0" :name="'charList'">
       <div class="charIndexList">
-        <div v-for="(data, i) in charIndexList" class="tab">
-          <span class="tab">
-            <span v-on:click="selectIndex(i)">{{ data }}</span>
-          </span>
+        <div v-for="(data, i) in charIndexList">
+          <FileTab :value="data" v-on:click="selectIndex(i)" ref="nameListRef" class="tab">{{ data }}</FileTab>
         </div>
       </div>
     </PanelContainer>
@@ -78,7 +97,11 @@ initCharPalette();
     display: flex;
   flex-direction: column;
   overflow: scroll;
-  width: 100%;
+  user-select: none;
+}
+
+.tab {
+  white-space: nowrap;
 }
 
 .asciiArt {

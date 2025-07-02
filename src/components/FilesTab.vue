@@ -74,10 +74,10 @@ watch(
         <div>file list</div>
         <div class="namelist">
             <div v-for="(data, i) in fileNameList">
-                <FileTab :value="data.name" 
+                <FileTab :value="data.name"
                          v-on:click="selectFile(i)" 
                          v-on:change="renameFile"
-                         ref="fileNameRefs"/>
+                         ref="fileNameRefs">{{ data.name }}</FileTab>
             </div>
         </div>
         <div class="buttonlist">
@@ -89,7 +89,7 @@ watch(
         <div>aa list</div>
         <div class="namelist">
             <div v-for="(data, i) in aaNameList">
-                <FileTab :value="data.name" 
+                <FileTab :value="data.name"
                          v-on:click="selectAa(i)"
                          v-on:change="renameAa" 
                          ref="aaNameRefs"/>
@@ -126,6 +126,7 @@ watch(
     width: 100%;
     height: 100%;
     background-color: aquamarine;
+    overflow: scroll;
 }
 
 .buttonlist {

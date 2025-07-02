@@ -53,7 +53,6 @@ export const useLayoutStore = defineStore(
                 }else{
                     this.canvasSize.width = width + "px";
                 }
-                console.log(width100, "width 100");
             }
         },        
     }
