@@ -9,7 +9,7 @@
         viewBox?: string
     }
     const props = withDefaults(defineProps<Props>(),
-            {size: 20,
+            {size: 40,
             color: '#000000',
             weight: 16,
             filled: false,

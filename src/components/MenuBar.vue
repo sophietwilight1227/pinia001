@@ -181,7 +181,7 @@ const writeAaListAsJson = async () => {
 
 <template>
   <div class="base">
-    <div>
+    <div class="mainMenu">
         <span v-on:click="changeMenu('file')">ファイル</span>
         <span v-on:click="changeMenu('image')">画像</span>
         <span v-on:click="changeMenu('setting')">設定</span>
@@ -191,18 +191,21 @@ const writeAaListAsJson = async () => {
             <IconBase>
                 <IconFile/>
             </IconBase>
+            <br/>
             <span>新規</span>
         </div>
         <div v-on:click="onClickOpenLocalText">
             <IconBase >
                 <IconFolder/>
             </IconBase>
+            <br/>
             <span>開く</span>
         </div>
         <div v-on:click="writeMLT">
             <IconBase >
                 <IconFolder/>
             </IconBase>
+            <br/>
             <span>保存</span>
         </div>
 
@@ -212,6 +215,7 @@ const writeAaListAsJson = async () => {
             <IconBase>
                 <IconImage/>
             </IconBase>
+            <br/>
             <span>開く</span>
         </div>
         <PictureEditer/>
@@ -221,12 +225,14 @@ const writeAaListAsJson = async () => {
             <IconBase>
                 <IconImage/>
             </IconBase>
+            <br/>
             <span>aalist読み込み</span>
         </div>
         <div v-on:click="writeAaListAsJson">
             <IconBase>
                 <IconImage/>
             </IconBase>
+            <br/>
             <span>aalist出力</span>
         </div>
     </div>
@@ -271,7 +277,9 @@ const writeAaListAsJson = async () => {
 .base {
     background-color: antiquewhite;
 }
-
+.mainMenu {
+    background-color: lightgreen;
+}
 .tab {
     background-color: aqua;
 }

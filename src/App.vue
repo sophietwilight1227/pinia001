@@ -27,7 +27,7 @@ import { useLayoutStore } from "@/stores/layout";
           <PanelDivider :order="0" :layout-name="'main'"/>
           <PanelContainer :order="1" :name="'main'">
             <EditablePreview>
-              <div>
+              <div class="container">
                 <MainCanvas/>
                 <PictureView/>                
               </div>
@@ -61,9 +61,9 @@ import { useLayoutStore } from "@/stores/layout";
   .container {
     display: flex;
     flex-direction: row;
+    min-height: 100%;
     max-width: none;
     overflow: hidden;
-    height: 100%;
     flex-grow: 1;
     align-items: stretch;
   }

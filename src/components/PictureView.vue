@@ -9,14 +9,15 @@ import { useLayoutStore } from "@/stores/layout";
 
 const layoutStore = useLayoutStore();
   layoutStore.$subscribe((mutation, state) => {
-    canvasSize.value.height = state.canvasSize.height;
-    canvasSize.value.width = state.canvasSize.width;
+    //canvasSize.value.height = state.canvasSize.height;
+    //canvasSize.value.width = state.canvasSize.width;
   })
-  const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", width: "100%"})
+  const canvasSize: Ref<{height: number, width: number}> = ref({height: 0, width: 0})
 
   
   const pictureViewSrtore = usePictureViewStore();
 
+  const imgElem: any = ref(null);
   const lineRed = ref();
   const lineGreen = ref();
   const lineBlue = ref();
@@ -39,14 +40,19 @@ const layoutStore = useLayoutStore();
   }
 
   const cssParams: Ref<Map<string, string>> = ref(new Map());
-    pictureViewSrtore.$subscribe((mutation, state) => {
-      Object.values(constPictureView.PARAM_LIST).forEach(value => {
+  pictureViewSrtore.$subscribe((mutation, state) => {
+    Object.values(constPictureView.PARAM_LIST).forEach(value => {
         cssParams.value.set(value.id, pictureViewSrtore.getCssValue(value.id));
       });
       backgroundColor.value = state.backgroundColor;
 
       if(imgSource.value != state.imageUrl){
         imgSource.value = state.imageUrl;
+        const img = new Image();
+        img.src = state.imageUrl;
+        canvasSize.value.height = img.height;
+        canvasSize.value.width = img.width;
+        console.log(canvasSize.value.width);
       }
   })
 
@@ -58,22 +64,23 @@ const layoutStore = useLayoutStore();
 
 <template>
   <div class="base">
-    <img :src="imgSource" class="mainImage"/>   
+    <img :src="imgSource" class="mainImage" ref="imgElem"/>   
   </div>
 </template>
 
 <style scoped>
 
 .base {     
-  width: 100%;
-  height: 100%;
-  /*height: v-bind(canvasSize.height);*/
+  height: v-bind(canvasSize.height * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
+  width: v-bind(canvasSize.width * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
   background-color: v-bind(backgroundColor);
   overflow:hidden;
   position: absolute;
+  flex-grow: 1;
 }
 
 .mainImage {
+  object-fit: none;
   left: v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_X.id));
   top: v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_Y.id));
   background: url(v-bind(imgSource));
