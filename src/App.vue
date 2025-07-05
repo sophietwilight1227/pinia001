@@ -11,8 +11,16 @@ import EditablePreview from "./components/EditablePreview.vue";
 import InfoBar from "./components/InfoBar.vue";
 
 import { useLayoutStore } from "@/stores/layout";
+import { ref, type Ref } from "vue";
   const layoutStore = useLayoutStore();
   layoutStore.initLayout();
+
+  const isLeftPictureView: Ref<boolean> = ref(false);
+
+  layoutStore.$subscribe((mutation, state) => {
+    isLeftPictureView.value = state.isLeftPictureView;
+  })
+
 
 </script>
 
@@ -27,16 +35,21 @@ import { useLayoutStore } from "@/stores/layout";
           <PanelDivider :order="0" :layout-name="'main'"/>
           <PanelContainer :order="1" :name="'main'">
             <EditablePreview>
-              <div class="container">
-                <MainCanvas/>
+              <div class="container" v-show="isLeftPictureView">
+                <MainCanvas :is-picture-view="true"/>
                 <PictureView/>                
               </div>
+              <MainCanvas v-show="!isLeftPictureView" :is-picture-view="false"/>
             </EditablePreview>
           </PanelContainer>
           <PanelDivider :order="1" :layout-name="'main'"/>
           <PanelContainer :order="2" :name="'main'">
             <EditablePreview>
-              <MainCanvas/>
+              <MainCanvas v-show="isLeftPictureView" :is-picture-view="false"/>
+              <div class="container" v-show="!isLeftPictureView" >
+                <MainCanvas :is-picture-view="true"/>
+                <PictureView/>                
+              </div>
             </EditablePreview>
           </PanelContainer>
           <PanelDivider :order="2" :layout-name="'main'"/>
@@ -61,7 +74,7 @@ import { useLayoutStore } from "@/stores/layout";
   .container {
     display: flex;
     flex-direction: row;
-    min-height: 100%;
+    height: 100%;
     max-width: none;
     overflow: hidden;
     flex-grow: 1;

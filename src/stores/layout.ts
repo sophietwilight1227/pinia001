@@ -3,7 +3,8 @@ import layoutList from '../assets/data/layout.json'
 import constLayout from "@/consts/constLayout";
 interface State {
     widthDic: Map<string, Array<{widthRatio: number, size: {height: number, width: number}}>>,
-    canvasSize: {height: string, width: string} //AA表示部のサイズ。単位つき
+    canvasSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
+    isLeftPictureView: boolean
 };
 
 export const useLayoutStore = defineStore(
@@ -12,7 +13,8 @@ export const useLayoutStore = defineStore(
         state: (): State => {
             return {
                 widthDic: new Map(),
-                canvasSize: {height: '100%', width: '100%'}
+                canvasSize: {height: '100%', width: '100%'},
+                isLeftPictureView: true
             };
         },
         getters: {
@@ -27,6 +29,7 @@ export const useLayoutStore = defineStore(
                     }
                     this.widthDic.set(layoutList[i].layoutName, lst);
                 }
+                this.isLeftPictureView = true;
             },
             initSize(height: number, width: number, index: number):void {
                 this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![index].size.width = width;
@@ -53,6 +56,9 @@ export const useLayoutStore = defineStore(
                 }else{
                     this.canvasSize.width = width + "px";
                 }
+            },
+            setPicturePosition(isLeft: boolean){
+                this.isLeftPictureView = isLeft;
             }
         },        
     }

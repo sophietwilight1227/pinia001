@@ -12,7 +12,6 @@
 
     const currentValue = ref(props.initialValue)
     watch(currentValue, (newValue) => {
-        console.log("emit " + newValue);
         emit("change",props.id ,newValue);
     })
 

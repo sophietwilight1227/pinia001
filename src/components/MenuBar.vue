@@ -9,10 +9,12 @@ import { usePictureViewStore } from "@/stores/pictureView";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 import { useCharSetStore } from "@/stores/charSet";
 import CharactorPalette from "./CharactorPalette.vue";
+import { useLayoutStore } from "@/stores/layout";
 
 const mainCanvasStore = useMainCanvasStore();
 const pictureViewSrtore = usePictureViewStore();
 const charSetStore = useCharSetStore();
+const layoutStore = useLayoutStore();
 
 const visibleList: Ref<Map<string, boolean>> = ref(new Map());
 const visibleModalMenu: Ref<boolean> = ref(false);
@@ -177,6 +179,10 @@ const writeAaListAsJson = async () => {
     await writeFile(handle, JSON.stringify(list));
 }
 
+const changePictureViewPosition = (e: any) => {
+    layoutStore.setPicturePosition(e.target.value == "left");
+}
+
 </script>
 
 <template>
@@ -234,6 +240,13 @@ const writeAaListAsJson = async () => {
             </IconBase>
             <br/>
             <span>aalist出力</span>
+        </div>
+        <div>
+            <div>画像プレビュー位置</div>
+            <select name="isLeftPicture" v-on:change="changePictureViewPosition">
+                <option value="left">左</option>
+                <option value="right">右</option>
+            </select>
         </div>
     </div>
   </div>

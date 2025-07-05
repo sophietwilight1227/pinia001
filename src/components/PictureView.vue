@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, reactive, ref, watch, type Ref} from "vue";
+import {computed, nextTick, reactive, ref, watch, type Ref} from "vue";
 import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
@@ -49,10 +49,12 @@ const layoutStore = useLayoutStore();
       if(imgSource.value != state.imageUrl){
         imgSource.value = state.imageUrl;
         const img = new Image();
+        img.onload = function(){
+          canvasSize.value.height = img.height;
+          canvasSize.value.width = img.width;
+          console.log(canvasSize.value.width, "image loaded");
+        };
         img.src = state.imageUrl;
-        canvasSize.value.height = img.height;
-        canvasSize.value.width = img.width;
-        console.log(canvasSize.value.width);
       }
   })
 
@@ -71,6 +73,8 @@ const layoutStore = useLayoutStore();
 <style scoped>
 
 .base {     
+  min-height: 100%;
+  min-width: 100%;
   height: v-bind(canvasSize.height * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
   width: v-bind(canvasSize.width * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
   background-color: v-bind(backgroundColor);

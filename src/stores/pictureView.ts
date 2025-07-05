@@ -48,6 +48,15 @@ export const usePictureViewStore = defineStore(
                     this.params.set(value.id, value.initialValue);
                 });
             },
+            getValue(id: string): number {
+                const value = this.params.get(id)
+                if(value == null){
+                    return 0;
+                }else{
+                    return value;
+                }
+                
+            },
             setValue(id: string, value: number): void {
                 this.params.set(id, value);
             },

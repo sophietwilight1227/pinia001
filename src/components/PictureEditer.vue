@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, ref, type Ref} from "vue";
+import {computed, ref, type HTMLAttributes, type Ref} from "vue";
 import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { usePictureViewStore } from "@/stores/pictureView";
@@ -63,6 +63,40 @@ import { usePictureViewStore } from "@/stores/pictureView";
     pictureViewSrtore.setValue(id, newValue);
   }
 
+  const changeFontColor = (e: any) => {
+    if(e != null && e.target != null){
+      const hexValue = e.target.value.replace('#', '');
+      const isOmit = hexValue.length === 3; // #fffなどの省略記法か
+
+      const [r, g, b] = hexValue
+        .match(isOmit ? /./g : /.{2}/g)
+        .map((s: string) => parseInt(isOmit ? s.repeat(2) : s, 16));     
+      
+      pictureViewSrtore.setValue(constPictureView.PARAM_LIST.LINE_RED.id, r);
+      pictureViewSrtore.setValue(constPictureView.PARAM_LIST.LINE_GREEN.id, g);
+      pictureViewSrtore.setValue(constPictureView.PARAM_LIST.LINE_BLUE.id, b);
+      componentRefs(constPictureView.PARAM_LIST.LINE_RED.id).value.changeValue(r);
+      componentRefs(constPictureView.PARAM_LIST.LINE_GREEN.id).value.changeValue(g);
+      componentRefs(constPictureView.PARAM_LIST.LINE_BLUE.id).value.changeValue(b);
+    }
+  }
+
+  const to16 = (num:number): string => {
+    return Number(num).toString(16).padStart(2, '0');
+  }
+
+  const  rgbToHex = (r: number, g: number, b: number ): string => {
+    return `#${to16(r)}${to16(g)}${to16(b)}`;
+  }
+
+  pictureViewSrtore.$subscribe((mutation, state) => {
+    const r: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_RED.id);
+    const g: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
+    const b: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
+    fontColor.value = rgbToHex(r, g, b);
+  })
+
+  const fontColor: Ref<string> = ref("#000000");
 </script>
 
 <template>
@@ -71,7 +105,7 @@ import { usePictureViewStore } from "@/stores/pictureView";
       <div>
         <div>
           <span>線色</span>
-          <input type="color"/>
+          <input type="color" v-on:input="changeFontColor" :value="fontColor"/>
         </div>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.LINE_RED" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.LINE_RED.id"/>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.LINE_GREEN" v-on:change="changeSliderValue" :ref="constPictureView.PARAM_LIST.LINE_GREEN.id"/>

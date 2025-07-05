@@ -5,6 +5,12 @@ import { useCharSetStore } from "@/stores/charSet";
 import type { CanvasMain } from "@/interfaces";
 import '@/assets/fonts/Saitamaar.ttf';
 import { useLayoutStore } from "@/stores/layout";
+import { usePictureViewStore } from "@/stores/pictureView";
+import constPictureView from "@/consts/constPictureView";
+
+const props = defineProps<{
+  isPictureView: boolean,
+}>()
 
 const text = ref("not");
 const width = ref(99);
@@ -17,7 +23,7 @@ const charSetStore = useCharSetStore();
 const mainCanvasAsciiArtStore = useMainCanvasStore();
 mainCanvasAsciiArtStore.initAsciiArt();
 const mainCanvasAA = ref("");
-
+const mainCanvasFontColor: Ref<string> = ref("rgb(0, 0, 0)")
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   mainCanvasAA.value = state.asciiArt;
@@ -28,6 +34,16 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
 layoutStore.$subscribe((mutation, state) => {
   canvasSize.value.height = state.canvasSize.height;
   canvasSize.value.width = state.canvasSize.width;
+})
+
+const pictureViewStore = usePictureViewStore();
+pictureViewStore.$subscribe((mutation, state) => {
+  if(props.isPictureView){
+    const r: number = pictureViewStore.getValue(constPictureView.PARAM_LIST.LINE_RED.id);
+    const g: number = pictureViewStore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
+    const b: number = pictureViewStore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
+    mainCanvasFontColor.value = `rgb(${r},${g},${b})`;
+  }
 })
 
 const onButtonClick = async () => {
@@ -247,6 +263,7 @@ const onKeyDown = async (e: KeyboardEvent) => {
   overflow: hidden;
   height: v-bind(canvasSize.height);
   width: v-bind(canvasSize.width);
+  color: v-bind(mainCanvasFontColor);
 }
 
 .sizeRef100 {
