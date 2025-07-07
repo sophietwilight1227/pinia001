@@ -116,6 +116,15 @@ const onClickReadAaList = ():void => {
     inputAaListButton.value.click();
 }
 
+//maincanvas にも同じのがある。あとで共通化する
+const decodeNumericEntity = (str: string) => {
+    var re = /&#([0-9a-fA-F]+);/g;
+    return str.replace(re, function(m) {
+      var cp = parseInt(arguments[1], 10);
+      return String.fromCodePoint(cp);
+    }); 
+}
+
 const openAaList = (e: any):void => {
     if(inputAaListButton.value != null){
         const file = inputAaListButton.value.files[0];
@@ -125,7 +134,7 @@ const openAaList = (e: any):void => {
             reader.onload = async (e) => {
                 const text: string | ArrayBuffer | null = e.target!.result;
                 if(e.target!.result != null){
-                    const text: string =  e.target!.result.toString();
+                    const text: string =  decodeNumericEntity(e.target!.result.toString());
                     const rawList: Array<string> = text.split(/\n/);
                     const list: Array<{name: string, list: Array<{value: string, width: number}>}> = [];
                     for(let i=0; i < rawList.length; i++){
@@ -250,20 +259,24 @@ const changePictureViewPosition = (e: any) => {
         </div>
     </div>
   </div>
-  <div v-show="visibleModalMenu" class="modalMenu">
-    <div>画像選択</div>
-    <div>
-        <div>ウェブ</div>
-        <input type="text" v-model="imageUrl"/>
-        <button v-on:click="openImage">開く</button>        
+  <div v-show="visibleModalMenu" class="modalMenuFrame">
+    <div class="modalMenuBackground"></div>
+    <div class="modalMenu">
+        <div>画像選択</div>
+        <div>
+            <div>ウェブ</div>
+            <input type="text" v-model="imageUrl"/>
+            <button v-on:click="openImage">開く</button>        
+        </div>
+        <div>
+            <div>ローカル</div>
+            <button v-on:click="onClickOpenLocalImage">参照(ローカル)</button>
+        </div>
+        
+        <button v-on:click="hideModalMenu">キャンセル</button>
     </div>
-    <div>
-        <div>ローカル</div>
-        <button v-on:click="onClickOpenLocalImage">参照(ローカル)</button>
-    </div>
-    
-    <button v-on:click="hideModalMenu">キャンセル</button>
   </div>
+  <!--ここから参照用。非表示にしておく-->
     <input
         style="display: none;"
         ref="inputLocalImageButton"
@@ -312,12 +325,27 @@ const changePictureViewPosition = (e: any) => {
 }
 .modalMenu {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    margin: 0 auto;
     z-index: 2000;
     background-color: aqua;
+    box-shadow: 0 10px 25px 0 rgba(0, 0, 0, .5);
+    padding: 10px;
 }
-
+.modalMenuBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: white;
+    opacity: 0.5;
+    z-index: 1900;
+    background-position: center;
+}
+.modalMenuFrame {
+  display: flex;
+  justify-content: center;
+}
 .asciiArt {
   white-space: pre;
   z-index: 10;

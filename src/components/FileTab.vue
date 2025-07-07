@@ -77,7 +77,6 @@ const onKeyDown = (e: KeyboardEvent):void => {
 
 <style scoped>
     .button1 {
-
         user-select: none;
     }
     .selected {

@@ -120,7 +120,7 @@ const hideAddCharMenu = () => {
 <style scoped>
 
 .base {
-  background-color: white;
+  background-color: indigo;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -129,13 +129,15 @@ const hideAddCharMenu = () => {
 }
 .charChip {
     background-color: lightcoral;
-    width: 30px;
+    min-width: 30px;
     user-select: none;
     align-items:flex-start;
     margin: 1px;
+    text-align: center;
 }
 .baloon {
     position: absolute;
+    width: 30px;
     z-index: 100;
     background-color: white;
     filter: drop-shadow(0px 1px 4px #aaa);
@@ -159,7 +161,6 @@ const hideAddCharMenu = () => {
 }
 
 .asciiArt {
-  background-color: aqua;
   font-size:16px;
   font-style: normal;
   font-weight: 400;

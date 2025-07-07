@@ -79,6 +79,7 @@ const compareLength = (value: number | undefined, reference: number | undefined)
   }
 }
 
+//MenuBarにも同じのがある。共通化する
 const decodeNumericEntity = (str: string) => {
     var re = /&#([0-9a-fA-F]+);/g;
     return str.replace(re, function(m) {
@@ -170,9 +171,11 @@ const onKeyDown = async (e: KeyboardEvent) => {
   if(e.altKey){
     switch(e.key){
       case 'ArrowLeft':
+        e.preventDefault();
         changeDot(-1);
         break;
       case 'ArrowRight':
+        e.preventDefault();
         changeDot(1);
         break;
     }

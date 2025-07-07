@@ -94,9 +94,11 @@ charSetStore.$subscribe((mutation, state) => {
     max-width: none;
     overflow: hidden;
     height: 100%;
+    background-color: aquamarine;
 }
 .charIndexList {
-    display: flex;
+  width: 100%;
+  display: flex;
   flex-direction: column;
   overflow: scroll;
   user-select: none;
