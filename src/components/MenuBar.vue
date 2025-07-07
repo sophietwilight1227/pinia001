@@ -10,6 +10,8 @@ import { useMainCanvasStore } from "@/stores/mainCanvas";
 import { useCharSetStore } from "@/stores/charSet";
 import CharactorPalette from "./CharactorPalette.vue";
 import { useLayoutStore } from "@/stores/layout";
+import ButtonText from "./ButtonText.vue";
+import ButtonWithIcon from "./ButtonWithIcon.vue";
 
 const mainCanvasStore = useMainCanvasStore();
 const pictureViewSrtore = usePictureViewStore();
@@ -34,6 +36,7 @@ initSetting();
 
 const changeMenu = (id: string): void => {
     for (let [key, value] of visibleList.value){
+        console.log(key, "menu clicked");
         if(key == id){
             visibleList.value.set(id, !visibleList.value.get(id));
         }else{
@@ -197,59 +200,46 @@ const changePictureViewPosition = (e: any) => {
 <template>
   <div class="base">
     <div class="mainMenu">
-        <span v-on:click="changeMenu('file')">ファイル</span>
-        <span v-on:click="changeMenu('image')">画像</span>
-        <span v-on:click="changeMenu('setting')">設定</span>
+        <ButtonText :value="'ファイル'" v-on:click="changeMenu('file')"/>
+        <ButtonText :value="'画像'" v-on:click="changeMenu('image')"/>
+        <ButtonText :value="'設定'" v-on:click="changeMenu('setting')"/>
     </div>
     <div v-show="visibleList.get('file')" class="hasSubMenu">
-        <div>
-            <IconBase>
+        <ButtonWithIcon :value="'新規'">
+            <IconBase >
                 <IconFile/>
             </IconBase>
-            <br/>
-            <span>新規</span>
-        </div>
-        <div v-on:click="onClickOpenLocalText">
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'開く'" v-on:click="onClickOpenLocalText">
             <IconBase >
                 <IconFolder/>
             </IconBase>
-            <br/>
-            <span>開く</span>
-        </div>
-        <div v-on:click="writeMLT">
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'保存'" v-on:click="writeMLT">
             <IconBase >
                 <IconFolder/>
             </IconBase>
-            <br/>
-            <span>保存</span>
-        </div>
-
+        </ButtonWithIcon>
     </div>
     <div v-show="visibleList.get('image')" class="hasSubMenu">
-        <div v-on:click="showModalMenu">
-            <IconBase>
+        <ButtonWithIcon :value="'開く'" v-on:click="showModalMenu">
+            <IconBase >
                 <IconImage/>
             </IconBase>
-            <br/>
-            <span>開く</span>
-        </div>
+        </ButtonWithIcon>
         <PictureEditer/>
     </div>
     <div v-show="visibleList.get('setting')" class="hasSubMenu">
-        <div v-on:click="onClickReadAaList">
-            <IconBase>
+        <ButtonWithIcon :value="'aalist読み込み'" v-on:click="onClickReadAaList">
+            <IconBase >
                 <IconImage/>
             </IconBase>
-            <br/>
-            <span>aalist読み込み</span>
-        </div>
-        <div v-on:click="writeAaListAsJson">
-            <IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'aalist出力'" v-on:click="writeAaListAsJson">
+            <IconBase >
                 <IconImage/>
             </IconBase>
-            <br/>
-            <span>aalist出力</span>
-        </div>
+        </ButtonWithIcon>
         <div>
             <div>画像プレビュー位置</div>
             <select name="isLeftPicture" v-on:change="changePictureViewPosition">
@@ -259,6 +249,7 @@ const changePictureViewPosition = (e: any) => {
         </div>
     </div>
   </div>
+  <div class="divider"></div>
   <div v-show="visibleModalMenu" class="modalMenuFrame">
     <div class="modalMenuBackground"></div>
     <div class="modalMenu">
@@ -302,6 +293,10 @@ const changePictureViewPosition = (e: any) => {
 
 .base {
     background-color: antiquewhite;
+}
+.divider {
+    height: 1px;
+    background-color: white;
 }
 .mainMenu {
     background-color: lightgreen;

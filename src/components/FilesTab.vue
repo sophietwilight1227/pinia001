@@ -71,7 +71,7 @@ watch(
 <template>
   <div class="base">    
     <div class="filelist">
-        <div>file list</div>
+        <div>ファイル</div>
         <div class="namelist">
             <div v-for="(data, i) in fileNameList">
                 <FileTab :value="data.name"
@@ -86,7 +86,7 @@ watch(
         </div>      
     </div>
     <div class="filelist">
-        <div>aa list</div>
+        <div>AA</div>
         <div class="namelist">
             <div v-for="(data, i) in aaNameList">
                 <FileTab :value="data.name"

@@ -22,6 +22,7 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
+    class="image1"
     :width="size"
     :height="props.size"
     :viewBox="props.viewBox"
@@ -34,3 +35,10 @@
   </svg>
     
 </template>
+<style scoped>
+    .image1 {
+        display: flex;
+        justify-content:center;
+        width: 100%;
+    }
+</style>

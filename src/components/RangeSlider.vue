@@ -34,15 +34,19 @@
         <button v-on:click="decrement">◀</button>
         <input type="range" :min="props.min" :max="props.max" v-model="currentValue"/> 
         <button v-on:click="increment">▶</button>
-        <input v-model="currentValue"/>
+        <input v-model="currentValue" class="text_value"/>
     </div>
 </template>
 
 <style scoped>
-  .base {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
+.menu_content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+.text_value {
+  width: 100%;
+  min-width: 20px;
+}
 </style>
