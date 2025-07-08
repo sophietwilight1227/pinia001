@@ -76,7 +76,6 @@ const hideMenu = () => {
   document.removeEventListener('click', hideMenu);
 }
 const showAddCharMenu = () => {
-  console.log("add char")
   menuAddChar.show = true;
 }
 const hideAddCharMenu = () => {
@@ -107,6 +106,7 @@ const hideAddCharMenu = () => {
     </div>    
 
     <span class="asciiArt" ref="spanElem">{{ text }}</span>
+
     <div v-show="menuAddChar.show" class="menuAddChar">
       <div>追加したい文字列</div>
       <input type="text" v-model="menuAddChar.text"/>

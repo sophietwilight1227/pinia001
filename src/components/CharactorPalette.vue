@@ -5,7 +5,7 @@ import PanelContainer from './PanelContainer.vue'
 import PanelDivider from './PanelDivider.vue'
 import charPalette from '../assets/data/charPalette.json'
 import { useCharSetStore } from "@/stores/charSet";
-import { nextTick, onMounted, onUpdated, ref, type Ref } from "vue";
+import { nextTick, onMounted, onUpdated, reactive, ref, type Ref } from "vue";
 import FileTab from "./FileTab.vue";
 
 const nameListRef: any = ref(null);
@@ -13,6 +13,7 @@ const spanElem: Ref<HTMLElement | null> = ref(null);
 const text: Ref<string> = ref("");
 const settingStore = useSettingStore();
 const charSetStore = useCharSetStore();
+const menuPosition: {left: number, top: number, show: boolean} = reactive({left: 0, top: 0, show: false});
 
 const charIndexList: Ref<Array<string>> = ref([]);
 
@@ -52,7 +53,6 @@ const importPrevCharPalette = (prevCharPalette: string): void => {
     for(let i=0; i < charSetStore.charPalette.length; i++){
       charIndexList.value.push(charSetStore.charPalette[i].indexName);
     }
-    selectIndex(0);
 }
 
 
@@ -82,15 +82,36 @@ const updateCharPalette = async (list: Array<{indexName: string, charList: Array
     nameListRef.value[charSetStore.currentIndex].select(true);
   }
 }
+
+const addCharIndex = ():void => {
+  charSetStore.addCharPaletteIndex(charSetStore.currentIndex, "新規タブ");
+}
+
+const removeCharIndex = ():void => {
+  charSetStore.removeCharPaletteIndex(charSetStore.currentIndex);
+}
+
 charSetStore.$subscribe((mutation, state) => {
     updateCharPalette(state.charPalette);
 })
+
+const onRightClick = (e: MouseEvent):void => {
+  menuPosition.left = e.pageX;
+  menuPosition.top = e.pageY;
+  menuPosition.show = true;
+  document.addEventListener('click', hideMenu);
+}
+const hideMenu = () => {
+  menuPosition.show = false
+  document.removeEventListener('click', hideMenu);
+}
+
 </script>
 
 <template>
   <div class="base">    
     <PanelContainer :order="0" :name="'charList'">
-      <div class="charIndexList">
+      <div class="charIndexList" v-on:contextmenu.prevent="onRightClick">
         <div v-for="(data, i) in charIndexList">
           <FileTab :value="data" v-on:click="selectIndex(i)" ref="nameListRef" class="tab">{{ data }}</FileTab>
         </div>
@@ -101,7 +122,15 @@ charSetStore.$subscribe((mutation, state) => {
       <CharactorList/>
     </PanelContainer>
   </div>
+
   <span class="asciiArt" ref="spanElem">{{ text }}</span>
+
+  <div v-show="menuPosition.show" class="contextMenu">
+    <div>リスト編集</div>
+    <div v-on:click="addCharIndex">追加</div>
+    <div v-on:click="removeCharIndex" v-show="charIndexList.length > 0">削除</div>
+  </div>    
+
 </template>
 
 <style scoped>
@@ -124,6 +153,14 @@ charSetStore.$subscribe((mutation, state) => {
 
 .tab {
   white-space: nowrap;
+}
+.contextMenu {
+  background-color: white;
+  z-index: 100;
+  border: 1px solid black;
+  position: fixed;
+  top: v-bind(menuPosition.top + "px");
+  left: v-bind(menuPosition.left + "px");
 }
 
 .asciiArt {
