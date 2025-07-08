@@ -37,10 +37,10 @@ const onDoubleClick = async () => {
     }
 }
 const onMouseOver = ():void => {
-    
+    className.value = "mouseover"
 }
 const onMouseOut = ():void => {
-    
+    select(selected.value);
 }
 const onFocusOutTextArea = ():void => {
     isEdit.value = false;
@@ -84,5 +84,8 @@ const onKeyDown = (e: KeyboardEvent):void => {
     }
     .notSelected {
         background-color: violet;
+    }
+    .mouseover {
+        background-color: burlywood;
     }
 </style>

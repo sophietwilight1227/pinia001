@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FileTab from "./FileTab.vue";
+import ButtonText from "./ButtonText.vue";
 import { reactive, ref, watch, type Ref } from "vue";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 
@@ -81,8 +82,8 @@ watch(
             </div>
         </div>
         <div class="buttonlist">
-            <div class="button" v-on:click="addFile">[add]</div>
-            <div class="button" v-on:click="deleteFile">[delete]</div>
+            <ButtonText :value="'+ 追加'" v-on:click="addFile"/>
+            <ButtonText :value="'- 削除'" v-on:click="deleteFile"/>
         </div>      
     </div>
     <div class="filelist">
@@ -97,8 +98,8 @@ watch(
         </div>
 
         <div class="buttonlist">
-            <div class="button" v-on:click="addAa">[add]</div>
-            <div class="button" v-on:click="deleteAa">[delete]</div>
+            <ButtonText :value="'+ 追加'" v-on:click="addAa"/>
+            <ButtonText :value="'- 削除'" v-on:click="deleteAa"/>
         </div>          
     </div>
 

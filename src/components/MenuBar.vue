@@ -157,6 +157,7 @@ const openAaList = (e: any):void => {
                         }
                     }
                     charSetStore.readAaList(list);
+                    charSetStore.saveCharPaletteLocalStorage();
                 }
             };
             reader.readAsText(file, "sjis");

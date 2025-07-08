@@ -29,6 +29,15 @@ const calcWidth = async (str: string): Promise<number> => {
 }
 
 const initCharPalette = async () => {
+  const prevCharPalette = localStorage.getItem("ahoge_editor_charpalette");
+  if(prevCharPalette == null){
+    importDefaultCharPalette();
+  }else{
+    importPrevCharPalette(prevCharPalette);
+  }
+}
+
+const importDefaultCharPalette = async () => {
   for(let i=0; i < charPalette.length; i++){
     charSetStore.addCharPaletteIndex(i, charPalette[i].indexName);
     for(let j=0; j < charPalette[i].charList.length; j++){
@@ -38,6 +47,15 @@ const initCharPalette = async () => {
     charIndexList.value.push(charPalette[i].indexName);
   }
 }
+const importPrevCharPalette = (prevCharPalette: string): void => {
+    charSetStore.initCharPlette(JSON.parse(prevCharPalette));
+    for(let i=0; i < charSetStore.charPalette.length; i++){
+      charIndexList.value.push(charSetStore.charPalette[i].indexName);
+    }
+    selectIndex(0);
+}
+
+
 
 const selectIndex = (index: number):void => {
     if(nameListRef.value != null){

@@ -41,15 +41,14 @@ const addChar = async () => {
 
   menuAddChar.show = false;
 }
-//updateCharList(charSetStore.charList);  //これがないと初期セットされない
+const removeChar = (): void => {
+  charSetStore.removeCharFromCurrentPalette(menuPosition.currentIndex);
+}
 
+const canRemove = (index: number): boolean => {
+  return index < charList.value.length;
+}
 
-//watch(
-//    () => charSetStore.charList,
-//    (newValue) => {
-//        updateCharList(newValue);
-//    }
-//)
 charSetStore.$subscribe((mutation, state) => {
     updateCharList(charSetStore.charList);
 })
@@ -69,6 +68,7 @@ const onRightClick = (e: MouseEvent ,index: number):void => {
   menuPosition.top = e.pageY;
   menuPosition.show = true;
   menuPosition.currentIndex = index;
+  console.log(menuPosition.currentIndex);
   document.addEventListener('click', hideMenu);
 }
 const hideMenu = () => {
@@ -87,13 +87,13 @@ const hideAddCharMenu = () => {
 </script>
 
 <template>
-  <div class="base">    
+  <div class="base" v-on:contextmenu.prevent="onRightClick($event, charList.length)">    
     <span v-for="(data, i) in charList" class="charChip" >
         <div class="asciiArt" 
           v-on:mouseover="onMouseOver(i)" 
           v-on:mouseout="onMouseOut(i)" 
           v-on:click.stop="onMouseClisk(i)" 
-          v-on:contextmenu.prevent="onRightClick($event, i)">
+          v-on:contextmenu.prevent.stop="onRightClick($event, i)">
           <span>{{ data.value }}</span>
           <p class="baloon" :style="{display: data.isMouseOver}">{{ data.width }}</p>
         </div>
@@ -101,14 +101,14 @@ const hideAddCharMenu = () => {
   </div>
   <div>
     <div v-show="menuPosition.show" class="contextMenu">
-      <div v-on:click="showAddCharMenu">add</div>
-      <div>menu2</div>
-      <div>menu3</div>
+      <div>リスト編集</div>
+      <div v-on:click="showAddCharMenu">追加</div>
+      <div v-on:click="removeChar" v-show="canRemove(menuPosition.currentIndex)">削除</div>
     </div>    
 
     <span class="asciiArt" ref="spanElem">{{ text }}</span>
     <div v-show="menuAddChar.show" class="menuAddChar">
-      <div>追加kしたい文字列</div>
+      <div>追加したい文字列</div>
       <input type="text" v-model="menuAddChar.text"/>
       <button v-on:click="addChar">add</button>
       <button v-on:click="hideAddCharMenu">cancel</button>
@@ -126,6 +126,7 @@ const hideAddCharMenu = () => {
   flex-wrap: wrap;
   align-content: flex-start;
   overflow: scroll;
+  width: 100%;
 }
 .charChip {
     background-color: lightcoral;
