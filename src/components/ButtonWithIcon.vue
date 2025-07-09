@@ -2,6 +2,7 @@
 import { nextTick, ref, type Ref } from 'vue';
 import IconBase from '@/assets/icons/icon_base.vue';
 import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
 
 const emit = defineEmits(['click', "change"]);
 
@@ -50,9 +51,9 @@ const onMouseOut = ():void => {
         text-align: center;
     }
     .mouseout {
-        background-color: v-bind(colorStore.secondary);
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
     }
     .mouseover {
-        background-color: v-bind(colorStore.accent);
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.ACCENT));
     }
 </style>

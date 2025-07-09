@@ -13,6 +13,7 @@ import { useLayoutStore } from "@/stores/layout";
 import ButtonText from "./ButtonText.vue";
 import ButtonWithIcon from "./ButtonWithIcon.vue";
 import { useColorStore } from "@/stores/color";
+import constColor from "@/consts/constColor";
 
 const menuButtonInfoList = [{id: "file", name: "ファイル"},
                             {id: "image", name: "画像"},
@@ -212,6 +213,9 @@ const changePictureViewPosition = (e: any) => {
     layoutStore.setPicturePosition(e.target.value == "left");
 }
 
+const changeColorScheme = (e: any) => {
+    colorStore.changeColorScheme(e.target.value);
+}
 </script>
 
 <template>
@@ -260,10 +264,19 @@ const changePictureViewPosition = (e: any) => {
             </IconBase>
         </ButtonWithIcon>
         <div>
-            <div>画像プレビュー位置</div>
+            <div>[画像プレビュー位置]</div>
             <select name="isLeftPicture" v-on:change="changePictureViewPosition">
                 <option value="left">左</option>
                 <option value="right">右</option>
+            </select>
+        </div>
+        <div>
+            <div>[配色]</div>
+            <select name="colorScheme" v-on:change="changeColorScheme">
+                <option value="test">テスト</option>
+                <option value="light">ライト</option>
+                <option value="dark">ダーク</option>
+                <option value="classic">クラシック</option>
             </select>
         </div>
     </div>
@@ -311,14 +324,14 @@ const changePictureViewPosition = (e: any) => {
 <style scoped>
 
 .base {
-    background-color: v-bind(colorStore.secondary);
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .divider {
     height: 1px;
     background-color: white;
 }
 .mainMenu {
-    background-color: v-bind(colorStore.secondary);
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .tab {
     background-color: aqua;

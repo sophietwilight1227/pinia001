@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
 import { nextTick, ref, type Ref } from 'vue';
 
 const emit = defineEmits(['click', "change"]);
@@ -57,15 +58,15 @@ const onMouseOut = ():void => {
 <style scoped>
     .button1 {
         user-select: none;
-        color: v-bind(colorStore.text);
+        color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
     }
     .mouseout {
-        background-color: v-bind(colorStore.primary);
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
     }
     .mouseover {
-        background-color: v-bind(colorStore.secondary);
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
     }
     .selected {
-        background-color: v-bind(colorStore.accent);
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.ACCENT));
     }
 </style>

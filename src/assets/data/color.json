@@ -1,0 +1,12 @@
+[
+    {
+        "name": "test",
+        "values": {
+            "primary": "rgb(0, 0, 255)",
+            "secondary": "rgb(0, 128, 255)",
+            "accent": "rgb(255, 0, 0)",
+            "text": "rgb(0,0,0)",
+            "base": "rgb(255,255,255)"
+        }
+    }
+]

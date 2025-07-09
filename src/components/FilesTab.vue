@@ -5,6 +5,7 @@ import { nextTick, reactive, ref, watch, type Ref } from "vue";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 import DraggableListNode from "./DraggableListNode.vue";
 import { useColorStore } from "@/stores/color";
+import constColor from "@/consts/constColor";
 
 const mainCanvasAsciiArtStore = useMainCanvasStore();
 const colorStore = useColorStore();
@@ -208,7 +209,7 @@ const onDragEnterAaList = (index: number): void => {
 
 .base {
     height: 100%;
-    background-color: v-bind(colorStore.secondary);;
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
     display: flex;
     flex-direction: column;
     padding: 5%;
