@@ -4,8 +4,10 @@ import ButtonText from "./ButtonText.vue";
 import { nextTick, reactive, ref, watch, type Ref } from "vue";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 import DraggableListNode from "./DraggableListNode.vue";
+import { useColorStore } from "@/stores/color";
 
 const mainCanvasAsciiArtStore = useMainCanvasStore();
+const colorStore = useColorStore();
 const fileNameList: Ref<Array<string>> = ref([]);
 const aaNameList: Ref<Array<{name:string}>> = ref([]);
 const fileNameRefs: any = ref(null);
@@ -206,7 +208,7 @@ const onDragEnterAaList = (index: number): void => {
 
 .base {
     height: 100%;
-    background-color:lightgray;
+    background-color: v-bind(colorStore.secondary);;
     display: flex;
     flex-direction: column;
     padding: 5%;

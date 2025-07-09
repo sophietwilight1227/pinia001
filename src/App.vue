@@ -12,6 +12,7 @@ import InfoBar from "./components/InfoBar.vue";
 
 import { useLayoutStore } from "@/stores/layout";
 import { ref, type Ref } from "vue";
+import { useColorStore } from "./stores/color";
   const layoutStore = useLayoutStore();
   layoutStore.initLayout();
 
@@ -20,6 +21,9 @@ import { ref, type Ref } from "vue";
   layoutStore.$subscribe((mutation, state) => {
     isLeftPictureView.value = state.isLeftPictureView;
   })
+
+  const colorStore = useColorStore();
+  colorStore.init();
 
 
 </script>

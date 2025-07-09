@@ -12,11 +12,18 @@ import CharactorPalette from "./CharactorPalette.vue";
 import { useLayoutStore } from "@/stores/layout";
 import ButtonText from "./ButtonText.vue";
 import ButtonWithIcon from "./ButtonWithIcon.vue";
+import { useColorStore } from "@/stores/color";
+
+const menuButtonInfoList = [{id: "file", name: "ファイル"},
+                            {id: "image", name: "画像"},
+                            {id: "setting", name: "設定"}]
+const menuButtons: any = ref(null);
 
 const mainCanvasStore = useMainCanvasStore();
 const pictureViewSrtore = usePictureViewStore();
 const charSetStore = useCharSetStore();
 const layoutStore = useLayoutStore();
+const colorStore = useColorStore();
 
 const visibleList: Ref<Map<string, boolean>> = ref(new Map());
 const visibleModalMenu: Ref<boolean> = ref(false);
@@ -28,19 +35,28 @@ const textSizeRef: any = ref("");
 const sizeRefElem: any = ref(null);
 
 const initSetting = ():void => {
-    visibleList.value.set("file", false);
-    visibleList.value.set("image", false);
-    visibleList.value.set("setting", false);
+    for(let i=0; i < menuButtonInfoList.length; i++){
+        visibleList.value.set(menuButtonInfoList[i].id, false);
+    }
 }   
 initSetting();
 
 const changeMenu = (id: string): void => {
     for (let [key, value] of visibleList.value){
-        console.log(key, "menu clicked");
         if(key == id){
             visibleList.value.set(id, !visibleList.value.get(id));
         }else{
             visibleList.value.set(key, false);
+        }
+    }
+
+    for(let i=0; i < menuButtonInfoList.length; i++){
+        if(menuButtons.value != null && menuButtons.value[i] != null){
+            if(menuButtonInfoList[i].id == id && visibleList.value.get(id)){
+                menuButtons.value[i].select(true);
+            }else{
+                menuButtons.value[i].select(false);
+            }
         }
     }
 }
@@ -201,9 +217,11 @@ const changePictureViewPosition = (e: any) => {
 <template>
   <div class="base">
     <div class="mainMenu">
-        <ButtonText :value="'ファイル'" v-on:click="changeMenu('file')"/>
-        <ButtonText :value="'画像'" v-on:click="changeMenu('image')"/>
-        <ButtonText :value="'設定'" v-on:click="changeMenu('setting')"/>
+        <ButtonText 
+            v-for="data in menuButtonInfoList" 
+            ref="menuButtons"
+            :value="data.name" 
+            v-on:click="changeMenu(data.id)"/>
     </div>
     <div v-show="visibleList.get('file')" class="hasSubMenu">
         <ButtonWithIcon :value="'新規'">
@@ -293,14 +311,14 @@ const changePictureViewPosition = (e: any) => {
 <style scoped>
 
 .base {
-    background-color: antiquewhite;
+    background-color: v-bind(colorStore.secondary);
 }
 .divider {
     height: 1px;
     background-color: white;
 }
 .mainMenu {
-    background-color: lightgreen;
+    background-color: v-bind(colorStore.secondary);
 }
 .tab {
     background-color: aqua;

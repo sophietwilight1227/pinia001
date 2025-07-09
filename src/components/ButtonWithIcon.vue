@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick, ref, type Ref } from 'vue';
 import IconBase from '@/assets/icons/icon_base.vue';
+import { useColorStore } from '@/stores/color';
 
 const emit = defineEmits(['click', "change"]);
 
@@ -8,6 +9,7 @@ const props = defineProps<{
     value: string
 }>()
 
+const colorStore = useColorStore();
 const name: Ref<string> = ref(props.value);
 const className: Ref<string> = ref("mouseout");
 
@@ -48,9 +50,9 @@ const onMouseOut = ():void => {
         text-align: center;
     }
     .mouseout {
-        background-color: hotpink;
+        background-color: v-bind(colorStore.secondary);
     }
     .mouseover {
-        background-color: khaki;
+        background-color: v-bind(colorStore.accent);
     }
 </style>

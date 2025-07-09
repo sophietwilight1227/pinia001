@@ -21,15 +21,16 @@ mainCanvasStore.$subscribe((mutation, state) => {
 <template>
     <div class="base">
         <span>
-            <span>[row]: </span>
+            <span>　[row]: </span>
             <span>
                 {{ currentRow + " / " + maxRow }}
             </span>
         </span>
         <span>
-            <span>[dot]: </span>
+            <span>　[dot]: </span>
             <span>{{ currentDot }}</span>
         </span>
+        <span>　[ここに操作の説明など]</span>
     </div>
 </template>
 

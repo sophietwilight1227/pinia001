@@ -3,7 +3,9 @@ import {computed, ref, type HTMLAttributes, type Ref} from "vue";
 import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { usePictureViewStore } from "@/stores/pictureView";
+import { useColorStore } from "@/stores/color";
 
+  const colorStore = useColorStore();
   const pictureViewSrtore = usePictureViewStore();
   pictureViewSrtore.initParams();
 
@@ -140,7 +142,7 @@ import { usePictureViewStore } from "@/stores/pictureView";
 }
 .menu {
   z-index: 10;
-  background-color: aliceblue;
+  background-color: v-bind(colorStore.secondary);
   display: flex;
   flex-direction: row;   
 }
