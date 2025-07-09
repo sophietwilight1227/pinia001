@@ -164,6 +164,11 @@ export const useMainCanvasStore = defineStore(
             addFile(fileName: string, aaList: Array<{aaName: string, asciiArt: string}>):void {
                 this.allData.push({fileName: fileName, aaList: aaList});
             },
+            moveFile(indexFrom: number, indexTo: number): void {
+                const elem = this.allData[indexFrom];
+                this.allData.splice(indexFrom, 1);
+                this.allData.splice(indexTo,0, elem);
+            },
             deleteFile(): void {
                 this.allData.splice(this.currentFileNamePosition, 1);
             },
@@ -182,6 +187,11 @@ export const useMainCanvasStore = defineStore(
             },
             deleteAa(): void {
                 this.allData[this.currentFileNamePosition].aaList.splice(this.currentAaNamePosition, 1);
+            },
+            moveAa(indexFrom: number, indexTo: number): void {
+                const elem = this.allData[this.currentFileNamePosition].aaList[indexFrom];
+                this.allData[this.currentFileNamePosition].aaList.splice(indexFrom, 1);
+                this.allData[this.currentFileNamePosition].aaList.splice(indexTo,0, elem);
             },
             renameAa(newName: string): void {
                 this.allData[this.currentFileNamePosition].aaList[this.currentAaNamePosition].aaName = newName;

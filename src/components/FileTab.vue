@@ -22,8 +22,11 @@ const select = (isSelected: boolean):void => {
         //isEdit.value = false;
     }
 }
+const change = (value: string): void => {
+    name.value = value;
+}
 
-defineExpose({ select });
+defineExpose({ select, change });
 
 const onButtonClick = ():void => {
     emit("click");
@@ -72,12 +75,12 @@ const onKeyDown = (e: KeyboardEvent):void => {
                 v-on:focusout="onFocusOutTextArea"
                 ref="textarea">
     </div>
-
 </template>
 
 <style scoped>
     .button1 {
         user-select: none;
+        width: 100%;;
     }
     .selected {
         background-color: aqua;

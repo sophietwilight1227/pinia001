@@ -7,13 +7,16 @@ import charPalette from '../assets/data/charPalette.json'
 import { useCharSetStore } from "@/stores/charSet";
 import { nextTick, onMounted, onUpdated, reactive, ref, type Ref } from "vue";
 import FileTab from "./FileTab.vue";
+import DraggableListNode from "./DraggableListNode.vue";
 
 const nameListRef: any = ref(null);
+const nameDragListRef: any = ref(null);
 const spanElem: Ref<HTMLElement | null> = ref(null);
 const text: Ref<string> = ref("");
 const settingStore = useSettingStore();
 const charSetStore = useCharSetStore();
 const menuPosition: {left: number, top: number, show: boolean} = reactive({left: 0, top: 0, show: false});
+const dragIndex: Ref<{start: number, end: number}> = ref({start: 0, end: 0});
 
 const charIndexList: Ref<Array<string>> = ref([]);
 
@@ -75,6 +78,9 @@ const updateCharPalette = async (list: Array<{indexName: string, charList: Array
   await nextTick();
   for(let i=0; i < list.length; i++){
     charIndexList.value.push(list[i].indexName);
+    if(nameListRef.value[i] != null){
+      nameListRef.value[i].change(list[i].indexName);
+    }
   }
   await nextTick();
 
@@ -89,6 +95,10 @@ const addCharIndex = ():void => {
 
 const removeCharIndex = ():void => {
   charSetStore.removeCharPaletteIndex(charSetStore.currentIndex);
+}
+
+const renameCharIndex = (name: string):void => {
+  charSetStore.renameCharPaletteIndex(name);
 }
 
 charSetStore.$subscribe((mutation, state) => {
@@ -106,6 +116,47 @@ const hideMenu = () => {
   document.removeEventListener('click', hideMenu);
 }
 
+const onDragStart = (index: number): void => {
+  const height:string = nameDragListRef.value[index].getHeight();
+  for(let i=0; i < index; i++){
+    nameDragListRef.value[i].setDrag(true, height);
+  }
+
+  for(let i=index+1; i < charIndexList.value.length; i++){
+    nameDragListRef.value[i].setDrag(true, "-" + height);
+  }
+  dragIndex.value.start = index;
+  dragIndex.value.end = index;
+}
+const onDragEnd = (index: number): void => {
+  for(let i=0; i < charIndexList.value.length; i++){
+    nameDragListRef.value[i].setDrag(false, "0px");
+  }
+  charSetStore.moveCharPaletteIndex(dragIndex.value.start, dragIndex.value.end);
+  selectIndex(dragIndex.value.end);
+}
+const onDragEnter = (index: number):void => {
+  for(let i=0; i < charIndexList.value.length; i++){
+    nameDragListRef.value[i].move(false);
+  }
+  let start: number = 0;
+  let end: number = 0;
+  if(index > dragIndex.value.start){
+    start = dragIndex.value.start+1;
+    end = index+1;
+  }else{
+    start = index+1;
+    end = dragIndex.value.start+1;
+  }
+  for(let i=start; i < end; i++){
+    nameDragListRef.value[i].move(true);
+  }  
+  dragIndex.value.end = index;
+}
+const onDragLeave = ():void => {
+  
+}
+
 </script>
 
 <template>
@@ -113,7 +164,16 @@ const hideMenu = () => {
     <PanelContainer :order="0" :name="'charList'">
       <div class="charIndexList" v-on:contextmenu.prevent="onRightClick">
         <div v-for="(data, i) in charIndexList">
-          <FileTab :value="data" v-on:click="selectIndex(i)" ref="nameListRef" class="tab">{{ data }}</FileTab>
+          <DraggableListNode ref="nameDragListRef"
+                            v-on:dragstart="onDragStart(i)"
+                            v-on:dragend="onDragEnd(i)"
+                            v-on:dragenter="onDragEnter(i)">
+            <FileTab :value="data" 
+                    v-on:click="selectIndex(i)" 
+                    v-on:change="renameCharIndex"
+                    ref="nameListRef" 
+                    class="tab"></FileTab>
+          </DraggableListNode>
         </div>
       </div>
     </PanelContainer>
