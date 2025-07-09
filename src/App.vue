@@ -9,10 +9,12 @@ import PanelContainer from './components/PanelContainer.vue'
 import PanelDivider from './components/PanelDivider.vue'
 import EditablePreview from "./components/EditablePreview.vue";
 import InfoBar from "./components/InfoBar.vue";
+import Dialog from "./components/Dialog.vue";
 
 import { useLayoutStore } from "@/stores/layout";
-import { ref, type Ref } from "vue";
+import { onMounted, ref, type Ref } from "vue";
 import { useColorStore } from "./stores/color";
+import { useDialogStore } from "./stores/dialog";
   const layoutStore = useLayoutStore();
   layoutStore.initLayout();
 
@@ -24,6 +26,13 @@ import { useColorStore } from "./stores/color";
 
   const colorStore = useColorStore();
   colorStore.init();
+
+  const dialogStore = useDialogStore();
+  const dialog = ref(null);
+
+  onMounted(() => {
+    dialogStore.initStore(dialog.value);
+  })
 
 
 </script>
@@ -63,6 +72,8 @@ import { useColorStore } from "./stores/color";
       </div>
       <InfoBar/>
     </div>
+
+    <Dialog ref="dialog"></Dialog>
   </main>
 </template>
 

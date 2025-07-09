@@ -14,6 +14,7 @@ import ButtonText from "./ButtonText.vue";
 import ButtonWithIcon from "./ButtonWithIcon.vue";
 import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
+import { useDialogStore } from "@/stores/dialog";
 
 const menuButtonInfoList = [{id: "file", name: "ファイル"},
                             {id: "image", name: "画像"},
@@ -25,6 +26,7 @@ const pictureViewSrtore = usePictureViewStore();
 const charSetStore = useCharSetStore();
 const layoutStore = useLayoutStore();
 const colorStore = useColorStore();
+const dialogStore = useDialogStore();
 
 const visibleList: Ref<Map<string, boolean>> = ref(new Map());
 const visibleModalMenu: Ref<boolean> = ref(false);
@@ -216,7 +218,16 @@ const changePictureViewPosition = (e: any) => {
 const changeColorScheme = (e: any) => {
     colorStore.changeColorScheme(e.target.value);
 }
+
+const openCredit = async () => {
+    if(await dialogStore.confirm("test message")){
+        console.log("ok");
+    }
+}
+
 </script>
+
+
 
 <template>
   <div class="base">
@@ -279,9 +290,13 @@ const changeColorScheme = (e: any) => {
                 <option value="classic">クラシック</option>
             </select>
         </div>
+        <div v-on:click="openCredit">クレジット</div>
     </div>
   </div>
+
   <div class="divider"></div>
+
+
   <div v-show="visibleModalMenu" class="modalMenuFrame">
     <div class="modalMenuBackground"></div>
     <div class="modalMenu">
