@@ -68,9 +68,9 @@ export const useMainCanvasStore = defineStore(
         },
         actions: {
             initAsciiArt(): void {
-                this.asciiArt = "testAA";
+                this.asciiArt = "";
                 this.allData.splice(0);
-                this.allData.push({fileName: "file1", aaList: [{aaName: "aa1", asciiArt: "test1"}]})
+                this.allData.push({fileName: "new file", aaList: [{aaName: "aa", asciiArt: ""}]})
             },
             editAsciiArt(aa: string, log: EditLog):void {
                 this.asciiArt = aa;

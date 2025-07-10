@@ -220,8 +220,9 @@ const onDragEnterAaList = (index: number): void => {
     display: flex;
     flex-direction: column;
     margin: 5% auto;
+    user-select: none;
     color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
-    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .namelist {
     width: 100%;

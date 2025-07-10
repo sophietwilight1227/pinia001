@@ -141,7 +141,7 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
   width: 100%;
   overflow: hidden;
   color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
-  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.BASE));
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
 }
 .size_measure_node2 {
   position: absolute;

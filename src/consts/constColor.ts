@@ -52,11 +52,11 @@ export default {
                 [
                     {
                         id: "primary",
-                        value:"rgb(200, 200, 200)",
+                        value:"rgb(230, 230, 245)",
                     },
                     {
                         id: "secondary",
-                        value:"rgb(230, 230, 230)",
+                        value:"rgb(250, 250, 255)",
                     },
                     {
                         id: "accent",
@@ -134,7 +134,7 @@ export default {
                     },
                     {
                         id: "text",
-                        value:"rgb(255,255,255)",
+                        value:"rgb(0,0,0)",
                     },
                     {
                         id: "base",
@@ -142,11 +142,11 @@ export default {
                     },
                     {
                         id: "mainCanvasBackground",
-                        value:"rgb(255,255,255)",
+                        value:"rgb(220,220,220)",
                     },
                     {
                         id: "mainCanvasGrid",
-                        value:"rgb(200,200,200)",
+                        value:"rgb(160,160,160)",
                     },
                 ],
         },

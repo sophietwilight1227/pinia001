@@ -281,7 +281,13 @@ const openCredit = async () => {
                 <option value="right">右</option>
             </select>
         </div>
-        <div>[グリッドの表示]</div>
+        <div>
+             <div>[グリッドの表示]</div>
+            <select name="hasGrid">
+                <option value="true">する</option>
+                <option value="false">しない</option>
+            </select>           
+        </div>
         <div>
             <div>[配色]</div>
             <select name="colorScheme" v-on:change="changeColorScheme">

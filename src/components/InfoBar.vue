@@ -41,5 +41,6 @@ mainCanvasStore.$subscribe((mutation, state) => {
     .base {
         color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
         background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
+        border-top: 1px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
     }
 </style>
