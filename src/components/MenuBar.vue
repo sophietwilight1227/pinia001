@@ -307,7 +307,7 @@ const openCredit = async () => {
             </select>
         </div>
         <div>
-            <div v-on:click="openCredit">info</div>
+            <div v-on:click="openCredit">[info]</div>
             <button v-on:click="showCredit">[表示]</button>            
         </div>
     </div>
