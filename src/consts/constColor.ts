@@ -60,7 +60,7 @@ export default {
                     },
                     {
                         id: "accent",
-                        value:"rgb(255, 128, 128)",
+                        value:"rgb(200, 235, 255)",
                     },
                     {
                         id: "text",

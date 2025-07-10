@@ -6,6 +6,9 @@ import { useMainCanvasStore } from "@/stores/mainCanvas";
 import DraggableListNode from "./DraggableListNode.vue";
 import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
+import { useDialogStore } from "@/stores/dialog";
+
+const dialogStore = useDialogStore();
 
 const mainCanvasAsciiArtStore = useMainCanvasStore();
 const colorStore = useColorStore();
@@ -32,8 +35,11 @@ const renameFile = (newName: string):void => {
 const addFile = ():void => {
     mainCanvasAsciiArtStore.addFile("new file" , [{aaName: "aa1", asciiArt: ""}]);
 }
-const deleteFile = ():void => {
-    mainCanvasAsciiArtStore.deleteFile();
+const deleteFile = async () => {
+    if(await dialogStore.alert("選択中のファイルを削除しますか？")){
+        mainCanvasAsciiArtStore.deleteFile();
+        await dialogStore.info("削除しました");
+    }    
 }
 const selectAa = (index: number):void => {
     if(aaNameRefs.value != null){
@@ -47,8 +53,11 @@ const selectAa = (index: number):void => {
 const addAa = ():void => {
     mainCanvasAsciiArtStore.addAa("new aa", "");
 }
-const deleteAa = ():void => {
-    mainCanvasAsciiArtStore.deleteAa();
+const deleteAa = async () => {
+    if(await dialogStore.alert("選択中のAAを削除しますか？")){
+        mainCanvasAsciiArtStore.deleteAa();
+        await dialogStore.info("削除しました");
+    }
 }
 const renameAa = (newName: string):void => {
     mainCanvasAsciiArtStore.renameAa(newName);

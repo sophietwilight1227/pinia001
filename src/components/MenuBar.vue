@@ -5,6 +5,8 @@ import IconFile from "@/assets/icons/icon_file.vue";
 import IconFolder from "@/assets/icons/icon_folder.vue";
 import IconBase from "@/assets/icons/icon_base.vue";
 import IconImage from "@/assets/icons/icon_image.vue";
+import IconSave from "@/assets/icons/icon_save.vue";
+import IconAalist from "@/assets/icons/icon_aalist.vue";
 import { usePictureViewStore } from "@/stores/pictureView";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 import { useCharSetStore } from "@/stores/charSet";
@@ -30,6 +32,7 @@ const dialogStore = useDialogStore();
 
 const visibleList: Ref<Map<string, boolean>> = ref(new Map());
 const visibleModalMenu: Ref<boolean> = ref(false);
+const visibleCredit: Ref<boolean> = ref(false);
 const imageUrl: Ref<string> = ref("");
 const inputLocalImageButton: any = ref(null);
 const inputLocalTextButton:any = ref(null);
@@ -74,6 +77,12 @@ const showModalMenu = ():void => {
 }
 const hideModalMenu = ():void => {
     visibleModalMenu.value = false;
+}
+const showCredit = ():void => {
+    visibleCredit.value = true;
+}
+const hideCredit = ():void => {
+    visibleCredit.value = false;
 }
 const onClickOpenLocalImage = ():void => {
     inputLocalImageButton.value!.click();
@@ -220,7 +229,7 @@ const changeColorScheme = (e: any) => {
 }
 
 const openCredit = async () => {
-    if(await dialogStore.confirm("test message")){
+    if(await dialogStore.alert("test message")){
         console.log("ok");
     }
 }
@@ -251,7 +260,7 @@ const openCredit = async () => {
         </ButtonWithIcon>
         <ButtonWithIcon :value="'保存'" v-on:click="writeMLT">
             <IconBase >
-                <IconFolder/>
+                <IconSave/>
             </IconBase>
         </ButtonWithIcon>
     </div>
@@ -266,12 +275,12 @@ const openCredit = async () => {
     <div v-show="visibleList.get('setting')" class="hasSubMenu">
         <ButtonWithIcon :value="'aalist読み込み'" v-on:click="onClickReadAaList">
             <IconBase >
-                <IconImage/>
+                <IconAalist/>
             </IconBase>
         </ButtonWithIcon>
         <ButtonWithIcon :value="'aalist出力'" v-on:click="writeAaListAsJson">
             <IconBase >
-                <IconImage/>
+                <IconAalist/>
             </IconBase>
         </ButtonWithIcon>
         <div>
@@ -297,7 +306,10 @@ const openCredit = async () => {
                 <option value="classic">クラシック</option>
             </select>
         </div>
-        <div v-on:click="openCredit">クレジット</div>
+        <div>
+            <div v-on:click="openCredit">info</div>
+            <button v-on:click="showCredit">[表示]</button>            
+        </div>
     </div>
   </div>
 
@@ -319,6 +331,15 @@ const openCredit = async () => {
         </div>
         
         <button v-on:click="hideModalMenu">キャンセル</button>
+    </div>
+  </div>
+  
+  <div v-show="visibleCredit" class="modalMenuFrame">
+    <div class="modalMenu">
+        <div>info</div>
+        <img src="@/assets/images/logo.png" alt="logo">
+        <div>*MIT License*</div>
+        <ButtonText :value="'とじる'" v-on:click="hideCredit"/>
     </div>
   </div>
   <!--ここから参照用。非表示にしておく-->
@@ -377,7 +398,9 @@ const openCredit = async () => {
 }
 .modalMenu {
     position: absolute;
-    margin: 0 auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
     z-index: 2000;
     box-shadow: 0 10px 25px 0 rgba(0, 0, 0, .5);
     padding: 10px;

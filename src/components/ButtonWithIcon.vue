@@ -42,6 +42,7 @@ const onMouseOut = ():void => {
 
 <style scoped>
     .button1 {
+        padding: 0px 5px 0px 5px;
         user-select: none;
         display: flex;
         flex-direction: column;

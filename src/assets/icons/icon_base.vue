@@ -18,19 +18,21 @@ const color: Ref<string> = ref("");
             {size: 40,
             color:  "default",
             weight: 16,
-            filled: false,
+            filled: true,
             addClass: '',
             viewBox:  '0 0 256 256'
     } )
 
     const initColor = () => {
-      if(props.color == "default"){
+      if(props.color == "default" || props.color == ""){
         color.value = colorStore.getColor(constColor.COLOR_NAME.TEXT);
-      }else{
-        color.value = props.color;
       }
     }
     initColor();
+
+    colorStore.$subscribe((mutation, state) => {
+      initColor();
+    });
 
 </script>
 

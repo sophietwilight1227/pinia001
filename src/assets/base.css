@@ -1,5 +1,7 @@
 
-
+body {
+  font-family: 'NotoSans';
+}
 .misspelled {
   color: red;
   border-bottom: 2px solid red;
@@ -23,6 +25,15 @@
   src: url('@/assets/fonts/Saitamaar.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'test';
+  src: url('@/assets/fonts/WDXLLubrifontJPN-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NotoSans';
+  src: url('@/assets/fonts/NotoSansJP-VariableFont_wght.ttf') format('truetype');
+}
 /* color palette from <https://github.com/vuejs/theme> */
 /*
 :root {

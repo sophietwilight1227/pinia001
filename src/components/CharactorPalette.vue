@@ -10,6 +10,9 @@ import FileTab from "./FileTab.vue";
 import DraggableListNode from "./DraggableListNode.vue";
 import { useColorStore } from '@/stores/color';
 import constColor from '@/consts/constColor';
+import { useDialogStore } from "@/stores/dialog";
+
+const dialogStore = useDialogStore();
 
 const colorStore = useColorStore();
 
@@ -97,8 +100,11 @@ const addCharIndex = ():void => {
   charSetStore.addCharPaletteIndex(charSetStore.currentIndex, "新規タブ");
 }
 
-const removeCharIndex = ():void => {
-  charSetStore.removeCharPaletteIndex(charSetStore.currentIndex);
+const removeCharIndex = async () => {
+  if(await dialogStore.alert("選択中の見出しを削除しますか？")){
+    charSetStore.removeCharPaletteIndex(charSetStore.currentIndex);
+    await dialogStore.info("削除しました");
+  }
 }
 
 const renameCharIndex = (name: string):void => {

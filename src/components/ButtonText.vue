@@ -57,6 +57,8 @@ const onMouseOut = ():void => {
 
 <style scoped>
     .button1 {
+        display: inline-block;
+        padding: 0px 5px 0px 5px;
         user-select: none;
         color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
     }

@@ -4,6 +4,9 @@ import { useMainCanvasStore } from '@/stores/mainCanvas';
 import { nextTick, reactive, ref, type Ref } from 'vue';
 import { useColorStore } from '@/stores/color';
 import constColor from '@/consts/constColor';
+import { useDialogStore } from "@/stores/dialog";
+
+const dialogStore = useDialogStore();
 
 const colorStore = useColorStore();
 const charSetStore = useCharSetStore();
@@ -44,8 +47,11 @@ const addChar = async () => {
 
   menuAddChar.show = false;
 }
-const removeChar = (): void => {
-  charSetStore.removeCharFromCurrentPalette(menuPosition.currentIndex);
+const removeChar = async () => {
+  if(await dialogStore.alert("この文字を削除しますか？：" + charList.value[menuPosition.currentIndex].value)){
+    charSetStore.removeCharFromCurrentPalette(menuPosition.currentIndex);
+    await dialogStore.info("削除しました");
+  }
 }
 
 const canRemove = (index: number): boolean => {
