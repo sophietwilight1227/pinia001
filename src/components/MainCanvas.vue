@@ -180,6 +180,16 @@ const onKeyDown = async (e: KeyboardEvent) => {
         break;
     }
   }
+  if(e.ctrlKey){
+    switch(e.key){
+      case 'R':
+        e.preventDefault();
+        return;
+      case 'r':
+        e.preventDefault();
+        return;
+    }
+  }
 }
 
 </script>
