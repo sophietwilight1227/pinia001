@@ -6,6 +6,10 @@ import { useMainCanvasStore } from "@/stores/mainCanvas";
 import MainCanvas from "./MainCanvas.vue";
 import { usePictureViewStore } from "@/stores/pictureView";
 import { useLayoutStore } from "@/stores/layout";
+import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
+
+const colorStore = useColorStore();
 
 const rowIndex: Ref<string> = ref("1");
 const rowIndexElem: any = ref(null);
@@ -106,16 +110,15 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
 }
 .rowIndex {
   position: sticky;
-  background-color: white;
   text-align: right;
   min-width: 30px;
   white-space: pre-wrap;
-  font-size:16px;
-  line-height:18px;
   overflow: hidden;
-  z-index: 3100;
+  z-index: 1100;
   border-right: 1px solid;
   height: v-bind(canvasSize.height);
+  color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .sticky_row {
   position: sticky;
@@ -124,42 +127,25 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
 }
 .size_measure_frame {
   position: sticky;
-  background-color: blue;
   top: 0;
 }
 .size_measure_node {
   position: absolute;
   height: max-content;
   min-height: 100vh;
-  border-left: 1px solid;
+  border-left: 1px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.MAIN_CANVAS_GRID));
 }
 .size_measure_frame2 {
   position: relative;
-  color: white;
-  background-color: blue;
   height: 20px;
   width: 100%;
   overflow: hidden;
+  color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.BASE));
 }
 .size_measure_node2 {
   position: absolute;
   height: 100%;
-  border-left: 1px solid;
-}
-.asciiArt {
-  white-space: pre;
-  z-index: 10;
-  font-size:16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height:18px;
-  letter-spacing: 0;
-  text-shadow: none;
-  font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
-}
-
-@font-face {
-  font-family: 'Saitamaar';
-  src: url('@/assets/fonts/Saitamaar.ttf') format('truetype');
+  border-left: 1px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.MAIN_CANVAS_BASE));
 }
 </style>

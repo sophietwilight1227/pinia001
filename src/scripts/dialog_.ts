@@ -9,10 +9,6 @@ export function addComponentDynamically (props = {}) {
   app.mount(wrapper);
   document.body.appendChild(wrapper);
 
-  wrapper.addEventListener("click", (e) => {
-    console.log("ok");
-    removeComponentDynamically(app, wrapper);
-  })
 }
 
 /** 動的なコンポーネントの削除 */

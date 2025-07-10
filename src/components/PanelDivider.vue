@@ -1,6 +1,11 @@
 <script setup lang="ts">
-  import {onMounted, ref, type Ref} from "vue";
-  import { useLayoutStore } from "@/stores/layout";
+import {onMounted, ref, type Ref} from "vue";
+import { useLayoutStore } from "@/stores/layout";
+import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
+
+const colorStore = useColorStore();
+
     const props = defineProps<{
     order: number,
     layoutName: string,
@@ -44,9 +49,9 @@
   .divider {
     width: 10px;
     height: 100%;
-    background-color: lightgray;
     cursor:w-resize;
     z-index: 500;
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
   }
 
 </style>

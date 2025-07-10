@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { nextTick, ref, type Ref } from 'vue';
+import { useColorStore } from "@/stores/color";
+import constColor from "@/consts/constColor";
+
+const colorStore = useColorStore();
 
 const emit = defineEmits(['click', "change"]);
 
@@ -80,15 +84,16 @@ const onKeyDown = (e: KeyboardEvent):void => {
 <style scoped>
     .button1 {
         user-select: none;
-        width: 100%;;
+        width: 100%;
+        color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
     }
     .selected {
-        background-color: aqua;
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.ACCENT));
     }
     .notSelected {
-        background-color: violet;
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
     }
     .mouseover {
-        background-color: burlywood;
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
     }
 </style>

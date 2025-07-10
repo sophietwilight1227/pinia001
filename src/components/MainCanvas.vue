@@ -243,19 +243,6 @@ const onKeyDown = async (e: KeyboardEvent) => {
   field-sizing: content;
   z-index: 9;
 }
-.asciiArt {
-  white-space: pre;
-  z-index: 10;
-  background-color: transparent;
-  font-size:16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height:18px;
-  letter-spacing: 0;
-  text-shadow: none;
-  font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
-}
-
 .textarea {
   background-color: transparent;
   white-space: pre;
@@ -273,10 +260,5 @@ const onKeyDown = async (e: KeyboardEvent) => {
   width: 100%;
   height: 100%;
   background-color: transparent;
-}
-
-@font-face {
-  font-family: 'Saitamaar';
-  src: url('@/assets/fonts/Saitamaar.ttf') format('truetype');
 }
 </style>

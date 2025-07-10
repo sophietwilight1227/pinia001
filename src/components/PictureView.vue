@@ -75,12 +75,12 @@ const layoutStore = useLayoutStore();
 .base {     
   min-height: 100%;
   min-width: 100%;
+  overflow:hidden;
+  position: absolute;
+  flex-grow: 1;  
   height: v-bind(canvasSize.height * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
   width: v-bind(canvasSize.width * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
   background-color: v-bind(backgroundColor);
-  overflow:hidden;
-  position: absolute;
-  flex-grow: 1;
 }
 
 .mainImage {

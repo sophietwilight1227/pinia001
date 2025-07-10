@@ -209,24 +209,25 @@ const onDragEnterAaList = (index: number): void => {
 
 .base {
     height: 100%;
-    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
     display: flex;
     flex-direction: column;
     padding: 5%;
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .filelist {
-    background-color: white;
     height: 50%;
     width: 100%;
     display: flex;
     flex-direction: column;
     margin: 5% auto;
+    color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
 }
 .namelist {
     width: 100%;
     height: 100%;
-    background-color: aquamarine;
     overflow: scroll;
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 
 .buttonlist {

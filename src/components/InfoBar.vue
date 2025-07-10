@@ -2,7 +2,10 @@
 import { useCharSetStore } from '@/stores/charSet';
 import { useMainCanvasStore } from '@/stores/mainCanvas';
 import { ref, type Ref } from 'vue';
+import { useColorStore } from "@/stores/color";
+import constColor from "@/consts/constColor";
 
+const colorStore = useColorStore();
 
 const currentRow: Ref<number> = ref(1);
 const maxRow: Ref<number> = ref(1);
@@ -36,6 +39,7 @@ mainCanvasStore.$subscribe((mutation, state) => {
 
 <style scoped>
     .base {
-        background-color: white;
+        color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
     }
 </style>

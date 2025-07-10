@@ -43,12 +43,12 @@ const onMouseOut = ():void => {
 <style scoped>
     .button1 {
         user-select: none;
-        background-color: aliceblue;
         display: flex;
         flex-direction: column;
         justify-content:center;
         align-items: stretch;
         text-align: center;
+        color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
     }
     .mouseout {
         background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));

@@ -4,6 +4,7 @@ import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { usePictureViewStore } from "@/stores/pictureView";
 import { useColorStore } from "@/stores/color";
+import constColor from "@/consts/constColor";
 
   const colorStore = useColorStore();
   const pictureViewSrtore = usePictureViewStore();
@@ -139,12 +140,14 @@ import { useColorStore } from "@/stores/color";
   justify-content: space-between;
   overflow-x: scroll;
   overflow-y: scroll;
+
 }
 .menu {
   z-index: 10;
-  background-color: v-bind(colorStore.secondary);
   display: flex;
   flex-direction: row;   
+  color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .menu_content {
   display: flex;

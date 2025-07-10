@@ -8,6 +8,10 @@ import { useCharSetStore } from "@/stores/charSet";
 import { nextTick, onMounted, onUpdated, reactive, ref, type Ref } from "vue";
 import FileTab from "./FileTab.vue";
 import DraggableListNode from "./DraggableListNode.vue";
+import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
+
+const colorStore = useColorStore();
 
 const nameListRef: any = ref(null);
 const nameDragListRef: any = ref(null);
@@ -201,7 +205,7 @@ const onDragLeave = ():void => {
     max-width: none;
     overflow: hidden;
     height: 100%;
-    background-color: aquamarine;
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .charIndexList {
   width: 100%;
@@ -215,24 +219,13 @@ const onDragLeave = ():void => {
   white-space: nowrap;
 }
 .contextMenu {
-  background-color: white;
   z-index: 100;
-  border: 1px solid black;
   position: fixed;
   top: v-bind(menuPosition.top + "px");
   left: v-bind(menuPosition.left + "px");
+  color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.BASE));
+  border: 1px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
 }
 
-.asciiArt {
-  white-space: pre;
-  z-index: 10;
-  background-color: transparent;
-  font-size:16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height:18px;
-  letter-spacing: 0;
-  text-shadow: none;
-  font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
-}
 </style>

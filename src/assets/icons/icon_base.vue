@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
+import { ref, type Ref } from 'vue';
+
+const colorStore = useColorStore();
+const color: Ref<string> = ref("");
 
     export interface Props {
         size?: number,
@@ -10,12 +16,21 @@
     }
     const props = withDefaults(defineProps<Props>(),
             {size: 40,
-            color: '#000000',
+            color:  "default",
             weight: 16,
             filled: false,
             addClass: '',
             viewBox:  '0 0 256 256'
     } )
+
+    const initColor = () => {
+      if(props.color == "default"){
+        color.value = colorStore.getColor(constColor.COLOR_NAME.TEXT);
+      }else{
+        color.value = props.color;
+      }
+    }
+    initColor();
 
 </script>
 
@@ -27,9 +42,9 @@
     :height="props.size"
     :viewBox="props.viewBox"
     :class="props.addClass"
-    :stroke="props.color"
+    :stroke="color"
     :stroke-width="props.filled ? '0' : props.weight"
-    :fill="filled ? props.color : ''"
+    :fill="filled ? color : ''"
   >
     <slot></slot>
   </svg>

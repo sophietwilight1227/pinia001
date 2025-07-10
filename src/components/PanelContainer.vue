@@ -3,6 +3,11 @@
 import { MutationType  } from "pinia"
 import {ref, computed ,type Ref} from "vue";
 import { useLayoutStore } from "@/stores/layout";
+import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
+
+const colorStore = useColorStore();
+
   const props = defineProps<{
     name: string,
     order: number,
@@ -38,10 +43,9 @@ import { useLayoutStore } from "@/stores/layout";
 .base {
   max-height: 100%;
   width: v-bind(width);
-  background-color: palegoldenrod;
-  /*position: relative;*/
   overflow: hidden;
   flex-grow: 1;
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.MAIN_CANVAS_BACKGROUND));
 }
 
 </style>

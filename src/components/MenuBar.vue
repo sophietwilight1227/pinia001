@@ -240,12 +240,12 @@ const openCredit = async () => {
     </div>
     <div v-show="visibleList.get('file')" class="hasSubMenu">
         <ButtonWithIcon :value="'新規'">
-            <IconBase >
+            <IconBase>
                 <IconFile/>
             </IconBase>
         </ButtonWithIcon>
         <ButtonWithIcon :value="'開く'" v-on:click="onClickOpenLocalText">
-            <IconBase >
+            <IconBase>
                 <IconFolder/>
             </IconBase>
         </ButtonWithIcon>
@@ -281,6 +281,7 @@ const openCredit = async () => {
                 <option value="right">右</option>
             </select>
         </div>
+        <div>[グリッドの表示]</div>
         <div>
             <div>[配色]</div>
             <select name="colorScheme" v-on:change="changeColorScheme">
@@ -343,13 +344,15 @@ const openCredit = async () => {
 }
 .divider {
     height: 1px;
-    background-color: white;
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
 }
 .mainMenu {
-    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
+    width: 100%;
+    color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
 }
 .tab {
-    background-color: aqua;
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 
 .button{
@@ -359,19 +362,21 @@ const openCredit = async () => {
     position: absolute;
     z-index: 100;
     background-color: white;
-    filter: drop-shadow(0px 1px 4px #aaa);
+    filter: drop-shadow(0px 1px 4px #000);
 }
 .hasSubMenu{
     display: flex;
     flex-direction: row;
+    color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
 }
 .modalMenu {
     position: absolute;
     margin: 0 auto;
     z-index: 2000;
-    background-color: aqua;
     box-shadow: 0 10px 25px 0 rgba(0, 0, 0, .5);
     padding: 10px;
+    color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .modalMenuBackground {
     position: fixed;
@@ -388,25 +393,10 @@ const openCredit = async () => {
   display: flex;
   justify-content: center;
 }
-.asciiArt {
-  white-space: pre;
-  z-index: 10;
-  background-color: transparent;
-  font-size:16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height:18px;
-  letter-spacing: 0;
-  text-shadow: none;
-  font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
-}
+
 .sizeRef {
     width: fit-content;
     background-color: blueviolet;
 }
 
-@font-face {
-  font-family: 'Saitamaar';
-  src: url('@/assets/fonts/Saitamaar.ttf') format('truetype');
-}
 </style>

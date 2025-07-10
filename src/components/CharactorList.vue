@@ -2,7 +2,10 @@
 import { useCharSetStore } from '@/stores/charSet';
 import { useMainCanvasStore } from '@/stores/mainCanvas';
 import { nextTick, reactive, ref, type Ref } from 'vue';
+import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
 
+const colorStore = useColorStore();
 const charSetStore = useCharSetStore();
 const mainCanvasAsciiArtStore = useMainCanvasStore();
 
@@ -120,60 +123,47 @@ const hideAddCharMenu = () => {
 <style scoped>
 
 .base {
-  background-color: indigo;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-content: flex-start;
   overflow: scroll;
   width: 100%;
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .charChip {
-    background-color: lightcoral;
     min-width: 30px;
     user-select: none;
     align-items:flex-start;
     margin: 1px;
+    padding: 3px 0px 3px 0px;
     text-align: center;
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.MAIN_CANVAS_BACKGROUND));
 }
 .baloon {
     position: absolute;
     width: 30px;
     z-index: 100;
-    background-color: white;
     filter: drop-shadow(0px 1px 4px #aaa);
+    color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .contextMenu {
-  background-color: white;
   z-index: 100;
-  border: 1px solid black;
   position: fixed;
   top: v-bind(menuPosition.top + "px");
   left: v-bind(menuPosition.left + "px");
+  color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.BASE));
+  border: 1px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
 }
 
 .menuAddChar {
-  background-color: white;
   z-index: 100;
-  border: 1px solid black;
   position: fixed;
   top: 50%;
   left: 50%;
-}
-
-.asciiArt {
-  font-size:16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height:18px;
-  letter-spacing: 0;
-  text-shadow: none;
-  font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
-  white-space: pre-wrap;
-}
-
-@font-face {
-  font-family: 'Saitamaar';
-  src: url('@/assets/fonts/Saitamaar.ttf') format('truetype');
+  background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.BASE));
+  border: 1px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
 }
 </style>

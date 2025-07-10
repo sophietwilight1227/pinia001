@@ -5,7 +5,9 @@ export default {
         SECONDARY: "secondary",
         ACCENT: "accent",
         TEXT: "text",
-        BASE: "base"
+        BASE: "base",
+        MAIN_CANVAS_BACKGROUND: "mainCanvasBackground",
+        MAIN_CANVAS_GRID: "mainCanvasGrid",
     },
     SCHEME_LIST: [
         {
@@ -15,15 +17,15 @@ export default {
                 [
                     {
                         id: "primary",
-                        value:"rgb(0, 0, 255)",
+                        value:"#b2daee",
                     },
                     {
                         id: "secondary",
-                        value:"rgb(0, 128, 255)",
+                        value:"#cee7f0",
                     },
                     {
                         id: "accent",
-                        value:"rgb(255, 0, 0)",
+                        value:"#009DBC",
                     },
                     {
                         id: "text",
@@ -32,6 +34,14 @@ export default {
                     {
                         id: "base",
                         value:"rgb(255,255,255)",
+                    },
+                    {
+                        id: "mainCanvasBackground",
+                        value:"rgb(255,255,255)",
+                    },
+                    {
+                        id: "mainCanvasGrid",
+                        value:"rgb(200,200,200)",
                     },
                 ],
         },
@@ -60,6 +70,14 @@ export default {
                         id: "base",
                         value:"rgb(255,255,255)",
                     },
+                    {
+                        id: "mainCanvasBackground",
+                        value:"rgb(255,255,255)",
+                    },
+                    {
+                        id: "mainCanvasGrid",
+                        value:"rgb(200,200,200)",
+                    },
                 ],
         },
         {
@@ -73,7 +91,7 @@ export default {
                     },
                     {
                         id: "secondary",
-                        value:"rgb(40, 40, 40)",
+                        value:"rgb(50, 50, 50)",
                     },
                     {
                         id: "accent",
@@ -86,6 +104,14 @@ export default {
                     {
                         id: "base",
                         value:"rgb(0,0,0)",
+                    },
+                    {
+                        id: "mainCanvasBackground",
+                        value:"rgb(255,255,255)",
+                    },
+                    {
+                        id: "mainCanvasGrid",
+                        value:"rgb(200,200,200)",
                     },
                 ],
         },
@@ -113,6 +139,14 @@ export default {
                     {
                         id: "base",
                         value:"rgb(0,0,0)",
+                    },
+                    {
+                        id: "mainCanvasBackground",
+                        value:"rgb(255,255,255)",
+                    },
+                    {
+                        id: "mainCanvasGrid",
+                        value:"rgb(200,200,200)",
                     },
                 ],
         },
