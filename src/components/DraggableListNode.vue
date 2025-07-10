@@ -20,7 +20,6 @@ const setDrag = (isDrag: boolean, deltaY: string): void => {
 }
 const move = (isMoved: boolean): void => {
     isMove.value = isMoved;
-    console.log("move", positionDeltaY.value)
 }
 defineExpose({ getHeight, setDrag, move });
 

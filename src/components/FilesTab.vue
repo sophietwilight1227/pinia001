@@ -220,7 +220,6 @@ const onDragEnterAaList = (index: number): void => {
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 5%;
     background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .filelist {
