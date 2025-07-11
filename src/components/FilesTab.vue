@@ -20,7 +20,7 @@ const dragIndex: Ref<{start: number, end: number}> = ref({start: 0, end: 0});
 const fileNameDragListRef: any = ref(null);
 const aaNameDragListRef:any = ref(null);
 
-const selectFile = (index: number):void => {
+const selectFile = async (index: number) => {
     if(fileNameRefs.value != null){
         for(let i=0; i < fileNameRefs.value.length; i++){
             fileNameRefs.value[i].select(false);
@@ -28,12 +28,14 @@ const selectFile = (index: number):void => {
         fileNameRefs.value[index].select(true);
     }
     mainCanvasAsciiArtStore.selectFile(index);
+    await nextTick();
+    selectAa(mainCanvasAsciiArtStore.allData[mainCanvasAsciiArtStore.currentFileNamePosition].currentPosition);
 }
 const renameFile = (newName: string):void => {
     mainCanvasAsciiArtStore.renameFile(newName);
 }
 const addFile = ():void => {
-    mainCanvasAsciiArtStore.addFile("new file" , [{aaName: "aa1", asciiArt: ""}]);
+    mainCanvasAsciiArtStore.addFile("new file" , [{aaName: "aa1", asciiArt: "", editLogs: []}]);
 }
 const deleteFile = async () => {
     if(await dialogStore.alert("選択中のファイルを削除しますか？")){
@@ -48,6 +50,7 @@ const selectAa = (index: number):void => {
         }
         aaNameRefs.value[index].select(true);
     }
+    console.log(index, "select aa");
     mainCanvasAsciiArtStore.selectAa(index);
 }
 const addAa = ():void => {
@@ -101,7 +104,6 @@ mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
     
     updateFileNameList(mainCanvasAsciiArtStore.fileNameList);
     updateAaNameList(mainCanvasAsciiArtStore.aaNameList);
-    console.log(fileNameList)
 })
 
 const dragStart = (index: number, elemListRef: any ): void => {

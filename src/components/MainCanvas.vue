@@ -27,6 +27,7 @@ const mainCanvasFontColor: Ref<string> = ref("rgb(0, 0, 0)")
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   mainCanvasAA.value = state.asciiArt;
+  console.log(state.asciiArt);
 })
 
 const layoutStore = useLayoutStore();
@@ -132,7 +133,7 @@ const onChangeTextArea = async (e: any) => {
         }
       }
     }
-    mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: 0});
+    mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: str.length});
     onSelectionChange(e);
     updateTextAreaWidth();
 

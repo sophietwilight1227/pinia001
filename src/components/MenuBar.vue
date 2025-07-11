@@ -17,10 +17,13 @@ import ButtonWithIcon from "./ButtonWithIcon.vue";
 import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
 import { useDialogStore } from "@/stores/dialog";
+import ToggleButton from "./ToggleButton.vue";
 
 const menuButtonInfoList = [{id: "file", name: "ファイル"},
-                            {id: "image", name: "画像"},
-                            {id: "setting", name: "設定"}]
+                            {id: "image", name: "元画像"},
+                            {id: "setting", name: "設定"},
+                            {id: "export_image", name: "画像出力"},
+                            {id: "export_movie", name: "動画出力"}]
 const menuButtons: any = ref(null);
 
 const mainCanvasStore = useMainCanvasStore();
@@ -100,11 +103,14 @@ const onClickOpenLocalText = ():void => {
 const openLocalText = (e: any):void => {
     if(inputLocalTextButton.value != null){
         const file = inputLocalTextButton.value.files[0];
+        if(!isValidFileType(file.name, ["mlt"])){
+            return;
+        }
         if (file) {
             const reader = new FileReader();
 
             reader.onload = (e) => {
-                const text: string | ArrayBuffer | null = e.target!.result;
+                //const text: string | ArrayBuffer | null = e.target!.result;
                 if(e.target!.result != null){
                     const text: string =  e.target!.result.toString();
                     mainCanvasStore.readMLT(inputLocalTextButton.value.files[0].name, text);
@@ -132,9 +138,9 @@ const writeMLT = async () => {
         suggestedName: textContent.fileName,
         types: [
             {
-            description: "Text Files",
+            description: "MLT ファイル　",
             accept: {
-                "text/plain": [".txt"],
+                "text/plain": [".mlt"],
             },
             },
         ],
@@ -159,6 +165,9 @@ const decodeNumericEntity = (str: string) => {
 const openAaList = (e: any):void => {
     if(inputAaListButton.value != null){
         const file = inputAaListButton.value.files[0];
+        if(!isValidFileType(file.name, ["txt"])){
+            return;
+        }
         if (file) {
             const reader = new FileReader();
 
@@ -219,6 +228,22 @@ const writeAaListAsJson = async () => {
     const handle = await (window as any).showSaveFilePicker(saveFileOptions);
     await writeFile(handle, JSON.stringify(list));
 }
+const isValidFileType = (fileName: string, allowedFiletype: Array<string>): boolean => {
+    const filetype:string | undefined = fileName.split('.').pop();
+    if(filetype == null){
+        dialogStore.error("拡張子を持たないファイルです。読み込みに失敗しました");
+        return false;
+    }else{
+        const fileExtension = filetype.toLowerCase();
+        if(allowedFiletype.includes(fileExtension)){
+            return true;
+        }else{
+            dialogStore.error("不正な拡張子です。読み込みに失敗しました");
+            return false;
+        }
+    }
+    return false;
+}
 
 const changePictureViewPosition = (e: any) => {
     layoutStore.setPicturePosition(e.target.value == "left");
@@ -226,6 +251,28 @@ const changePictureViewPosition = (e: any) => {
 
 const changeColorScheme = (e: any) => {
     colorStore.changeColorScheme(e.target.value);
+}
+
+const setMovieMode = (value: boolean):void => {
+    mainCanvasStore.setMovieMode(value);
+}
+const incrementMovie = (): void => {
+    mainCanvasStore.setMovieIndex(mainCanvasStore.currentMoviePosition + 1);
+}
+const decrementMovie = (): void => {
+    mainCanvasStore.setMovieIndex(mainCanvasStore.currentMoviePosition - 1);
+}
+const getMovieMaxIndex = ():number => {
+    const currentFile = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition];
+    if(currentFile != null){
+        const currentAaPosition: number = currentFile.currentPosition;
+        return mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].aaList[currentAaPosition].editLogs.length;
+    }else{
+        return 0;
+    }
+}   
+const onChangeMovieIndexRange = (e: any) => {
+    mainCanvasStore.setMovieIndex(e.target.value);
 }
 
 const openCredit = async () => {
@@ -248,11 +295,11 @@ const openCredit = async () => {
             v-on:click="changeMenu(data.id)"/>
     </div>
     <div v-show="visibleList.get('file')" class="hasSubMenu">
-        <ButtonWithIcon :value="'新規'">
+        <!--ButtonWithIcon :value="'新規'">
             <IconBase>
                 <IconFile/>
             </IconBase>
-        </ButtonWithIcon>
+        </ButtonWithIcon-->
         <ButtonWithIcon :value="'開く'" v-on:click="onClickOpenLocalText">
             <IconBase>
                 <IconFolder/>
@@ -311,8 +358,24 @@ const openCredit = async () => {
             <button v-on:click="showCredit">[表示]</button>            
         </div>
     </div>
+    <div v-show="visibleList.get('export_image')" class="hasSubMenu">
+        <div>編集エリアのAAを画像出力するための設定など</div>
+    </div>
+    <div v-show="visibleList.get('export_movie')" class="hasSubMenu">
+        <div>動画モード</div>
+        <ToggleButton v-on:click="setMovieMode"/>        
+        <div v-show="mainCanvasStore.isMovieMode">
+            <button v-on:click="decrementMovie">＜</button>
+            <span>{{ mainCanvasStore.currentMoviePosition }}</span>
+            <button v-on:click="incrementMovie">＞</button>
+            <input type="range" 
+                :min="0" 
+                :max="getMovieMaxIndex()" 
+                v-on:input="onChangeMovieIndexRange"
+                v-model="mainCanvasStore.currentMoviePosition"/> 
+        </div>            
+    </div>   
   </div>
-
   <div class="divider"></div>
 
 
@@ -338,7 +401,6 @@ const openCredit = async () => {
     <div class="modalMenu">
         <div>info</div>
         <img src="@/assets/images/logo.png" alt="logo">
-        <div>*MIT License*</div>
         <ButtonText :value="'とじる'" v-on:click="hideCredit"/>
     </div>
   </div>
@@ -347,19 +409,19 @@ const openCredit = async () => {
         style="display: none;"
         ref="inputLocalImageButton"
         type="file"
-        accept="image/jpeg, image/jpg, image/png"
+        accept=".jpeg, .jpg, .png"
         v-on:change="openLocalFileImage">  
     <input
         style="display: none;"
         ref="inputLocalTextButton"
         type="file"
-        accept="text/mlt"
+        accept=".mlt"
         v-on:change="openLocalText">  
     <input
         style="display: none;"
         ref="inputAaListButton"
         type="file"
-        accept="text/"
+        accept=".txt"
         v-on:change="openAaList">  
     <span class="asciiArt sizeRef" ref="sizeRefElem">{{ textSizeRef }}</span>
 </template>

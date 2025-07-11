@@ -4,19 +4,21 @@ import type { EditLog, Setting } from "@/interfaces";
 
 interface State {
     allData: Array<{fileName: string,
+                    currentPosition: number,
                     aaList: Array<{
                                     aaName: string,
                                     asciiArt: string,
+                                    editLogs: Array<EditLog>,
                                 }>,
                     }>,
     asciiArt: string;
     rowIndex: string;
     maxRow: number;
     caretPosition: {start: number, end: number};
-    editLogs: Array<EditLog>;
     currentFileNamePosition: number,
-    currentAaNamePosition: number,
     setting: Setting;
+    isMovieMode: boolean;
+    currentMoviePosition: number,
 };
 
 export const useMainCanvasStore = defineStore(
@@ -29,10 +31,10 @@ export const useMainCanvasStore = defineStore(
                 rowIndex: "1",  //MainCanvasに表示する行番号の連番
                 maxRow: 1,
                 caretPosition: {start:0, end: 0},
-                editLogs: [],
                 currentFileNamePosition:0,
-                currentAaNamePosition: 0,
                 setting: {},
+                isMovieMode: false,
+                currentMoviePosition: 0,
             };
         },
         getters: {
@@ -70,13 +72,13 @@ export const useMainCanvasStore = defineStore(
             initAsciiArt(): void {
                 this.asciiArt = "";
                 this.allData.splice(0);
-                this.allData.push({fileName: "new file", aaList: [{aaName: "aa", asciiArt: ""}]})
+                this.allData.push({fileName: "new file",currentPosition: 0 , aaList: [{aaName: "aa", asciiArt: "", editLogs: []}]})
             },
             editAsciiArt(aa: string, log: EditLog):void {
                 this.asciiArt = aa;
-                this.allData[this.currentFileNamePosition].aaList[this.currentAaNamePosition].asciiArt = this.asciiArt;
-                this.editLogs.push(log);
-
+                const currentPosition: number = this.allData[this.currentFileNamePosition].currentPosition;
+                this.allData[this.currentFileNamePosition].aaList[currentPosition].asciiArt = this.asciiArt;
+                this.allData[this.currentFileNamePosition].aaList[currentPosition].editLogs.push(log);
                 this.updateRowIndex(aa);
             },
             updateRowIndex(str: string): void {
@@ -160,9 +162,10 @@ export const useMainCanvasStore = defineStore(
                     return;
                 }
                 this.currentFileNamePosition = index;
+                this.selectAa(this.allData[this.currentFileNamePosition].currentPosition);
             },
-            addFile(fileName: string, aaList: Array<{aaName: string, asciiArt: string}>):void {
-                this.allData.push({fileName: fileName, aaList: aaList});
+            addFile(fileName: string, aaList: Array<{aaName: string, asciiArt: string, editLogs: Array<EditLog>}>):void {
+                this.allData.push({fileName: fileName,currentPosition: 0 , aaList: aaList});
             },
             moveFile(indexFrom: number, indexTo: number): void {
                 const elem = this.allData[indexFrom];
@@ -179,14 +182,15 @@ export const useMainCanvasStore = defineStore(
                 if(index == null){
                     return;
                 }
-                this.currentAaNamePosition = index;
+                this.allData[this.currentFileNamePosition].currentPosition = index;
                 this.asciiArt = this.allData[this.currentFileNamePosition].aaList[index].asciiArt;
             },
             addAa(aaName: string, asciiArt: string): void {
-                this.allData[this.currentFileNamePosition].aaList.push({aaName: aaName, asciiArt: asciiArt});
+                this.allData[this.currentFileNamePosition].aaList.push({aaName: aaName, asciiArt: asciiArt, editLogs: []});
             },
             deleteAa(): void {
-                this.allData[this.currentFileNamePosition].aaList.splice(this.currentAaNamePosition, 1);
+                const currentPosition: number = this.allData[this.currentFileNamePosition].currentPosition;
+                this.allData[this.currentFileNamePosition].aaList.splice(currentPosition, 1);
             },
             moveAa(indexFrom: number, indexTo: number): void {
                 const elem = this.allData[this.currentFileNamePosition].aaList[indexFrom];
@@ -194,15 +198,16 @@ export const useMainCanvasStore = defineStore(
                 this.allData[this.currentFileNamePosition].aaList.splice(indexTo,0, elem);
             },
             renameAa(newName: string): void {
-                this.allData[this.currentFileNamePosition].aaList[this.currentAaNamePosition].aaName = newName;
+                const currentPosition: number = this.allData[this.currentFileNamePosition].currentPosition;
+                this.allData[this.currentFileNamePosition].aaList[currentPosition].aaName = newName;
             },
             readMLT(filename: string, text: string): void {
                 const lst: Array<string> = text.split("[SPLIT]");
-                const listAa: Array<{aaName: string, asciiArt: string}> = [];
+                const listAa: Array<{aaName: string, asciiArt: string, editLogs: Array<EditLog>}> = [];
                 for(let i=0; i < lst.length; i++){
-                    listAa.push({aaName: i.toString(), asciiArt: lst[i]})
+                    listAa.push({aaName: i.toString(), asciiArt: lst[i], editLogs: []})
                 }
-                this.allData.push({fileName: filename, aaList: listAa});
+                this.allData.push({fileName: filename,currentPosition: 0 , aaList: listAa});
                 
             },
             writeMLT(): {fileName: string, asciiArt: string} {
@@ -213,6 +218,27 @@ export const useMainCanvasStore = defineStore(
                     text += list[i].asciiArt;
                 }
                 return {fileName: this.allData[this.currentFileNamePosition].fileName, asciiArt: text};
+            },
+            setMovieMode(value: boolean): void {
+                this.isMovieMode = value;
+            },
+            setMovieIndex(index: number): void {
+                const currentAaIndex: number = this.allData[this.currentFileNamePosition].currentPosition;
+                const currentLog: Array<EditLog> = this.allData[this.currentFileNamePosition].aaList[currentAaIndex].editLogs;
+                if(index < currentLog.length && index >= 0){
+                    this.currentMoviePosition = index;
+                    this.setAsciiArtFromLogAt(index);
+                }
+            },
+            setAsciiArtFromLogAt(index: number): void {
+                const currentAaIndex: number = this.allData[this.currentFileNamePosition].currentPosition;
+                const currentLog: Array<EditLog> = this.allData[this.currentFileNamePosition].aaList[currentAaIndex].editLogs;
+                if(index < currentLog.length && index >= 0){
+                    const aa = currentLog[index].value
+                    if(aa != null){
+                        this.asciiArt = aa;
+                    }
+                }
             }
         },        
     }
