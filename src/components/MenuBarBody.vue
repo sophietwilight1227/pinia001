@@ -9,6 +9,7 @@ import MenuBarPictureView from './MenuBarPictureView.vue';
 import MenuBarSetting from './MenuBarSetting.vue';
 import MenuBarExportImage from './MenuBarExportImage.vue';
 import MenuBarExportMovie from './MenuBarExportMovie.vue';
+import MenuBarEdit from './MenuBarEdit.vue';
 
 const colorStore = useColorStore();
 const menuButtons: any = ref(null);
@@ -53,6 +54,7 @@ const changeMenu = (id: string): void => {
                 v-on:click="changeMenu(data.id)"/>
         </div>
         <MenuBarFiles v-show="visibleList.get('file')"/>
+        <MenuBarEdit v-show="visibleList.get('edit')"/>
         <MenuBarPictureView v-show="visibleList.get('image')"/>
         <MenuBarSetting v-show="visibleList.get('setting')"/>
         <MenuBarExportImage v-show="visibleList.get('export_image')"/>
