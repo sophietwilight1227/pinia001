@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import constLayout from "@/consts/constLayout";
 import MenuBar from "./components/MenuBar.vue";
+import MenuBarBody from "./components/MenuBarBody.vue";
 import FilesTab from "./components/FilesTab.vue";
 import MainCanvas from './components/MainCanvas.vue'
 import CharctorPalette from './components/CharactorPalette.vue'
@@ -9,12 +10,13 @@ import PanelContainer from './components/PanelContainer.vue'
 import PanelDivider from './components/PanelDivider.vue'
 import EditablePreview from "./components/EditablePreview.vue";
 import InfoBar from "./components/InfoBar.vue";
-import Dialog from "./components/Dialog.vue";
+import Dialog from "./components/DialogConfirm.vue";
 
 import { useLayoutStore } from "@/stores/layout";
 import { onMounted, ref, type Ref } from "vue";
 import { useColorStore } from "./stores/color";
 import { useDialogStore } from "./stores/dialog";
+
   const layoutStore = useLayoutStore();
   layoutStore.initLayout();
 
@@ -40,7 +42,7 @@ import { useDialogStore } from "./stores/dialog";
 <template>
   <main>
     <div class="main">
-      <MenuBar/>
+      <MenuBarBody/>
       <div class="container">
           <PanelContainer :order="0" :name="'main'">
             <FilesTab/>

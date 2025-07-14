@@ -1,7 +1,7 @@
 //不使用
 
 import { createApp } from "vue";
-import Dialog from "@/components/Dialog.vue";
+import Dialog from "@/components/DialogConfirm.vue";
 
 /** 動的なコンポーネントの追加 */
 export function addComponentDynamically (props = {}) {

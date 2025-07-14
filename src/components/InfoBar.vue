@@ -33,6 +33,7 @@ mainCanvasStore.$subscribe((mutation, state) => {
             <span>　[dot]: </span>
             <span>{{ currentDot }}</span>
         </span>
+        <span>　[file size]　</span>
         <span>　[ここに操作の説明など]</span>
     </div>
 </template>

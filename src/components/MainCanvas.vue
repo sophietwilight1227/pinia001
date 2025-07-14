@@ -27,7 +27,6 @@ const mainCanvasFontColor: Ref<string> = ref("rgb(0, 0, 0)")
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   mainCanvasAA.value = state.asciiArt;
-  console.log(state.asciiArt);
 })
 
 const layoutStore = useLayoutStore();
@@ -205,6 +204,7 @@ const onKeyDown = async (e: KeyboardEvent) => {
                 v-on:keydown="onKeyDown"
                 v-model="mainCanvasAA"
                 ref="textAreaElem"
+                v-bind:class="{hiddenEdit: mainCanvasAsciiArtStore.isMovieMode}"
                 ></textarea>
     
     <div class="measure">
@@ -265,6 +265,9 @@ const onKeyDown = async (e: KeyboardEvent) => {
   height: v-bind(canvasSize.height);
   width: v-bind(canvasSize.width);
   color: v-bind(mainCanvasFontColor);
+}
+.hiddenEdit {
+  pointer-events: none;
 }
 
 .sizeRef100 {

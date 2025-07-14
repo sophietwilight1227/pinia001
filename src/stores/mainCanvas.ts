@@ -39,11 +39,17 @@ export const useMainCanvasStore = defineStore(
         },
         getters: {
             currentRow(): number {
+                if(this.asciiArt == null){
+                    return 0;
+                }
                 const str: string = this.asciiArt.slice(0, this.caretPosition.start);
                 const lineCount:number = str.length - str.replace(/\n/g, "").length + 1;
                 return lineCount;
             },
             halfStrCurrentRow(): string {
+                if(this.asciiArt == null){
+                    return "";
+                }
                 const str: Array<string> = this.asciiArt.slice(0, this.caretPosition.start).split(/\n/g);
                 return str[str.length - 1];
             },
@@ -181,9 +187,10 @@ export const useMainCanvasStore = defineStore(
             selectAa(index: number){
                 if(index == null){
                     return;
-                }
+                }           
                 this.allData[this.currentFileNamePosition].currentPosition = index;
                 this.asciiArt = this.allData[this.currentFileNamePosition].aaList[index].asciiArt;
+
             },
             addAa(aaName: string, asciiArt: string): void {
                 this.allData[this.currentFileNamePosition].aaList.push({aaName: aaName, asciiArt: asciiArt, editLogs: []});
@@ -201,21 +208,70 @@ export const useMainCanvasStore = defineStore(
                 const currentPosition: number = this.allData[this.currentFileNamePosition].currentPosition;
                 this.allData[this.currentFileNamePosition].aaList[currentPosition].aaName = newName;
             },
+            readText(filename: string, text: string): boolean {
+                const extension: string = filename.substring(filename.length - 3).toLowerCase();
+                switch(extension){
+                    case "mlt":
+                        this.readMLT(filename, text);
+                        return true;
+                    case "ast":
+                        this.readAST(filename, text);
+                        return true;
+                    default:
+                        return false;
+                }
+            },
             readMLT(filename: string, text: string): void {
                 const lst: Array<string> = text.split("[SPLIT]");
                 const listAa: Array<{aaName: string, asciiArt: string, editLogs: Array<EditLog>}> = [];
                 for(let i=0; i < lst.length; i++){
                     listAa.push({aaName: i.toString(), asciiArt: lst[i], editLogs: []})
                 }
-                this.allData.push({fileName: filename,currentPosition: 0 , aaList: listAa});
-                
+                this.allData.push({fileName: filename,currentPosition: 0 , aaList: listAa});    
+            },
+            readAST(filename: string, text: string){
+                const lst: Array<string> = text.split("[AA]");
+                console.log(lst);
+                const listAa: Array<{aaName: string, asciiArt: string, editLogs: Array<EditLog>}> = [];
+                for(let i=0; i < lst.length; i++){
+                    const nameStart = lst[i].indexOf("[");
+                    const nameEnd = lst[i].indexOf("]");
+                    if(nameStart < nameEnd && nameEnd < lst[i].length){
+                        const name = lst[i].substring(nameStart, nameEnd);
+                        const aa = lst[i].substring(nameEnd + 3);
+                        listAa.push({aaName: name, asciiArt: aa, editLogs: []})
+                    }else{
+                        listAa.push({aaName: "", asciiArt: lst[i], editLogs: []})
+                    }
+                }
+                this.allData.push({fileName: filename,currentPosition: 0 , aaList: listAa});   
+            },
+            writeText(): {fileName: string, asciiArt: string} {
+                const list: Array<{aaName: string, asciiArt: string}> = this.allData[this.currentFileNamePosition].aaList;
+                const currentPosition: number = this.allData[this.currentFileNamePosition].currentPosition;
+                const aaName = list[currentPosition].aaName;
+                const text: string = list[currentPosition].asciiArt;
+                const fileName: string = this.allData[this.currentFileNamePosition].fileName;
+                return {fileName: fileName + "_" + aaName, asciiArt: text};
             },
             writeMLT(): {fileName: string, asciiArt: string} {
                 const list: Array<{aaName: string, asciiArt: string}> = this.allData[this.currentFileNamePosition].aaList;
                 let text: string = list[0].asciiArt;
                 for(let i=1; i < list.length; i++){
-                    text += "[SPLIT]";
+                    text += "\n[SPLIT]\n";
                     text += list[i].asciiArt;
+                }
+                return {fileName: this.allData[this.currentFileNamePosition].fileName, asciiArt: text};
+            },
+            writeAST(): {fileName: string, asciiArt: string} {
+                const list: Array<{aaName: string, asciiArt: string}> = this.allData[this.currentFileNamePosition].aaList;
+                let text: string = "";
+                for(let i=0; i < list.length; i++){
+                    text += "[AA][";
+                    text += list[i].aaName;
+                    text += "]\n";
+                    text += list[i].asciiArt;
+                    text += "\n";
                 }
                 return {fileName: this.allData[this.currentFileNamePosition].fileName, asciiArt: text};
             },

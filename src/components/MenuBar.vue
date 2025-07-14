@@ -1,4 +1,7 @@
 <script setup lang="ts">
+
+//不使用
+
 import { nextTick, ref, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type Ref } from "vue";
 import PictureEditer from "./PictureEditer.vue";
 import IconFile from "@/assets/icons/icon_file.vue";
@@ -295,11 +298,6 @@ const openCredit = async () => {
             v-on:click="changeMenu(data.id)"/>
     </div>
     <div v-show="visibleList.get('file')" class="hasSubMenu">
-        <!--ButtonWithIcon :value="'新規'">
-            <IconBase>
-                <IconFile/>
-            </IconBase>
-        </ButtonWithIcon-->
         <ButtonWithIcon :value="'開く'" v-on:click="onClickOpenLocalText">
             <IconBase>
                 <IconFolder/>
