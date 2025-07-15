@@ -8,8 +8,9 @@ import IconBase from '@/assets/icons/icon_base.vue';
 import IconCamera from '@/assets/icons/icon_camera.vue';
 import IconDownload from '@/assets/icons/icon_download.vue';
 import IconImage from '@/assets/icons/icon_image.vue';
+import { useDialogStore } from '@/stores/dialog';
 
-
+const dialogStore = useDialogStore();
 const mainCanvasStore = useMainCanvasStore();
 const layoutStore = useLayoutStore();
 const canvasElem: any = ref(null);
@@ -48,6 +49,7 @@ const render = async () => {
         if(blob != null){
             previewSource.value = dataURL;
             aElem.value.href = window.URL.createObjectURL(blob);
+            dialogStore.info("ダウンロードボタンのリンク先から保存してください")
         }
         sizeRefElem.value.style.display = "none";
     })

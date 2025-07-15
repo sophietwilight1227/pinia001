@@ -7,7 +7,10 @@ import IconBase from '@/assets/icons/icon_base.vue';
 import IconDownload from '@/assets/icons/icon_download.vue';
 import IconProjector from '@/assets/icons/icon_projector.vue';
 import ButtonWithIcon from './ButtonWithIcon.vue';
+import { useDialogStore } from '@/stores/dialog';
 
+
+const dialogStore = useDialogStore();
 const mainCanvasStore = useMainCanvasStore();
 const sizeRefAA: Ref<string> = ref("");
 const canvasElem: any = ref(null);
@@ -123,6 +126,7 @@ const renderLogs = async () => {
         //window.open(URL.createObjectURL(blob));
         aElem.value.href = window.URL.createObjectURL(blob);
         sizeRefElem.value.style.display = "none";
+        dialogStore.info("ダウンロードボタンのリンク先から保存してください")
     });
     gif.render();
 }
