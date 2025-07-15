@@ -3,6 +3,10 @@ import { useMainCanvasStore } from '@/stores/mainCanvas';
 import ToggleButton from './ToggleButton.vue';
 import { nextTick, ref, type Ref } from 'vue';
 import GIF from 'gif.js';
+import IconBase from '@/assets/icons/icon_base.vue';
+import IconDownload from '@/assets/icons/icon_download.vue';
+import IconProjector from '@/assets/icons/icon_projector.vue';
+import ButtonWithIcon from './ButtonWithIcon.vue';
 
 const mainCanvasStore = useMainCanvasStore();
 const sizeRefAA: Ref<string> = ref("");
@@ -34,9 +38,31 @@ const getMovieMaxIndex = ():number => {
 const onChangeMovieIndexRange = (e: any) => {
     mainCanvasStore.setMovieIndex(e.target.value);
 }
+const resizeImage = async () => {
+    const aalist = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].aaList;
+    const current = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].currentPosition;
+    const editLogs = aalist[current].editLogs;
+
+    let height: number = 0;
+    let width: number = 0;
+
+    for(let i=0; i < editLogs.length; i++){
+        const aa = editLogs[i].value;
+        if(aa != null){
+            sizeRefAA.value = aa;
+            await nextTick();    
+            height = Math.max(height, sizeRefElem.value.scrollHeight);
+            width = Math.max(width, sizeRefElem.value.scrollWidth);
+        }
+    }
+
+    canvasHeight.value = height;
+    canvasWidth.value = width;
+    await nextTick();
+}
 
 const renderLogs = async () => {
-    //canvas の大きさの設定から
+    resizeImage();
     const ctx = canvasElem.value.getContext('2d', { willReadFrequently: true });
     ctx.clearRect(0, 0, canvasElem.value.width, canvasElem.value.height);
     ctx.font = '16px Saitamaar';
@@ -79,7 +105,7 @@ const renderLogs = async () => {
             
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, canvasWidth.value, canvasHeight.value);
-            ctx.fillStyle = 'blue';
+            ctx.fillStyle = 'black';
             for(let j = 0; j < textArray.length; j++){
                 ctx.fillText(textArray[j], 0,  (j + 0.5) * lineHeight);
             }       
@@ -100,7 +126,9 @@ const renderLogs = async () => {
     });
     gif.render();
 }
-
+const download = () => {
+    window.open(aElem.value.href, '_blank');
+}
 
 </script>
 
@@ -108,7 +136,7 @@ const renderLogs = async () => {
     <div>
         <div>動画モード</div>
         <ToggleButton v-on:click="setMovieMode"/>        
-        <div v-show="mainCanvasStore.isMovieMode">
+        <div v-show="mainCanvasStore.isMovieMode" class="buttons">
             <button v-on:click="decrementMovie">＜</button>
             <span>{{ mainCanvasStore.currentMoviePosition }}</span>
             <button v-on:click="incrementMovie">＞</button>
@@ -117,11 +145,21 @@ const renderLogs = async () => {
                 :max="getMovieMaxIndex()" 
                 v-on:input="onChangeMovieIndexRange"
                 v-model="mainCanvasStore.currentMoviePosition"/> 
+            <div class="buttons">
+                <ButtonWithIcon :value="'動画化'" v-on:click="renderLogs">
+                    <IconBase >
+                        <IconProjector/>
+                    </IconBase>                    
+                </ButtonWithIcon>
+                <ButtonWithIcon :value="'ダウンロード'" v-on:click="download">
+                    <IconBase>
+                        <IconDownload/>
+                    </IconBase>
+                </ButtonWithIcon>
+                <a ref="aElem"></a>            
+            </div>                
         </div>    
-        <div class="buttons">
-            <button v-on:click="renderLogs">動画</button>
-            <a ref="aElem">ダウンロード</a>            
-        </div>
+
         <div class="img">
             <canvas class="canvas" ref="canvasElem"></canvas>
             <div class="asciiArt ref" ref="sizeRefElem">{{ sizeRefAA }}</div>
@@ -158,6 +196,7 @@ const renderLogs = async () => {
     }
     .buttons {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        align-items: center;
     }
 </style>
