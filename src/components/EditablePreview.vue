@@ -46,7 +46,6 @@ const viewScrollLeft = ():number => {
         width = viewElem.value.scrollLeft;
       }
     }
-    console.log(width, "scroll");
     return width;
 }
 const onScroll = (e:any): void => {

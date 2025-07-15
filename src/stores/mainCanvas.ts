@@ -11,10 +11,12 @@ interface State {
                                     editLogs: Array<EditLog>,
                                 }>,
                     }>,
-    asciiArt: string;
-    rowIndex: string;
-    maxRow: number;
-    caretPosition: {start: number, end: number};
+    asciiArt: string,
+    rowIndex: string,
+    maxRow: number,
+    caretPosition: {start: number, end: number},
+    isRectSelectMode: boolean,
+    rectSelectPosition: {start: {x: number, y: number}, end: {x: number, y:number}},
     currentFileNamePosition: number,
     setting: Setting;
     isMovieMode: boolean;
@@ -32,6 +34,8 @@ export const useMainCanvasStore = defineStore(
                 maxRow: 1,
                 caretPosition: {start:0, end: 0},
                 currentFileNamePosition:0,
+                isRectSelectMode: false,
+                rectSelectPosition:{start:{x: 0, y: 0}, end: {x: 0, y: 0}},
                 setting: {},
                 isMovieMode: false,
                 currentMoviePosition: 0,
@@ -162,6 +166,9 @@ export const useMainCanvasStore = defineStore(
             editCaretPosition(start: number, end: number){
                 this.caretPosition.start = start;
                 this.caretPosition.end = end;
+            },
+            setRecSelectMode(isRectSelect: boolean) {
+                this.isRectSelectMode = isRectSelect;
             },
             selectFile(index: number):void {
                 if(index == null){

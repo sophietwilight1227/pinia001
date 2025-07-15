@@ -7,10 +7,14 @@ body {
   border-bottom: 2px solid red;
   z-index: 3000;
 }
+.selected_rect {
+  position: absolute;
+  mix-blend-mode: difference;
+  background-color: blue;
+}
 .asciiArt {
   white-space: pre;
   z-index: 10;
-  background-color: transparent;
   font-size:16px;
   font-style: normal;
   font-weight: 400;
