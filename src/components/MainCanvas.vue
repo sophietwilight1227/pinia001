@@ -25,13 +25,17 @@ const mainCanvasAsciiArtStore = useMainCanvasStore();
 mainCanvasAsciiArtStore.initAsciiArt();
 const mainCanvasAA = ref("");
 const mainCanvasFontColor: Ref<string> = ref("rgb(0, 0, 0)")
+const caretPositionColor: Ref<string> = ref("transparent")
 const isDragging: Ref<boolean> = ref(false);
+const caretPosition: Ref<{top: number, left: number}> = ref({top: 0, left: 0});
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   mainCanvasAA.value = state.asciiArt;
+  updateCaretPosition(mainCanvasAsciiArtStore.asciiArt, mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);
 })
 const mainCanvasAaRef = computed(() => {
   return mainCanvasAA.value + '\u200b';//これがないとテキスト末尾の空行がうまくいかなくなる
+  //return mainCanvasAA.value.split("\n").join("↓\n") + "↓"
 })
 
 const layoutStore = useLayoutStore();
@@ -48,8 +52,18 @@ pictureViewStore.$subscribe((mutation, state) => {
     const g: number = pictureViewStore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
     const b: number = pictureViewStore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
     mainCanvasFontColor.value = `rgb(${r},${g},${b})`;
+    caretPositionColor.value = `rgb(${r},${g},${b})`;
   }
 })
+
+const initCaretPositionColor = () => {
+  if(props.isPictureView){
+    caretPositionColor.value = "black";
+  }else{
+    caretPositionColor.value = "transparent";
+  }
+}
+initCaretPositionColor();
 
 const onButtonClick = async () => {
   console.log("pushed");
@@ -145,6 +159,30 @@ const onChangeTextArea = async (e: any) => {
   }
 }
 
+const updateCaretPosition = (rawStr: string, startPos: number, endPos: number) => {
+
+  const frontStr:string = rawStr.substring(0, startPos);
+  const strs = frontStr.split("\n");
+
+  //行数
+  const lineCount:number = frontStr.length;
+  //キャレットの左側の文字列
+  //const targetStr:string = strs[strs.length-1];
+  //ドット数
+  //const dot = charSetStore.calcStrWidth(targetStr);
+  
+  mainCanvasAsciiArtStore.editCaretPosition(startPos, endPos);
+  const rowHeight: number = 18;
+  const caretStr: string = strs[strs.length-1];
+  if(caretStr == null){
+    return;
+  }
+  const left: number = charSetStore.calcStrWidth(caretStr);
+  caretPosition.value.top = (strs.length - 1) * rowHeight;
+  caretPosition.value.left = left;
+  console.log(caretPosition.value);
+}
+
 
 const onSelectionChange = (e:any) => {
   if(e.target != document.activeElement){
@@ -154,17 +192,8 @@ const onSelectionChange = (e:any) => {
   const rawStr:string = e.target.value;
   const endPos = e.target.selectionEnd;
   const startPos:number = e.target.selectionStart;
-  const frontStr:string = rawStr.substring(0, startPos);
-  const strs = frontStr.split("\n");
 
-  //行数
-  const lineCount:number = frontStr.length;
-  //キャレットの左側の文字列
-  const targetStr:string = strs[strs.length-1];
-  //ドット数
-  const dot = charSetStore.calcStrWidth(targetStr);
-  
-  mainCanvasAsciiArtStore.editCaretPosition(startPos, endPos);
+  updateCaretPosition(rawStr, startPos, endPos);
 
   if(mainCanvasAsciiArtStore.isRectSelectMode){
   //選択解除
@@ -270,6 +299,7 @@ const onKeyDown = async (e: KeyboardEvent) => {
 
 <template>
   <div class="base">  
+    <div class="caretPosition asciiArt">|</div>
     <div class="measureAA asciiArt" ref="textAreRefElem">{{ mainCanvasAaRef }}</div>
     <div class="selectRect asciiArt" ref="rectSelectContainerElem"></div>
     <textarea class="asciiArt textarea" 
@@ -356,5 +386,11 @@ const onKeyDown = async (e: KeyboardEvent) => {
   width: 100%;
   height: 100%;
   background-color: transparent;
+}
+.caretPosition {
+  position: absolute;
+  top: v-bind(caretPosition.top + 'px');
+  left: v-bind(caretPosition.left + 'px');
+  color: v-bind(caretPositionColor);
 }
 </style>

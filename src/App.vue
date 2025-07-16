@@ -51,8 +51,8 @@ import { useDialogStore } from "./stores/dialog";
           <PanelContainer :order="1" :name="'main'">
             <EditablePreview>
               <div class="container" v-show="isLeftPictureView">
-                <MainCanvas :is-picture-view="true"/>
-                <PictureView/>                
+                <PictureView/>             
+                <MainCanvas :is-picture-view="true"/> 
               </div>
               <MainCanvas v-show="!isLeftPictureView" :is-picture-view="false"/>
             </EditablePreview>
@@ -62,8 +62,8 @@ import { useDialogStore } from "./stores/dialog";
             <EditablePreview>
               <MainCanvas v-show="isLeftPictureView" :is-picture-view="false"/>
               <div class="container" v-show="!isLeftPictureView" >
-                <MainCanvas :is-picture-view="true"/>
-                <PictureView/>                
+                <PictureView/> 
+                <MainCanvas :is-picture-view="true"/>      
               </div>
             </EditablePreview>
           </PanelContainer>

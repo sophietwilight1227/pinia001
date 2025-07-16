@@ -89,7 +89,7 @@ const layoutStore = useLayoutStore();
   top: v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_Y.id));
   background: url(v-bind(imgSource));
   position: absolute;
-  z-index: 1;
+  z-index: 0;
   opacity: v-bind(cssParams.get(constPictureView.PARAM_LIST.ALPHA.id));
   rotate: v-bind(cssParams.get(constPictureView.PARAM_LIST.ROTE_ANGLE.id));
   transform: scale(v-bind(cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id)));

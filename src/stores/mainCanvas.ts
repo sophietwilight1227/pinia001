@@ -122,7 +122,6 @@ export const useMainCanvasStore = defineStore(
             },
             changeDot(delta: number): void{
                 const currentRowInfo:{text: string, width: number} = this.getLastSpaceWidth();
-                console.log(currentRowInfo.width);
                 const targetWidth: number = currentRowInfo.width + delta;
                 let res: number = targetWidth % 11
                 let countFull: number = (targetWidth - res) / 11; //全角スペースの個数
@@ -154,7 +153,116 @@ export const useMainCanvasStore = defineStore(
                 this.caretPosition.start = pos;
                 this.caretPosition.end = pos;
 
-                this.asciiArt = (currentRowInfo.text + space + latterText);
+                //this.asciiArt = (currentRowInfo.text + space + latterText);
+                const aa = currentRowInfo.text + space + latterText;
+                const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
+                this.editAsciiArt(aa, log);
+                console.log(aa, "dot");
+            },
+            addSpaceToEndOfLine(){
+                const text: Array<string> = this.asciiArt.split("\n");
+                let aa: string = "";
+                for(let i=0; i < 40; i++){
+                    if(i < text.length){
+                        aa += text[i];
+                    }
+                    aa += "　".repeat(40);
+                    aa += "\n";
+                }
+                const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
+                this.editAsciiArt(aa, log);
+            },
+            deleteSpaceAtEnd(){
+                const text: Array<string> = this.asciiArt.split("\n");
+                let aa: string = "";
+                for(let i=0; i < text.length; i++){
+                    aa += text[i].trimEnd();
+                    aa += "\n";
+                }
+                const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
+                this.editAsciiArt(aa, log);
+            },
+            deleteEmptyLine(){
+                const text: Array<string> = this.asciiArt.split("\n");
+                let aa: string = "";
+                for(let i=0; i < text.length; i++){
+                    if(text[i].trim() != ""){
+                        aa += text[i];
+                        aa += "\n";
+                    }
+                }
+                const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
+                this.editAsciiArt(aa, log);
+            },
+            addSpaceToLineHead(){
+                const text: Array<string> = this.asciiArt.split("\n");
+                let aa: string = "";
+                for(let i=0; i < text.length; i++){
+                    aa += "　";
+                    aa += text[i];
+                    if(i != text.length - 1){
+                        aa += "\n";
+                    }
+                }
+                const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
+                this.editAsciiArt(aa, log);
+            },
+            deleteSpaceFromLineHead(){
+                const text: Array<string> = this.asciiArt.split("\n");
+                let aa: string = "";
+                for(let i=0; i < text.length; i++){
+                    const line: string = text[i];
+                    if(line.charAt(0) == "　"){
+                        aa += line.slice(1, line.length);
+                    }else{
+                        aa += text[i];
+                    }
+                    if(i != text.length - 1){
+                        aa += "\n";
+                    }
+                }
+                const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
+                this.editAsciiArt(aa, log);
+            },
+            addSpaceToLineEndToArrange(widthList: Array<number>){
+                const aa: Array<string> = this.asciiArt.split("\n"); 
+                const aryMax = (a: number,b: number) => {return Math.max(a,b)};
+                const maxWidth = widthList.reduce(aryMax);
+
+                const widthHalf:number = 5; //半角スペースの幅
+                const widthFull: number = 11;   //全角スペースの幅
+                for(let i=0; i < widthList.length; i++){
+                    const widthDiff:number = maxWidth - widthList[i];
+                    let widthRes: number = widthDiff % 11;
+                    let countHalf = 10; //全角1個　=> 半角2個 の変換で1dotずれるので、最大10回ずらせばすべてカバーできる
+                    let countFull = 10 + (widthDiff - widthRes) / 11;
+                    if(widthRes >= 5){
+                        widthRes -= 5;
+                        countHalf ++;
+                    }
+                    countHalf -= widthRes * 2;
+                    countFull += widthRes
+                    aa[i] += "　".repeat(countFull - countHalf)
+                    aa[i] += "　 ".repeat(countHalf);
+                }
+                const aaPlusSpace = aa.join("|\n") + "|";
+                const log: EditLog = {value: aaPlusSpace, start: 0, end: aaPlusSpace.length - 1};
+                this.editAsciiArt(aaPlusSpace, log);
+            },
+            deleteLastCharFromAllLine(){
+                const text: Array<string> = this.asciiArt.split("\n");
+                let aa: string = "";
+                for(let i=0; i < text.length; i++){
+                    const line: string = text[i];
+                    if(line.length > 0){
+                        aa += line.slice(0, line.length - 1);
+                    }
+                    if(i != text.length - 1){
+                        aa += "\n";
+                    }
+                }
+                const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
+                this.editAsciiArt(aa, log);
             },
             insertCharToAsciiArt(char: string){
                 const strStart = this.asciiArt.slice(0, this.caretPosition.start);

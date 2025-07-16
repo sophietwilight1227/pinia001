@@ -10,6 +10,8 @@ import { useCharSetStore } from '@/stores/charSet';
 import { useLayoutStore } from '@/stores/layout';
 import DialogSelect from './DialogSelect.vue';
 import ButtonText from './ButtonText.vue';
+import IconSetting from '@/assets/icons/icon_setting.vue';
+import IconInfo from '@/assets/icons/icon_info.vue';
 
 const colorStore = useColorStore();
 const charSetStore = useCharSetStore();
@@ -19,6 +21,7 @@ const inputAaListButton: any = ref(null);
 const textSizeRef: any = ref("");
 const sizeRefElem: any = ref(null);
 const visibleCredit: Ref<boolean> = ref(false);
+const visibleSetting:  Ref<boolean> = ref(false);
 
 const onClickReadAaList = ():void => {
     inputAaListButton.value.click();
@@ -128,6 +131,12 @@ const showCredit = ():void => {
 const hideCredit = ():void => {
     visibleCredit.value = false;
 }
+const showSetting = () => {
+    visibleSetting.value = true;
+}
+const hideSetting = () => {
+    visibleSetting.value = false;
+}
 </script>
 
 <template>
@@ -142,34 +151,16 @@ const hideCredit = ():void => {
                 <IconAalist/>
             </IconBase>
         </ButtonWithIcon>
-        <div>
-            <div>[画像プレビュー位置]</div>
-            <select name="isLeftPicture" v-on:change="changePictureViewPosition">
-                <option value="left">左</option>
-                <option value="right">右</option>
-            </select>
-        </div>
-        <div>
-             <div>[グリッドの表示]</div>
-            <select name="hasGrid">
-                <option value="true">する</option>
-                <option value="false">しない</option>
-            </select>           
-        </div>
-        <div>
-            <div>[配色]</div>
-            <select name="colorScheme" v-on:change="changeColorScheme">
-                <option value="test">テスト</option>
-                <option value="light">ライト</option>
-                <option value="dark">ダーク</option>
-                <option value="classic">クラシック</option>
-            </select>
-        </div>
-        <div>
-            <div>[info3]</div>
-            <button v-on:click="showCredit">[表示]</button>            
-        </div>
-
+        <ButtonWithIcon :value="'設定'" v-on:click="showSetting">
+            <IconBase>
+                <IconSetting/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'情報'" v-on:click="showCredit">
+            <IconBase>
+                <IconInfo/>
+            </IconBase>
+        </ButtonWithIcon>
 
         <input
             style="display: none;"
@@ -177,6 +168,34 @@ const hideCredit = ():void => {
             type="file"
             accept=".txt"
             v-on:change="openAaList">   
+        
+        <DialogSelect v-show="visibleSetting">
+            <div>
+                <div>[画像プレビュー位置]</div>
+                <select name="isLeftPicture" v-on:change="changePictureViewPosition">
+                    <option value="left">左</option>
+                    <option value="right">右</option>
+                </select>
+            </div>
+            <div>
+                <div>[グリッドの表示]</div>
+                <select name="hasGrid">
+                    <option value="true">する</option>
+                    <option value="false">しない</option>
+                </select>           
+            </div>
+            <div>
+                <div>[配色]</div>
+                <select name="colorScheme" v-on:change="changeColorScheme">
+                    <option value="test">テスト</option>
+                    <option value="light">ライト</option>
+                    <option value="dark">ダーク</option>
+                    <option value="classic">クラシック</option>
+                </select>
+            </div>
+            <ButtonText :value="'とじる'" v-on:click="hideSetting"/>
+        </DialogSelect>
+
         
         <DialogSelect v-show="visibleCredit" >
             <div>info</div>
