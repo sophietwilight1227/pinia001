@@ -16,7 +16,9 @@ interface State {
     maxRow: number,
     caretPosition: {start: number, end: number},
     isRectSelectMode: boolean,
+    isRectSelectInsertMode: boolean,
     rectSelectPosition: {start: {x: number, y: number}, end: {x: number, y:number}},
+    rectSelectTextInfo: Array<{row: number, start: number, end: number, text: string}>,
     currentFileNamePosition: number,
     setting: Setting;
     isMovieMode: boolean;
@@ -35,7 +37,9 @@ export const useMainCanvasStore = defineStore(
                 caretPosition: {start:0, end: 0},
                 currentFileNamePosition:0,
                 isRectSelectMode: false,
+                isRectSelectInsertMode: true,
                 rectSelectPosition:{start:{x: 0, y: 0}, end: {x: 0, y: 0}},
+                rectSelectTextInfo: [],
                 setting: {},
                 isMovieMode: false,
                 currentMoviePosition: 0,

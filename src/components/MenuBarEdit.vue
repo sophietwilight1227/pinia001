@@ -2,6 +2,15 @@
 import { useMainCanvasStore } from '@/stores/mainCanvas';
 import ToggleButton from './ToggleButton.vue';
 import { useCharSetStore } from '@/stores/charSet';
+import IconAddEnd from '@/assets/icons/icon_add_end.vue';
+import IconBase from '@/assets/icons/icon_base.vue';
+import ButtonWithIcon from './ButtonWithIcon.vue';
+import IconDeleteEnd from '@/assets/icons/icon_delete_end.vue';
+import IconAddHead from '@/assets/icons/icon_add_head.vue';
+import IconDeleteHead from '@/assets/icons/icon_delete_head.vue';
+import IconDeleteEmptyRow from '@/assets/icons/icon_delete_empty_row.vue';
+import IconDeleteLast from '@/assets/icons/icon_delete_last.vue';
+import IconArrangeEnd from '@/assets/icons/icon_arrange_end.vue';
 
 const charSetStore = useCharSetStore();
 const mainCanvasStore = useMainCanvasStore();
@@ -18,19 +27,66 @@ const addSpaceToEndOfLineToArrange = () => {
     }
     mainCanvasStore.addSpaceToLineEndToArrange(widthList);
 }
+const changeRectSelectType = (e: any) => {
+    switch(e.target.value){ 
+        case "insert":
+            mainCanvasStore.isRectSelectInsertMode = true;
+            break;
+        case "update":
+            mainCanvasStore.isRectSelectInsertMode = false;
+            break;
+    }   
+}
 
 </script>
 <template>
     <div class="base">
-        <div>矩形選択切り替え</div>
-        <ToggleButton v-on:click="setRectSelectMode"/>    
-        <div v-on:click="mainCanvasStore.addSpaceToEndOfLine">[空白追加]</div>    
-        <div v-on:click="mainCanvasStore.deleteSpaceAtEnd">[行末空白削除]</div>    
-        <div v-on:click="mainCanvasStore.deleteEmptyLine">[空行削除]</div>
-        <div v-on:click="mainCanvasStore.addSpaceToLineHead">[行頭空白追加]</div>
-        <div v-on:click="mainCanvasStore.deleteSpaceFromLineHead">[行頭空白削除]</div>
-        <div v-on:click="addSpaceToEndOfLineToArrange">[行末を揃える]</div>
-        <div v-on:click="mainCanvasStore.deleteLastCharFromAllLine">[行末から1文字削除]</div>
+        <div>
+            <div>矩形選択</div>
+            <ToggleButton v-on:click="setRectSelectMode"/>                
+        </div>
+        <div>
+            <div>挿入 / 上書</div>
+            <select name="rectSelectType" v-on:change="changeRectSelectType">
+                <option value="insert">挿入</option>
+                <option value="update">上書</option>
+            </select>  
+        </div>
+        <ButtonWithIcon :value="'空白追加'" v-on:click="mainCanvasStore.addSpaceToEndOfLine">
+            <IconBase>
+                <IconAddEnd/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'行末空白削除'" v-on:click="mainCanvasStore.deleteSpaceAtEnd">
+            <IconBase>
+                <IconDeleteEnd/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'行頭空白追加'" v-on:click="mainCanvasStore.addSpaceToLineHead">
+            <IconBase>
+                <IconAddHead/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'行頭空白削除'" v-on:click="mainCanvasStore.deleteSpaceFromLineHead">
+            <IconBase>
+                <IconDeleteHead/>
+            </IconBase>
+        </ButtonWithIcon>
+         <ButtonWithIcon :value="'空行削除'" v-on:click="mainCanvasStore.deleteEmptyLine">
+            <IconBase>
+                <IconDeleteEmptyRow/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'行末を揃える'" v-on:click="addSpaceToEndOfLineToArrange">
+            <IconBase>
+                <IconArrangeEnd/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'行末から1文字削除'" v-on:click="mainCanvasStore.deleteLastCharFromAllLine">
+            <IconBase>
+                <IconDeleteLast/>
+            </IconBase>
+        </ButtonWithIcon>
     </div>
 </template>
 

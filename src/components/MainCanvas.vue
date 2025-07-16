@@ -2,7 +2,7 @@
 import {ref, nextTick, computed, type Ref, reactive } from "vue";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 import { useCharSetStore } from "@/stores/charSet";
-import type { CanvasMain } from "@/interfaces";
+import type { CanvasMain, EditLog } from "@/interfaces";
 import '@/assets/fonts/Saitamaar.ttf';
 import { useLayoutStore } from "@/stores/layout";
 import { usePictureViewStore } from "@/stores/pictureView";
@@ -27,7 +27,8 @@ const mainCanvasAA = ref("");
 const mainCanvasFontColor: Ref<string> = ref("rgb(0, 0, 0)")
 const caretPositionColor: Ref<string> = ref("transparent")
 const isDragging: Ref<boolean> = ref(false);
-const caretPosition: Ref<{top: number, left: number}> = ref({top: 0, left: 0});
+const caretPosition: Ref<{top: number, left: number}> = ref({top: 0, left: 0}); //座標。CSSで使う
+const selectedRectTextInfo: Ref<Array<{row: number, start: number, end: number, text: string}>> = ref([]);
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   mainCanvasAA.value = state.asciiArt;
@@ -180,7 +181,6 @@ const updateCaretPosition = (rawStr: string, startPos: number, endPos: number) =
   const left: number = charSetStore.calcStrWidth(caretStr);
   caretPosition.value.top = (strs.length - 1) * rowHeight;
   caretPosition.value.left = left;
-  console.log(caretPosition.value);
 }
 
 
@@ -226,10 +226,10 @@ const onMouseMove = (e: MouseEvent) => {
   const rowTop: number = (topLeft.y - (topLeft.y % rowHeight) ) / rowHeight;
   const rowBottom: number = (bottomRight.y - (bottomRight.y % rowHeight) ) / rowHeight;
   let html: string = "";
-  let selectedStrInfo: Array<{start: number, end: number, text: string}> = [];
+  let selectedStrInfo: Array<{row: number, start: number, end: number, text: string}> = [];
   for(let i=rowTop; i < rowBottom; i++){
     let rowLeft:number = 0;
-    const strInfo = {start: 0, end: 0, text: ""};
+    const strInfo = {row: 0, start: 0, end: 0, text: ""};
     for(let j=0; j < aa[i].length; j++){
       const char:string = aa[i].charAt(j);
       const charWidth:number = charSetStore.calcStrWidth(char);
@@ -254,11 +254,13 @@ const onMouseMove = (e: MouseEvent) => {
       }
     }
     html += `<div class="selected_rect asciiArt" style = "height: ${rowHeight}px; width: ${rowRight - rowLeft}px; top: ${rowHeight * i}px; left: ${rowLeft}px;"></div> `;
-    strInfo.text = aa[i].slice(strInfo.start, strInfo.end);
+    strInfo.text = aa[i].slice(strInfo.start, strInfo.end + 1);
+    strInfo.row = i;
     selectedStrInfo.push(strInfo)
   }
   rectSelectContainerElem.value.innerHTML = html;
   console.log(selectedStrInfo);
+  selectedRectTextInfo.value = selectedStrInfo;
 }
 const onMouseUp = (e: MouseEvent) => {
   isDragging.value = false;
@@ -270,6 +272,92 @@ const changeDot = async (delta: number) => {
         textAreaElem.value.setSelectionRange(mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);  
         checkSpace(mainCanvasAA.value);
 }
+const copySelectedRectTextToStore = () => {
+  mainCanvasAsciiArtStore.rectSelectTextInfo = selectedRectTextInfo.value;
+}
+const deleteSelectedRectText = () => {
+
+}
+const pasteSelectedRectTextFromStore = () => {
+  const aa: Array<string> = mainCanvasAA.value.split("\n");
+  const caretRow = mainCanvasAsciiArtStore.currentRow - 1;
+  const firstText: string = mainCanvasAsciiArtStore.halfStrCurrentRow;
+  const caretPos = firstText.length;
+  const selectInfo = mainCanvasAsciiArtStore.rectSelectTextInfo;
+  const firstTextWidth: number = charSetStore.calcStrWidth(firstText);
+  const isInsert: boolean = mainCanvasAsciiArtStore.isRectSelectInsertMode;
+  aa[caretRow] = pasteTextLine(aa[caretRow], firstTextWidth, selectInfo[0].text, isInsert);
+  for(let i = 1; i < selectInfo.length; i++){
+    if(caretRow + i < aa.length){
+      aa[caretRow + i] = pasteTextLine(aa[caretRow + i], firstTextWidth,selectInfo[i].text , isInsert)
+      console.log(aa[caretRow + i]);
+    }else{
+      const addText: string = pasteTextLine("", firstTextWidth,selectInfo[i].text , isInsert);
+      aa.push(addText);
+      console.log(addText, "push");
+    }
+  }
+  console.log(aa);
+  const addedAA: string = aa.join("\n");
+  const log: EditLog = {value: addedAA, start: 0, end: addedAA.length - 1};
+  mainCanvasAsciiArtStore.editAsciiArt(addedAA, log);
+}
+//leftPos は実際に測定した長さ
+const pasteTextLine = (target: string, leftPos: number, text: string, isInsert: boolean): string => {
+  const targetWidth: number = charSetStore.calcStrWidth(target);
+  const textWidth: number =  charSetStore.calcStrWidth(text);
+  if(isInsert){ //挿入
+    if(targetWidth < leftPos){
+      return target + addSpace(targetWidth, leftPos) + text;
+    }else{
+      const startIndex:number = getStartIndex(target, leftPos);
+      return target.slice(0, startIndex) + text + target.slice(startIndex + 1, target.length);
+    }
+  }else{  //上書き
+    if(targetWidth < leftPos){  //空白の追加が必要である場合
+      return target + addSpace(targetWidth, leftPos) + text;
+    }else if(targetWidth < leftPos + textWidth){  //元の文字列の途中から上書きが始まるが、末端ははみ出す場合
+      const startIndex:number = getStartIndex(target, leftPos);
+      return target.slice(0, startIndex) + text
+    }else{  //元の文字列の中に上書きする文字列が収まる場合
+      const startIndex:number = getStartIndex(target, leftPos);
+      const endIndex: number = getStartIndex(target, leftPos + textWidth);
+      return target.slice(0, startIndex) + text + target.slice(endIndex, target.length);
+    }    
+  }
+  return "";
+}
+const addSpace = (start: number, goal: number): string => {
+  const halfWidth: number = 5;
+  const fullWidth: number = 11;
+  const diff: number = goal - start;
+  let excess = fullWidth - diff % fullWidth
+  let fullCount: number = (diff - diff % fullWidth) / fullWidth + 1;
+  let halfCount: number = 0;
+  if(excess > halfWidth){
+    fullCount --;
+    halfCount ++;
+    excess -= halfWidth;
+  }
+  //while(excess > 0 && fullCount > halfCount + 3){
+  //  excess --;
+  //  halfCount += 2;
+  //  fullCount --;
+  //}
+  console.log(halfCount, fullCount);
+  return "　 ".repeat(halfCount) + "　".repeat(fullCount - halfCount);
+}
+
+const getStartIndex = (target: string, leftPos: number ):number => {
+  let startPos: number = charSetStore.calcStrWidth(target);
+  let index: number = target.length - 1;
+  while(startPos > leftPos && index > 0){
+    startPos -= charSetStore.calcStrWidth(target.charAt(index));
+    index --;
+  }
+  return index;
+}
+
 const onKeyDown = async (e: KeyboardEvent) => {
   if(e.altKey){
     switch(e.key){
@@ -291,6 +379,28 @@ const onKeyDown = async (e: KeyboardEvent) => {
       case 'r':
         e.preventDefault();
         return;
+      case 'C':
+      case 'c':
+        if(mainCanvasAsciiArtStore.isRectSelectMode){
+          e.preventDefault();
+          copySelectedRectTextToStore();
+        }
+        return;
+      case 'X':
+      case 'x':
+        if(mainCanvasAsciiArtStore.isRectSelectMode){
+          e.preventDefault();
+          copySelectedRectTextToStore();
+          deleteSelectedRectText();
+        }
+        return;
+      case 'V':
+      case 'v':
+        if(mainCanvasAsciiArtStore.isRectSelectMode){
+          e.preventDefault();
+          pasteSelectedRectTextFromStore();
+        }
+        return
     }
   }
 }
