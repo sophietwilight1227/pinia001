@@ -37,7 +37,9 @@ mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   mainCanvasAA.value = state.asciiArt;
   updateArrow(mainCanvasAA.value);
   updateCaretPosition(mainCanvasAsciiArtStore.asciiArt, mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);
-  textAreaElem.value.focus();
+  if(textAreRefElem.value != null && "TEXTAREA" != document.activeElement?.nodeName){
+    textAreaElem.value.focus();
+  }
 })
 const mainCanvasAaRef = computed(() => {
   return mainCanvasAA.value + '\u200b';//これがないとテキスト末尾の空行がうまくいかなくなる
@@ -163,7 +165,6 @@ const onChangeTextArea = async (e: any) => {
         if(spanElem.value != null){
           await nextTick();
           charSetStore.addCharSizeDic(char, spanElem.value.offsetWidth);
-          console.log(char, spanElem.value.offsetWidth);
         }
       }
     }
@@ -185,7 +186,6 @@ const updateArrow = async (aa: string) => {
     const rowHeight: number = 18;
     for(let i=0; i < text.length; i++){
       const rowLeft: number = await charSetStore.calcStrWidth(text[i]);
-      console.log(text[i], rowLeft)
       html += `<div class="asciiArt arrowNode" style = "top: ${rowHeight * i}px; left: ${rowLeft}px;">↓</div> `;
     }
     arrowContainerElem.value.innerHTML = html;  

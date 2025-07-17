@@ -117,6 +117,7 @@ export const useMainCanvasStore = defineStore(
                 if(aa != ""){
                     localStorage.setItem(constLocalStorage.TAG_NAME.LAST_EDIT_AA, aa);
                 }
+                console.log(aa);
             },
             updateRowIndex(str: string): void {
                 const lineCount = str.length - str.replace(/\n/g, "").length + 1
