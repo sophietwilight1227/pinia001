@@ -46,9 +46,10 @@ const writeFile = () => {
 }
 
 const selectedFileType: Ref<string> = ref("mlt");
-const optionsFileType = [{value: "txt", label: "txt"},
-                        {value: "mlt", label: "mlt"},
-                        {value: "ast", label: "ast"}]
+const optionsFileType = [{value: "txt", label: "txt: 現在編集中のAAを保存します"},
+                        {value: "mlt", label: "mlt: 現在編集中のファイルを保存します(AA見出しなし)"},
+                        {value: "ast", label: "ast: 現在編集中のファイルを保存します(AA見出しあり)"},
+                        {value: "aaa", label: "aaa: 現在編集中のファイルを保存します(編集履歴含む)"}]
 const selectedEncode: Ref<string> = ref("utf-8");
 const optionsEncode = [{value: "utf-8", label: "utf-8"},
                         {value: "shift-jis", label: "shift-jis"}]
