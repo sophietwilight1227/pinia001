@@ -19,6 +19,10 @@ const aaNameRefs: Ref<Array<typeof FileTab> | null> = ref(null);
 const dragIndex: Ref<{start: number, end: number}> = ref({start: 0, end: 0});
 const fileNameDragListRef: any = ref(null);
 const aaNameDragListRef:any = ref(null);
+const aaPreview: any = ref(null);
+const aaPreviewPosition: Ref<{top: string, left: string}> = ref({top: "0px", left: "0px"});
+const isVisiblePreview: Ref<boolean> = ref(false);
+const aaPreviewText: Ref<string> = ref("");
 
 const selectFile = async (index: number) => {
     if(fileNameRefs.value != null){
@@ -166,6 +170,15 @@ const onDragEndAaList = ():void => {
 const onDragEnterAaList = (index: number): void => {
     dragEnter(index, aaNameDragListRef);
 }
+const onMouseOver = (e: MouseEvent, index: number) => {
+    isVisiblePreview.value = true;
+    aaPreviewPosition.value.left = e.clientX + "px";
+    aaPreviewPosition.value.top = e.clientY + "px";
+    aaPreviewText.value = mainCanvasAsciiArtStore.allData[mainCanvasAsciiArtStore.currentFileNamePosition].aaList[index].asciiArt;
+}
+const onMouseOut = (e: Event) => {
+    isVisiblePreview.value = false;
+}
 </script>
 
 <template>
@@ -195,6 +208,8 @@ const onDragEnterAaList = (index: number): void => {
         <div class="namelist">
             <div v-for="(data, i) in aaNameList">
                 <DraggableListNode ref="aaNameDragListRef"
+                                    v-on:mouseover="onMouseOver($event, i)"
+                                    v-on:mouseout="onMouseOut"
                                     v-on:dragstart="onDragStartAaList(i)"
                                     v-on:dragend="onDragEndAaList"
                                     v-on:dragenter="onDragEnterAaList(i)">
@@ -212,7 +227,9 @@ const onDragEnterAaList = (index: number): void => {
             <ButtonText :value="'- 削除'" v-on:click="deleteAa"/>
         </div>          
     </div>
-
+    <div ref="aaPreview" 
+        v-show="isVisiblePreview"
+        class="aaPreview asciiArt">{{ aaPreviewText }}</div>
   </div>
 </template>
 
@@ -248,5 +265,15 @@ const onDragEnterAaList = (index: number): void => {
 .button{
     background-color: pink;
     user-select: none;
+}
+.aaPreview {
+    position: absolute;
+    border: 1px solid;
+    z-index: 3000;
+    box-shadow: 10px v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
+    top: v-bind(aaPreviewPosition.top);
+    left: v-bind(aaPreviewPosition.left);
 }
 </style>

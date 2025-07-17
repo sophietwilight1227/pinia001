@@ -45,46 +45,46 @@
             x="10.958271"
             y="-10.959447">AA□</tspan></text>
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          d="M 1.855446,28.752414 9.6710393,10.661909 18.533314,29.046983"
          id="path3" />
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          d="M 4.4780256,22.68201 H 15.465166"
          id="path4" />
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          d="m 24.054124,28.752412 7.815594,-18.090506 8.862276,18.385075"
          id="path3-7" />
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          d="M 26.676703,22.682008 H 37.663844"
          id="path4-1" />
       <rect
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          id="rect4"
          width="17.840195"
          height="17.840195"
          x="47.318184"
          y="9.3973999" />
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          d="M 1.8554482,58.178164 9.6710424,40.087659 18.533317,58.472734"
          id="path3-6" />
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          d="M 4.4780277,52.107759 H 15.465168"
          id="path4-14" />
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          d="M 24.054127,58.178162 31.86972,40.087657 40.731996,58.472731"
          id="path3-7-2" />
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          d="M 26.676706,52.107757 H 37.663847"
          id="path4-1-3" />
       <rect
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke-width:3.11752;stroke-dasharray:none;stroke-opacity:1"
          id="rect4-2"
          width="17.840195"
          height="17.840195"

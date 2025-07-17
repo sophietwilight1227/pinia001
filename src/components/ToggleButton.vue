@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue';
+import { useColorStore } from '@/stores/color';
+import constColor from '@/consts/constColor';
 
     export interface Props {
         size?: number,
@@ -10,6 +12,7 @@ import { ref, type Ref } from 'vue';
 
     const emit = defineEmits(['click']);
 
+    const colorStore = useColorStore();
     const isActive: Ref<boolean> = ref(false);
     const onClick = () => {
         isActive.value = !isActive.value;
@@ -37,7 +40,7 @@ import { ref, type Ref } from 'vue';
         border-radius: v-bind($props.size.valueOf() / 2 + "px");;           
     }
     .switch_outer.active {
-        background-color: #51E373;
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.ACCENT));
     }
     .toggle_switch {
         border-radius: 50%;

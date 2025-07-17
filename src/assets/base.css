@@ -12,6 +12,10 @@ body {
   mix-blend-mode: difference;
   background-color: blue;
 }
+.arrowNode {
+  position: absolute;
+}
+
 .asciiArt {
   white-space: pre;
   z-index: 10;

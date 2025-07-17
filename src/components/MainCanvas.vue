@@ -19,6 +19,7 @@ const textAreaElem:any = ref(null);
 const textAreRefElem: any = ref(null);
 const sizeRef100:Ref<HTMLElement | null> = ref(null);
 const rectSelectContainerElem: any = ref(null);
+const arrowContainerElem: any = ref(null);
 
 const charSetStore = useCharSetStore();
 const mainCanvasAsciiArtStore = useMainCanvasStore();
@@ -32,11 +33,11 @@ const selectedRectTextInfo: Ref<Array<{row: number, start: number, end: number, 
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   mainCanvasAA.value = state.asciiArt;
+  updateArrow(mainCanvasAA.value);
   updateCaretPosition(mainCanvasAsciiArtStore.asciiArt, mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);
 })
 const mainCanvasAaRef = computed(() => {
   return mainCanvasAA.value + '\u200b';//これがないとテキスト末尾の空行がうまくいかなくなる
-  //return mainCanvasAA.value.split("\n").join("↓\n") + "↓"
 })
 
 const layoutStore = useLayoutStore();
@@ -157,7 +158,22 @@ const onChangeTextArea = async (e: any) => {
     updateTextAreaWidth();
 
     checkSpace(str);
+    updateArrow(str);
   }
+}
+const updateArrow = (aa: string) => {
+    if(arrowContainerElem.value == null){
+      return;
+    }
+    const text: Array<string> = aa.split("\n");
+    let html: string = "";
+    const rowHeight: number = 18;
+    for(let i=0; i < text.length; i++){
+      const rowLeft: number = charSetStore.calcStrWidth(text[i]);
+      console.log(rowLeft);
+      html += `<div class="asciiArt arrowNode" style = "top: ${rowHeight * i}px; left: ${rowLeft}px;">↓</div> `;
+    }
+    arrowContainerElem.value.innerHTML = html;  
 }
 
 const updateCaretPosition = (rawStr: string, startPos: number, endPos: number) => {
@@ -411,6 +427,7 @@ const onKeyDown = async (e: KeyboardEvent) => {
   <div class="base">  
     <div class="caretPosition asciiArt">|</div>
     <div class="measureAA asciiArt" ref="textAreRefElem">{{ mainCanvasAaRef }}</div>
+    <div class="asciiArt arrow" ref="arrowContainerElem"></div>
     <div class="selectRect asciiArt" ref="rectSelectContainerElem"></div>
     <textarea class="asciiArt textarea" 
                 spellcheck=false
@@ -427,7 +444,6 @@ const onKeyDown = async (e: KeyboardEvent) => {
     
     <div class="measure">
       <span class="asciiArt" ref="spanElem">{{ text }}</span>
-      
     </div>
     <span class="sizeRef100" ref="sizeRef100">　</span>
   </div>
@@ -502,5 +518,12 @@ const onKeyDown = async (e: KeyboardEvent) => {
   top: v-bind(caretPosition.top + 'px');
   left: v-bind(caretPosition.left + 'px');
   color: v-bind(caretPositionColor);
+}
+.arrow {
+  position: absolute;
+  display: table;  
+  width: fit-content;
+  height: fit-content;
+  color: gray;
 }
 </style>
