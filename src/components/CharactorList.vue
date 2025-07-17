@@ -21,8 +21,10 @@ const menuAddChar: {left: number, top: number, show: boolean, text: string} = re
 const charList: Ref<Array<{value:string, width: number, isMouseOver: string}>> = ref([])
 const updateCharList = (newValue: Array<{value: string, width: number}>):void => {
   const newList:Array<{value:string, width: number, isMouseOver: string}> = [];
-  for(let i=0; i < newValue.length; i++){
-    newList.push({value: newValue[i].value, width: newValue[i].width, isMouseOver: "none"});
+  if(newValue !== undefined){
+    for(let i=0; i < newValue.length; i++){
+      newList.push({value: newValue[i].value, width: newValue[i].width, isMouseOver: "none"});
+    }    
   }
   charList.value = newList;
 }

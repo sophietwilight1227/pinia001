@@ -17,7 +17,7 @@ const dialogStore = useDialogStore();
 const mainCanvasStore = useMainCanvasStore();
 
 const openLocalText = async (e: any) => {
-    const text = (await openText(["mlt", "ast"]));
+    const text = (await openText(["txt" ,"mlt", "ast", "aaa"]));
     if(text.isValid){
         if(!mainCanvasStore.readText(text.filename, text.content)){
             dialogStore.error("不正な拡張子です。読み込みに失敗しました");
@@ -39,6 +39,9 @@ const writeFile = () => {
         case "ast":
             textContent = mainCanvasStore.writeAST();
             break;
+        case "aaa":
+            textContent = mainCanvasStore.writeAAA();
+            break;
     }
     writeAaTextFile(textContent.asciiArt, textContent.fileName,selectedFileType.value , selectedEncode.value);
     dialogStore.info("ダウンロードフォルダに保存しました");
@@ -51,8 +54,8 @@ const optionsFileType = [{value: "txt", label: "txt: 現在編集中のAAを保�
                         {value: "ast", label: "ast: 現在編集中のファイルを保存します(AA見出しあり)"},
                         {value: "aaa", label: "aaa: 現在編集中のファイルを保存します(編集履歴含む)"}]
 const selectedEncode: Ref<string> = ref("utf-8");
-const optionsEncode = [{value: "utf-8", label: "utf-8"},
-                        {value: "shift-jis", label: "shift-jis"}]
+const optionsEncode = [{value: "utf-8", label: "utf-8: 最近の形式"},
+                        {value: "shift-jis", label: "shift-jis: （´д｀）Edit 等で編集したい場合の形式"}]
 
 const saveFileElem: any = ref(null);
 const showModalMenu = () => {
@@ -87,7 +90,7 @@ const hideModalMenu = () => {
                     type="radio"
                     v-model="selectedFileType"
                     :value="option.value"
-                    > {{ option.label }}
+                    > {{ option.label }}<br>
                 </label>     
             </div>
             <div>
@@ -97,7 +100,7 @@ const hideModalMenu = () => {
                     type="radio"
                     v-model="selectedEncode"
                     :value="option.value"
-                    > {{ option.label }}
+                    > {{ option.label }}<br>
                 </label>   
             </div>
             <ButtonText :value="'保存'" v-on:click="writeFile"/>

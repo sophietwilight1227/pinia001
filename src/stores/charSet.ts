@@ -1,4 +1,6 @@
+import { writeAaTextFile } from "@/scripts/fileIO";
 import {defineStore} from "pinia";
+import { nextTick } from "vue";
 
 interface State {
     charSizeDic: Map<string, number>;
@@ -9,6 +11,7 @@ interface State {
                     }>
                 }>;
     currentIndex: number;
+    textSizeRef: any;
 };
 
 export const useCharSetStore = defineStore(
@@ -19,6 +22,7 @@ export const useCharSetStore = defineStore(
                 charSizeDic: new Map(),
                 charPalette: [],
                 currentIndex: 0,
+                textSizeRef: null,
             };
         },
         getters: {
@@ -85,6 +89,57 @@ export const useCharSetStore = defineStore(
                     const text:string = JSON.stringify(this.charPalette);
                     localStorage.setItem("ahoge_editor_charpalette", text);
                 }
+            },
+            readText(filename: string, text: string): boolean {
+                const extension: string = filename.substring(filename.length - 3).toLowerCase();
+                switch(extension){
+                    case "txt":
+                        this.readTXT(text);
+                        return true;
+                    case "aal":
+                        this.readAAL(text);
+                        return true;
+                    default:
+                        return false;
+                }
+            },
+            async readTXT(text: string) {
+                const rawList: Array<string> = text.split(/\n/);
+                const list: Array<{name: string, list: Array<{value: string, width: number}>}> = [];
+                for(let i=0; i < rawList.length; i++){
+                    const char: string = rawList[i].trim();
+                    if(char.slice(0,9) == "[ListName"){
+                        list.push({name: rawList[i].slice(10, char.length - 1), list: []});
+                    }else if(char == "[end]"){
+                            //何もしない
+                    }else{
+                        const widthPromis = (await this.calcCharWidth(char))
+                        let width: number = 0
+                        if(widthPromis != null){
+                            width = widthPromis.valueOf();
+                        }
+                        list[list.length - 1].list.push({value: char, width: width.valueOf()});
+                    }
+                }
+                this.readAaList(list);
+                this.saveCharPaletteLocalStorage();
+            },
+            readAAL(text: string){
+                const list = JSON.parse(text);
+                this.charPalette = list;
+                this.saveCharPaletteLocalStorage();
+            },
+            writeAAL(){
+                writeAaTextFile(JSON.stringify(this.charPalette), "aalist","aal" , "utf-8");
+            },
+            async calcCharWidth (str: string): Promise<number> {
+                this.textSizeRef.value = str;
+                await nextTick();
+                console.log(str, this.textSizeRef.offsetWidth);
+                return this.textSizeRef.offsetWidth;
+            },
+            setTextSizeRef(elem: any){
+                this.textSizeRef = elem;
             }
         },        
     }

@@ -353,15 +353,25 @@ export const useMainCanvasStore = defineStore(
             readText(filename: string, text: string): boolean {
                 const extension: string = filename.substring(filename.length - 3).toLowerCase();
                 switch(extension){
+                    case "txt":
+                        this.readTXT(filename, text);
+                        return true;
                     case "mlt":
                         this.readMLT(filename, text);
                         return true;
                     case "ast":
                         this.readAST(filename, text);
                         return true;
+                    case "aaa":
+                        this.readAAA(filename, text);
+                        return true;
                     default:
                         return false;
                 }
+            },
+            readTXT(filename: string, text: string): void {
+                const listAa: Array<{aaName: string, asciiArt: string, editLogs: Array<EditLog>}> = [{aaName: filename, asciiArt: text, editLogs: []}];
+                this.allData.push({fileName: filename,currentPosition: 0 , aaList: listAa});   
             },
             readMLT(filename: string, text: string): void {
                 const lst: Array<string> = text.split("[SPLIT]");
@@ -386,6 +396,10 @@ export const useMainCanvasStore = defineStore(
                         listAa.push({aaName: "", asciiArt: lst[i], editLogs: []})
                     }
                 }
+                this.allData.push({fileName: filename,currentPosition: 0 , aaList: listAa});   
+            },
+            readAAA(filename: string, text: string){
+                const listAa = JSON.parse(text);
                 this.allData.push({fileName: filename,currentPosition: 0 , aaList: listAa});   
             },
             writeText(): {fileName: string, asciiArt: string} {
@@ -416,6 +430,10 @@ export const useMainCanvasStore = defineStore(
                     text += "\n";
                 }
                 return {fileName: this.allData[this.currentFileNamePosition].fileName, asciiArt: text};
+            },
+            writeAAA(): {fileName: string, asciiArt: string} {
+                const list: Array<{aaName: string, asciiArt: string}> = this.allData[this.currentFileNamePosition].aaList;
+                return {fileName: this.allData[this.currentFileNamePosition].fileName, asciiArt: JSON.stringify(list)};
             },
             setMovieMode(value: boolean): void {
                 this.isMovieMode = value;

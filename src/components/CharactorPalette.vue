@@ -166,7 +166,9 @@ const onDragEnter = (index: number):void => {
 const onDragLeave = ():void => {
   
 }
-
+onMounted(() => {
+  charSetStore.setTextSizeRef(spanElem.value);
+})
 </script>
 
 <template>

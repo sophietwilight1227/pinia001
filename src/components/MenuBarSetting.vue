@@ -5,7 +5,7 @@ import IconAalist from '@/assets/icons/icon_aalist.vue';
 import constColor from '@/consts/constColor';
 import { useColorStore } from '@/stores/color';
 import { nextTick, ref, type Ref } from 'vue';
-import { isValidFileType } from '@/scripts/fileIO';
+import { isValidFileType, openText } from '@/scripts/fileIO';
 import { useCharSetStore } from '@/stores/charSet';
 import { useLayoutStore } from '@/stores/layout';
 import DialogSelect from './DialogSelect.vue';
@@ -15,7 +15,10 @@ import IconInfo from '@/assets/icons/icon_info.vue';
 import { useMainCanvasStore } from '@/stores/mainCanvas';
 import constLocalStorage from '@/consts/constLocalStorage';
 import constLayout from '@/consts/constLayout';
+import { useDialogStore } from '@/stores/dialog';
 
+
+const dialogStore = useDialogStore();
 const colorStore = useColorStore();
 const charSetStore = useCharSetStore();
 const layoutStore = useLayoutStore();
@@ -78,65 +81,22 @@ const init = () => {
 const onClickReadAaList = ():void => {
     inputAaListButton.value.click();
 }
-
-
-const openAaList = (e: any):void => {
-    if(inputAaListButton.value != null){
-        const file = inputAaListButton.value.files[0];
-        if(!isValidFileType(file.name, ["txt"])){
-            return;
+const openAaList = async (e: any) => {
+    const text = (await openText(["txt" ,"aal"]));
+    if(text.isValid){
+        if(!charSetStore.readText(text.filename, text.content)){
+            dialogStore.error("不正な拡張子です。読み込みに失敗しました");
         }
-        if (file) {
-            const reader = new FileReader();
-
-            reader.onload = async (e) => {
-                const text: string | ArrayBuffer | null = e.target!.result;
-                if(e.target!.result != null){
-                    const text: string =  decodeNumericEntity(e.target!.result.toString());
-                    const rawList: Array<string> = text.split(/\n/);
-                    const list: Array<{name: string, list: Array<{value: string, width: number}>}> = [];
-                    for(let i=0; i < rawList.length; i++){
-                        const char: string = rawList[i].trim();
-                        if(char.slice(0,9) == "[ListName"){
-                            list.push({name: rawList[i].slice(10, char.length - 1), list: []});
-                        }else if(char == "[end]"){
-                            //何もしない
-                        }else{
-                            const widthPromis = (await calcCharWidth(char))
-                            let width: number = 0
-                            if(widthPromis != null){
-                                width = widthPromis.valueOf();
-                            }
-                            
-                            list[list.length - 1].list.push({value: char, width: width.valueOf()});
-                        }
-                    }
-                    charSetStore.readAaList(list);
-                    charSetStore.saveCharPaletteLocalStorage();
-                }
-            };
-            reader.readAsText(file, "sjis");
-        }
+    }else{
+        dialogStore.error(text.errorMessage);
     }
 }
-
-//maincanvas にも同じのがある。あとで共通化する
-const decodeNumericEntity = (str: string) => {
-    var re = /&#([0-9a-fA-F]+);/g;
-    return str.replace(re, function(m) {
-      var cp = parseInt(arguments[1], 10);
-      return String.fromCodePoint(cp);
-    }); 
+const writeAaListAsJson = () => {
+    charSetStore.writeAAL();
+    dialogStore.info("ダウンロードフォルダに保存しました");
 }
 
-const calcCharWidth = async (str: string): Promise<number> => {
-    textSizeRef.value = str;
-    await nextTick();
-    return sizeRefElem.value.offsetWidth;
-}
-
-
-const writeAaListAsJson = async () => {
+const writeAaListAsJson_ = async () => {
     const list: Array<{indexName: string, charList: Array<string>}> = [];
     for(let i=0; i < charSetStore.charPalette.length; i++){
         list.push({indexName: charSetStore.charPalette[i].indexName, charList: []});
@@ -205,7 +165,7 @@ const hideSetting = () => {
 
 <template>
     <div class="base">
-        <ButtonWithIcon :value="'aalist読み込み'" v-on:click="onClickReadAaList">
+        <ButtonWithIcon :value="'aalist読み込み'" v-on:click="openAaList">
             <IconBase >
                     <IconAalist/>
                 </IconBase>
@@ -270,14 +230,12 @@ const hideSetting = () => {
         
         <DialogSelect v-show="visibleCredit" >
             <div>info</div>
-            <img src="@/assets/images/logo.png" alt="logo">
+            <img src="@/assets/images/logo.png" alt="logo"><br>
             <ButtonText :value="'とじる'" v-on:click="hideCredit"/>
         </DialogSelect>
 
         <span class="asciiArt sizeRef" ref="sizeRefElem">{{ textSizeRef }}</span>
     </div>
-
-
 </template>
 
 <style scoped>
