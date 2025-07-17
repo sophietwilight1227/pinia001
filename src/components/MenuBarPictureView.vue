@@ -8,6 +8,7 @@ import { useColorStore } from '@/stores/color';
 import DialogSelect from './DialogSelect.vue';
 import { ref, type Ref } from 'vue';
 import { usePictureViewStore } from '@/stores/pictureView';
+import IconReload from '@/assets/icons/icon_reload.vue';
 
 const pictureViewStore = usePictureViewStore();
 const colorStore = useColorStore();
@@ -48,6 +49,11 @@ const openLocalFileImage = (e: Event):void => {
         <ButtonWithIcon :value="'開く'" v-on:click="showModalMenu">
             <IconBase >
                 <IconImage/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'設定初期化'" v-on:click="pictureViewStore.resetParams">
+            <IconBase>
+                <IconReload/>
             </IconBase>
         </ButtonWithIcon>
         <PictureEditer/>

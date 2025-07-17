@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import type { EditLog, Setting } from "@/interfaces";
+import constLocalStorage from "@/consts/constLocalStorage";
 
 
 interface State {
@@ -23,6 +24,7 @@ interface State {
     setting: Setting;
     isMovieMode: boolean;
     currentMoviePosition: number,
+    holdLastEditAA: boolean
 };
 
 export const useMainCanvasStore = defineStore(
@@ -43,6 +45,7 @@ export const useMainCanvasStore = defineStore(
                 setting: {},
                 isMovieMode: false,
                 currentMoviePosition: 0,
+                holdLastEditAA: false
             };
         },
         getters: {
@@ -84,9 +87,26 @@ export const useMainCanvasStore = defineStore(
         },
         actions: {
             initAsciiArt(): void {
-                this.asciiArt = "";
-                this.allData.splice(0);
-                this.allData.push({fileName: "new file",currentPosition: 0 , aaList: [{aaName: "aa", asciiArt: "", editLogs: []}]})
+                let lastAA = null;
+                const holdLastAA = localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT);
+                if(holdLastAA == null){
+                    this.holdLastEditAA = false;
+                }else{
+                    this.holdLastEditAA = (holdLastAA == "true");
+                }
+                if(this.holdLastEditAA){
+                    lastAA = localStorage.getItem(constLocalStorage.TAG_NAME.LAST_EDIT_AA);
+                }
+                if(lastAA == null){
+                    this.asciiArt = "";
+                    this.allData.splice(0);
+                    this.allData.push({fileName: "new file",currentPosition: 0 , aaList: [{aaName: "aa", asciiArt: "", editLogs: []}]})
+                }else{
+                    this.asciiArt = lastAA;
+                    this.allData.splice(0);
+                    this.allData.push({fileName: "new file",currentPosition: 0 , aaList: [{aaName: "last edit", asciiArt: lastAA, editLogs: []}]})
+                }
+
             },
             editAsciiArt(aa: string, log: EditLog):void {
                 this.asciiArt = aa;
@@ -94,6 +114,9 @@ export const useMainCanvasStore = defineStore(
                 this.allData[this.currentFileNamePosition].aaList[currentPosition].asciiArt = this.asciiArt;
                 this.allData[this.currentFileNamePosition].aaList[currentPosition].editLogs.push(log);
                 this.updateRowIndex(aa);
+                if(aa != ""){
+                    localStorage.setItem(constLocalStorage.TAG_NAME.LAST_EDIT_AA, aa);
+                }
             },
             updateRowIndex(str: string): void {
                 const lineCount = str.length - str.replace(/\n/g, "").length + 1

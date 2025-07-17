@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import constPictureView from "@/consts/constPictureView";
+import constLocalStorage from "@/consts/constLocalStorage";
 interface State {
     imageUrl: string,
     params: Map<string, number>,
@@ -45,7 +46,18 @@ export const usePictureViewStore = defineStore(
             initParams():void {
                 this.params = new Map();
                 Object.values(constPictureView.PARAM_LIST).forEach(value => {
-                    this.params.set(value.id, value.initialValue);
+                    const savedValue = localStorage.getItem(constLocalStorage.PREFIX + value.id);
+                    console.log(savedValue);
+                    if(savedValue == null){
+                        this.params.set(value.id, value.initialValue);
+                    }else{
+                        this.params.set(value.id, Number.parseInt(savedValue));
+                    }
+                });
+            },
+            resetParams(){
+                Object.values(constPictureView.PARAM_LIST).forEach(value => {
+                    this.setValue(value.id, value.initialValue);
                 });
             },
             getValue(id: string): number {
@@ -59,6 +71,7 @@ export const usePictureViewStore = defineStore(
             },
             setValue(id: string, value: number): void {
                 this.params.set(id, value);
+                localStorage.setItem(constLocalStorage.PREFIX + id, value.toString());
             },
             getCssValue(id:string){
                 switch(id){

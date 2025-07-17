@@ -16,6 +16,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { onMounted, ref, type Ref } from "vue";
 import { useColorStore } from "./stores/color";
 import { useDialogStore } from "./stores/dialog";
+import constLocalStorage from "./consts/constLocalStorage";
 
   const layoutStore = useLayoutStore();
   layoutStore.initLayout();
@@ -25,8 +26,17 @@ import { useDialogStore } from "./stores/dialog";
   layoutStore.$subscribe((mutation, state) => {
     isLeftPictureView.value = state.isLeftPictureView;
   })
+  const init = () => {
+    const isLeft = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.IMAGE_PREVIEW_POSITION);
+    if(isLeft == null){
+      layoutStore.isLeftPictureView = true;
+    }else{
+      layoutStore.isLeftPictureView = (isLeft == "left");
+    }
+  }
 
   const colorStore = useColorStore();
+  colorStore.initScheme();
   colorStore.init();
 
   const dialogStore = useDialogStore();
@@ -34,6 +44,7 @@ import { useDialogStore } from "./stores/dialog";
 
   onMounted(() => {
     dialogStore.initStore(dialog.value);
+    init();
   })
 
 

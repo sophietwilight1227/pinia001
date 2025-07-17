@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import constColor from "@/consts/constColor";
+import constLocalStorage from "@/consts/constLocalStorage";
 
 interface State {
     colorDic: Map<string, string>,
@@ -39,6 +40,13 @@ export const useColorStore = defineStore(
                         });
                     }
                 }
+            },
+            initScheme(){
+                let name = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.COLOR_SCHEME);
+                if(name == null){
+                    name = constColor.SCHEME_LIST[0].id;
+                }
+                this.changeColorScheme(name);
             },
             changeColorScheme(name: string): void {
                 this.colorScheme = name;

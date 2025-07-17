@@ -8,6 +8,7 @@ import { usePictureViewStore } from "@/stores/pictureView";
 import { useLayoutStore } from "@/stores/layout";
 import { useColorStore } from '@/stores/color';
 import constColor from '@/consts/constColor';
+import constLocalStorage from "@/consts/constLocalStorage";
 
 const colorStore = useColorStore();
 
@@ -17,6 +18,7 @@ const columnIndex: Ref<number> = ref(10);
 const columnIndexElem: any = ref(null);
 const viewElem: any = ref(null);
 const viewScrollLeftValue: Ref<number> = ref(0);
+const hasColumnGrid: Ref<boolean> = ref(true);
 
 const layoutStore = useLayoutStore();
 layoutStore.$subscribe((mutation, state) => {
@@ -29,6 +31,7 @@ layoutStore.$subscribe((mutation, state) => {
       }
     }
     columnIndex.value = (width - (width % 100)) / 100
+    hasColumnGrid.value = state.hasColumnGrid;
 })
 const rowIndexWidth = ():number => {
     let width: number = 0;
@@ -39,6 +42,17 @@ const rowIndexWidth = ():number => {
     }
     return width;
 }
+
+const init = () => {
+  const hasGrid = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SHOW_GRID);
+  if(hasGrid == null){
+    layoutStore.hasColumnGrid = true;
+  }else{
+    layoutStore.hasColumnGrid = (hasGrid == "true");
+  }
+}
+init();
+
 const viewScrollLeft = ():number => {
     let width: number = 0;
     if(viewElem.value != null){
@@ -71,7 +85,7 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
     </div>
     <div class="row2" ref="viewElem" v-on:scroll="onScroll">
       <div class="asciiArt rowIndex sticky_row" ref="rowIndexElem">{{ rowIndex }}</div>
-      <div class="size_measure_frame">
+      <div class="size_measure_frame" v-show="hasColumnGrid">
             <div v-for="i in columnIndex" 
                   class="asciiArt size_measure_node"
                   v-bind:style="{left: i * 100 + 'px'}"

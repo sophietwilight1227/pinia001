@@ -7,6 +7,7 @@ import '@/assets/fonts/Saitamaar.ttf';
 import { useLayoutStore } from "@/stores/layout";
 import { usePictureViewStore } from "@/stores/pictureView";
 import constPictureView from "@/consts/constPictureView";
+import constLocalStorage from "@/consts/constLocalStorage";
 
 const props = defineProps<{
   isPictureView: boolean,
@@ -68,7 +69,6 @@ const initCaretPositionColor = () => {
 initCaretPositionColor();
 
 const onButtonClick = async () => {
-  console.log("pushed");
   text.value = "";
   for (let i = 1; i < 100; i++){
     text.value += "_";
@@ -170,7 +170,6 @@ const updateArrow = (aa: string) => {
     const rowHeight: number = 18;
     for(let i=0; i < text.length; i++){
       const rowLeft: number = charSetStore.calcStrWidth(text[i]);
-      console.log(rowLeft);
       html += `<div class="asciiArt arrowNode" style = "top: ${rowHeight * i}px; left: ${rowLeft}px;">↓</div> `;
     }
     arrowContainerElem.value.innerHTML = html;  
@@ -275,7 +274,6 @@ const onMouseMove = (e: MouseEvent) => {
     selectedStrInfo.push(strInfo)
   }
   rectSelectContainerElem.value.innerHTML = html;
-  console.log(selectedStrInfo);
   selectedRectTextInfo.value = selectedStrInfo;
 }
 const onMouseUp = (e: MouseEvent) => {
@@ -306,14 +304,11 @@ const pasteSelectedRectTextFromStore = () => {
   for(let i = 1; i < selectInfo.length; i++){
     if(caretRow + i < aa.length){
       aa[caretRow + i] = pasteTextLine(aa[caretRow + i], firstTextWidth,selectInfo[i].text , isInsert)
-      console.log(aa[caretRow + i]);
     }else{
       const addText: string = pasteTextLine("", firstTextWidth,selectInfo[i].text , isInsert);
       aa.push(addText);
-      console.log(addText, "push");
     }
   }
-  console.log(aa);
   const addedAA: string = aa.join("\n");
   const log: EditLog = {value: addedAA, start: 0, end: addedAA.length - 1};
   mainCanvasAsciiArtStore.editAsciiArt(addedAA, log);
@@ -360,7 +355,6 @@ const addSpace = (start: number, goal: number): string => {
   //  halfCount += 2;
   //  fullCount --;
   //}
-  console.log(halfCount, fullCount);
   return "　 ".repeat(halfCount) + "　".repeat(fullCount - halfCount);
 }
 

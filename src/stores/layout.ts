@@ -4,7 +4,8 @@ import constLayout from "@/consts/constLayout";
 interface State {
     widthDic: Map<string, Array<{widthRatio: number, size: {height: number, width: number}}>>,
     canvasSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
-    isLeftPictureView: boolean
+    isLeftPictureView: boolean,
+    hasColumnGrid: boolean,
 };
 
 export const useLayoutStore = defineStore(
@@ -14,7 +15,8 @@ export const useLayoutStore = defineStore(
             return {
                 widthDic: new Map(),
                 canvasSize: {height: '100%', width: '100%'},
-                isLeftPictureView: true
+                isLeftPictureView: true,
+                hasColumnGrid: true,
             };
         },
         getters: {
@@ -59,7 +61,10 @@ export const useLayoutStore = defineStore(
             },
             setPicturePosition(isLeft: boolean){
                 this.isLeftPictureView = isLeft;
-            }
+            },
+            changeColumnGrid(value: boolean){
+                this.hasColumnGrid = value;
+            },
         },        
     }
 );

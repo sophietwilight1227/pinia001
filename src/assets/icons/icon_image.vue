@@ -3,11 +3,6 @@
 
 <template>
 <svg version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="256px" height="256px" viewBox="0 0 512 512" style="width: 256px; height: 256px; opacity: 1;" xml:space="preserve">
-<!--style type="text/css">
-
-	.st0{fill:#4B4B4B;}
-
-</style-->
 <g>
 	<path class="st0" d="M99.281,399.469h320.094c6.172,0,11.844-3.422,14.719-8.875c2.844-5.469,2.438-12.078-1.063-17.141
 		l-69.156-100.094c-6.313-9.125-16.781-14.516-27.906-14.297s-21.406,5.969-27.375,15.359l-19.719,30.984l-54.828-79.359

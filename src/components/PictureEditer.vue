@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import {computed, ref, type HTMLAttributes, type Ref} from "vue";
+import {computed, onMounted, ref, type HTMLAttributes, type Ref} from "vue";
 import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { usePictureViewStore } from "@/stores/pictureView";
 import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
+import constLocalStorage from "@/consts/constLocalStorage";
 
   const colorStore = useColorStore();
   const pictureViewSrtore = usePictureViewStore();
@@ -13,6 +14,11 @@ import constColor from "@/consts/constColor";
   const lineRed = ref();
   const lineGreen = ref();
   const lineBlue = ref();
+  const posX = ref();
+  const posY = ref();
+  const sizeRate = ref();
+  const roteAngle = ref();
+  const alpha = ref();
 
   //changeValue (子要素のメソッドの実行) で必要
   const componentRefs = (id: string):Ref => {
@@ -26,15 +32,41 @@ import constColor from "@/consts/constColor";
       case constPictureView.PARAM_LIST.LINE_GREEN.id:
         return lineGreen;
         break;
+      case constPictureView.PARAM_LIST.POS_X.id:
+        return posX;
+        break;
+      case constPictureView.PARAM_LIST.POS_Y.id:
+        return posY;
+        break;
+      case constPictureView.PARAM_LIST.SIZE_RATE.id:
+        return sizeRate;
+        break;
+      case constPictureView.PARAM_LIST.ROTE_ANGLE.id:
+        return roteAngle;
+        break;
+      case constPictureView.PARAM_LIST.ALPHA.id:
+        return alpha;
+        break;
       default:
         return ref();
     }
   }
 
   const params = new Map();
-  Object.values(constPictureView.PARAM_LIST).forEach(value => {
-    params.set(value.id, ref(value.initialValue));
-  });
+  const init = () => {
+    Object.values(constPictureView.PARAM_LIST).forEach(value => {
+      const savedValue = localStorage.getItem(constLocalStorage.PREFIX + value.id);
+      if(savedValue == null){
+        params.set(value.id, ref(value.initialValue));
+      }else{
+        params.set(value.id, ref(savedValue));
+        if(componentRefs(value.id).value != null){
+          componentRefs(value.id).value.changeValue(savedValue);
+        }
+      }
+    });    
+  }
+
 
   const cssParams = computed(() => (id:string) => {
     switch(id){
@@ -97,9 +129,20 @@ import constColor from "@/consts/constColor";
     const g: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
     const b: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
     fontColor.value = rgbToHex(r, g, b);
+
+    Object.values(constPictureView.PARAM_LIST).forEach(value => {
+      if(componentRefs(value.id).value != null){
+        componentRefs(value.id).value.changeValue(pictureViewSrtore.getValue(value.id));
+      }
+    });    
   })
 
   const fontColor: Ref<string> = ref("#000000");
+
+
+    onMounted(() => {
+      init();
+    })
 </script>
 
 <template>
