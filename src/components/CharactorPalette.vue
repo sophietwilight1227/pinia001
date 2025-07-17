@@ -11,6 +11,7 @@ import DraggableListNode from "./DraggableListNode.vue";
 import { useColorStore } from '@/stores/color';
 import constColor from '@/consts/constColor';
 import { useDialogStore } from "@/stores/dialog";
+import aalist from '@/assets/data/aalist.json'
 
 const dialogStore = useDialogStore();
 
@@ -49,14 +50,18 @@ const initCharPalette = async () => {
 }
 
 const importDefaultCharPalette = async () => {
-  for(let i=0; i < charPalette.length; i++){
-    charSetStore.addCharPaletteIndex(i, charPalette[i].indexName);
-    for(let j=0; j < charPalette[i].charList.length; j++){
-      const width: number = (await calcWidth(charPalette[i].charList[j])).valueOf();
-      charSetStore.addCharPalette(i, j, charPalette[i].charList[j], width);
+  //for(let i=0; i < charPalette.length; i++){
+  //  charSetStore.addCharPaletteIndex(i, charPalette[i].indexName);
+  //  for(let j=0; j < charPalette[i].charList.length; j++){
+  //    const width: number = (await calcWidth(charPalette[i].charList[j])).valueOf();
+  //    charSetStore.addCharPalette(i, j, charPalette[i].charList[j], width);
+  //  }
+  //  charIndexList.value.push(charPalette[i].indexName);
+  //}
+    charSetStore.initCharPlette(aalist);
+    for(let i=0; i < charSetStore.charPalette.length; i++){
+      charIndexList.value.push(charSetStore.charPalette[i].indexName);
     }
-    charIndexList.value.push(charPalette[i].indexName);
-  }
 }
 const importPrevCharPalette = (prevCharPalette: string): void => {
     charSetStore.initCharPlette(JSON.parse(prevCharPalette));

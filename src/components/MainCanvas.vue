@@ -18,6 +18,7 @@ const width = ref(99);
 const spanElem:Ref<HTMLElement | null> = ref(null);
 const textAreaElem:any = ref(null);
 const textAreRefElem: any = ref(null);
+const headSpaceElem: any = ref(null);
 const sizeRef100:Ref<HTMLElement | null> = ref(null);
 const rectSelectContainerElem: any = ref(null);
 const arrowContainerElem: any = ref(null);
@@ -36,6 +37,7 @@ mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   mainCanvasAA.value = state.asciiArt;
   updateArrow(mainCanvasAA.value);
   updateCaretPosition(mainCanvasAsciiArtStore.asciiArt, mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);
+  textAreaElem.value.focus();
 })
 const mainCanvasAaRef = computed(() => {
   return mainCanvasAA.value + '\u200b';//これがないとテキスト末尾の空行がうまくいかなくなる
@@ -108,7 +110,7 @@ const decodeNumericEntity = (str: string) => {
       return String.fromCodePoint(cp);
     }); 
 }
-const checkSpace = (text: string): void => {
+const checkContinuousSpace = (text: string): void => {
   if(!text.includes("  ")){
     return;
   }
@@ -117,7 +119,6 @@ const checkSpace = (text: string): void => {
   let prevSpace: number = 0;
 
   words.forEach(word => {
-    // ここにスペルチェックロジックを実装 (例: 辞書データと照合)
     if(word == ""){
       prevSpace ++;
     }else{
@@ -136,6 +137,18 @@ const checkSpace = (text: string): void => {
     }
   });
   textAreRefElem.value!.innerHTML = html;
+}
+const checkHeadSpace = (text: string) => {
+  const aa = text.split("\n");
+  let html: string = "";
+  for(let i=0; i < aa.length; i++){
+    if(aa[i].charAt(0) == " "){
+      html += `<span class="asciiArt misspelled">${" "}</span> `;
+    }else{
+      html += `<span class="asciiArt">${" "}</span> `;
+    }
+  }
+  headSpaceElem.value!.innerHTML = html;
 }
 
 const onChangeTextArea = async (e: any) => {
@@ -158,7 +171,8 @@ const onChangeTextArea = async (e: any) => {
     onSelectionChange(e);
     updateTextAreaWidth();
 
-    checkSpace(str);
+    checkContinuousSpace(str);
+    checkHeadSpace(str);
     updateArrow(str);
   }
 }
@@ -286,7 +300,8 @@ const changeDot = async (delta: number) => {
         mainCanvasAsciiArtStore.changeDot(delta);
         await nextTick();
         textAreaElem.value.setSelectionRange(mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);  
-        checkSpace(mainCanvasAA.value);
+        checkContinuousSpace(mainCanvasAA.value);
+        checkHeadSpace(mainCanvasAA.value);
 }
 const copySelectedRectTextToStore = () => {
   mainCanvasAsciiArtStore.rectSelectTextInfo = selectedRectTextInfo.value;
@@ -422,6 +437,7 @@ const onKeyDown = async (e: KeyboardEvent) => {
 <template>
   <div class="base">  
     <div class="caretPosition asciiArt">|</div>
+    <div class="measureAA asciiArt" ref="headSpaceElem"></div>
     <div class="measureAA asciiArt" ref="textAreRefElem">{{ mainCanvasAaRef }}</div>
     <div class="asciiArt arrow" ref="arrowContainerElem"></div>
     <div class="selectRect asciiArt" ref="rectSelectContainerElem"></div>
