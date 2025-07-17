@@ -32,19 +32,28 @@ export const useCharSetStore = defineStore(
         },
         actions: {
             addCharSizeDic(char: string, size: number):void {
-                if(!this.charSizeDic.has(char)){
-                    this.charSizeDic.set(char, size);
-                }
+                this.charSizeDic.set(char, size);
             },
-            calcStrWidth(str: string): number {
+            async calcStrWidth(str: string) {
                 let width = 0;
                 for(let i=0; i < str.length; i++){
+                    let charWidth: number;
                     if(this.charSizeDic.has(str.charAt(i))){
-                        const charWidth = this.charSizeDic.get(str.charAt(i));
-                        if(charWidth != undefined){
-                            width += charWidth; 
+                        const tempWidth = this.charSizeDic.get(str.charAt(i));
+                        if(tempWidth == null || tempWidth == 0){
+                            charWidth = await this.calcCharWidth(str.charAt(i));
+                            this.addCharSizeDic(str.charAt(i), charWidth);
+                            console.log(charWidth, str.charAt(i));
+                        }else{
+                            charWidth = tempWidth;
                         }
+                    }else{
+                        charWidth = await this.calcCharWidth(str.charAt(i));
+                        this.addCharSizeDic(str.charAt(i), charWidth);
                     }
+                    if(charWidth != undefined){
+                        width += charWidth; 
+                    }                    
                 }
                 return width;
             },
@@ -133,12 +142,11 @@ export const useCharSetStore = defineStore(
                 writeAaTextFile(JSON.stringify(this.charPalette), "aalist","aal" , "utf-8");
             },
             async calcCharWidth (str: string): Promise<number> {
-                this.textSizeRef.value = str;
+                this.textSizeRef.innerHTML = str;
                 await nextTick();
-                console.log(str, this.textSizeRef.offsetWidth);
                 return this.textSizeRef.offsetWidth;
             },
-            setTextSizeRef(elem: any){
+            async setTextSizeRef(elem: any){
                 this.textSizeRef = elem;
             }
         },        

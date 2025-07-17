@@ -150,6 +150,7 @@ const onChangeTextArea = async (e: any) => {
         if(spanElem.value != null){
           await nextTick();
           charSetStore.addCharSizeDic(char, spanElem.value.offsetWidth);
+          console.log(char, spanElem.value.offsetWidth);
         }
       }
     }
@@ -161,7 +162,7 @@ const onChangeTextArea = async (e: any) => {
     updateArrow(str);
   }
 }
-const updateArrow = (aa: string) => {
+const updateArrow = async (aa: string) => {
     if(arrowContainerElem.value == null){
       return;
     }
@@ -169,13 +170,14 @@ const updateArrow = (aa: string) => {
     let html: string = "";
     const rowHeight: number = 18;
     for(let i=0; i < text.length; i++){
-      const rowLeft: number = charSetStore.calcStrWidth(text[i]);
+      const rowLeft: number = await charSetStore.calcStrWidth(text[i]);
+      console.log(text[i], rowLeft)
       html += `<div class="asciiArt arrowNode" style = "top: ${rowHeight * i}px; left: ${rowLeft}px;">↓</div> `;
     }
     arrowContainerElem.value.innerHTML = html;  
 }
 
-const updateCaretPosition = (rawStr: string, startPos: number, endPos: number) => {
+const updateCaretPosition = async (rawStr: string, startPos: number, endPos: number) => {
 
   const frontStr:string = rawStr.substring(0, startPos);
   const strs = frontStr.split("\n");
@@ -193,7 +195,7 @@ const updateCaretPosition = (rawStr: string, startPos: number, endPos: number) =
   if(caretStr == null){
     return;
   }
-  const left: number = charSetStore.calcStrWidth(caretStr);
+  const left: number = await charSetStore.calcStrWidth(caretStr);
   caretPosition.value.top = (strs.length - 1) * rowHeight;
   caretPosition.value.left = left;
 }
@@ -222,7 +224,7 @@ const onMouseDown = (e:MouseEvent) => {
   rectSelectContainerElem.value.innerHTML = "";
 }
 
-const onMouseMove = (e: MouseEvent) => {
+const onMouseMove = async (e: MouseEvent) => {
   if(!mainCanvasAsciiArtStore.isRectSelectMode){
     return;
   }  
@@ -247,7 +249,7 @@ const onMouseMove = (e: MouseEvent) => {
     const strInfo = {row: 0, start: 0, end: 0, text: ""};
     for(let j=0; j < aa[i].length; j++){
       const char:string = aa[i].charAt(j);
-      const charWidth:number = charSetStore.calcStrWidth(char);
+      const charWidth:number = await charSetStore.calcStrWidth(char);
       if(rowLeft + charWidth > topLeft.x){
         strInfo.start = j;
         break;
@@ -256,11 +258,11 @@ const onMouseMove = (e: MouseEvent) => {
       }
     }
 
-    let rowRight: number = charSetStore.calcStrWidth(aa[i]);
+    let rowRight: number = await charSetStore.calcStrWidth(aa[i]);
     for(let j=aa[i].length; j >= 0; j--){
       
       const char:string = aa[i].charAt(j);
-      const charWidth:number = charSetStore.calcStrWidth(char);
+      const charWidth:number = await charSetStore.calcStrWidth(char);
       if(rowRight - charWidth < bottomRight.x){
         strInfo.end = j;
         break;
@@ -292,20 +294,20 @@ const copySelectedRectTextToStore = () => {
 const deleteSelectedRectText = () => {
 
 }
-const pasteSelectedRectTextFromStore = () => {
+const pasteSelectedRectTextFromStore = async () => {
   const aa: Array<string> = mainCanvasAA.value.split("\n");
   const caretRow = mainCanvasAsciiArtStore.currentRow - 1;
   const firstText: string = mainCanvasAsciiArtStore.halfStrCurrentRow;
   const caretPos = firstText.length;
   const selectInfo = mainCanvasAsciiArtStore.rectSelectTextInfo;
-  const firstTextWidth: number = charSetStore.calcStrWidth(firstText);
+  const firstTextWidth: number = await charSetStore.calcStrWidth(firstText);
   const isInsert: boolean = mainCanvasAsciiArtStore.isRectSelectInsertMode;
-  aa[caretRow] = pasteTextLine(aa[caretRow], firstTextWidth, selectInfo[0].text, isInsert);
+  aa[caretRow] = await pasteTextLine(aa[caretRow], firstTextWidth, selectInfo[0].text, isInsert);
   for(let i = 1; i < selectInfo.length; i++){
     if(caretRow + i < aa.length){
-      aa[caretRow + i] = pasteTextLine(aa[caretRow + i], firstTextWidth,selectInfo[i].text , isInsert)
+      aa[caretRow + i] = await pasteTextLine(aa[caretRow + i], firstTextWidth,selectInfo[i].text , isInsert)
     }else{
-      const addText: string = pasteTextLine("", firstTextWidth,selectInfo[i].text , isInsert);
+      const addText: string = await pasteTextLine("", firstTextWidth,selectInfo[i].text , isInsert);
       aa.push(addText);
     }
   }
@@ -314,25 +316,25 @@ const pasteSelectedRectTextFromStore = () => {
   mainCanvasAsciiArtStore.editAsciiArt(addedAA, log);
 }
 //leftPos は実際に測定した長さ
-const pasteTextLine = (target: string, leftPos: number, text: string, isInsert: boolean): string => {
-  const targetWidth: number = charSetStore.calcStrWidth(target);
-  const textWidth: number =  charSetStore.calcStrWidth(text);
+const pasteTextLine = async (target: string, leftPos: number, text: string, isInsert: boolean): Promise<string> => {
+  const targetWidth: number = await charSetStore.calcStrWidth(target);
+  const textWidth: number = await charSetStore.calcStrWidth(text);
   if(isInsert){ //挿入
     if(targetWidth < leftPos){
       return target + addSpace(targetWidth, leftPos) + text;
     }else{
-      const startIndex:number = getStartIndex(target, leftPos);
+      const startIndex:number = await getStartIndex(target, leftPos);
       return target.slice(0, startIndex) + text + target.slice(startIndex + 1, target.length);
     }
   }else{  //上書き
     if(targetWidth < leftPos){  //空白の追加が必要である場合
       return target + addSpace(targetWidth, leftPos) + text;
     }else if(targetWidth < leftPos + textWidth){  //元の文字列の途中から上書きが始まるが、末端ははみ出す場合
-      const startIndex:number = getStartIndex(target, leftPos);
+      const startIndex:number = await getStartIndex(target, leftPos);
       return target.slice(0, startIndex) + text
     }else{  //元の文字列の中に上書きする文字列が収まる場合
-      const startIndex:number = getStartIndex(target, leftPos);
-      const endIndex: number = getStartIndex(target, leftPos + textWidth);
+      const startIndex:number = await getStartIndex(target, leftPos);
+      const endIndex: number = await getStartIndex(target, leftPos + textWidth);
       return target.slice(0, startIndex) + text + target.slice(endIndex, target.length);
     }    
   }
@@ -358,11 +360,11 @@ const addSpace = (start: number, goal: number): string => {
   return "　 ".repeat(halfCount) + "　".repeat(fullCount - halfCount);
 }
 
-const getStartIndex = (target: string, leftPos: number ):number => {
-  let startPos: number = charSetStore.calcStrWidth(target);
+const getStartIndex = async (target: string, leftPos: number ):Promise<number> => {
+  let startPos: number = await charSetStore.calcStrWidth(target);
   let index: number = target.length - 1;
   while(startPos > leftPos && index > 0){
-    startPos -= charSetStore.calcStrWidth(target.charAt(index));
+    startPos -= await charSetStore.calcStrWidth(target.charAt(index));
     index --;
   }
   return index;

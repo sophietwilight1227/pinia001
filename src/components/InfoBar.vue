@@ -13,10 +13,10 @@ const currentDot: Ref<number> = ref(0);
 const mainCanvasStore = useMainCanvasStore();
 const charSetStore = useCharSetStore();
 
-mainCanvasStore.$subscribe((mutation, state) => {
+mainCanvasStore.$subscribe(async (mutation, state) => {
   currentRow.value = mainCanvasStore.currentRow;
   maxRow.value = state.maxRow;
-  currentDot.value = charSetStore.calcStrWidth(mainCanvasStore.halfStrCurrentRow);
+  currentDot.value = await charSetStore.calcStrWidth(mainCanvasStore.halfStrCurrentRow);
 })
 
 </script>

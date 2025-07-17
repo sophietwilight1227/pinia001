@@ -19,11 +19,11 @@ const setRectSelectMode = (value: boolean):void => {
     mainCanvasStore.setRecSelectMode(value);
 }
 
-const addSpaceToEndOfLineToArrange = () => {
+const addSpaceToEndOfLineToArrange = async () => {
     const aa: Array<string> = mainCanvasStore.asciiArt.split("\n");
     const widthList: Array<number> = [];
     for(let i=0; i < aa.length; i++){
-        widthList.push(charSetStore.calcStrWidth(aa[i]));
+        widthList.push(await charSetStore.calcStrWidth(aa[i]));
     }
     mainCanvasStore.addSpaceToLineEndToArrange(widthList);
 }
