@@ -8,6 +8,11 @@ import IconDownload from '@/assets/icons/icon_download.vue';
 import IconProjector from '@/assets/icons/icon_projector.vue';
 import ButtonWithIcon from './ButtonWithIcon.vue';
 import { useDialogStore } from '@/stores/dialog';
+import ProgressBar from './ProgressBar.vue';
+import DialogSelect from './DialogSelect.vue';
+import Loading from './Loading.vue';
+import ButtonText from './ButtonText.vue';
+
 
 
 const dialogStore = useDialogStore();
@@ -19,6 +24,8 @@ const sizeRefElem: any = ref(null);
 const imageElem: any = ref(null);
 const canvasWidth: Ref<number> = ref(0);
 const canvasHeight: Ref<number> = ref(0);
+const visibleProgress: Ref<boolean> = ref(false);
+const progressBarElem: any = ref(null);
 
 const setMovieMode = (value: boolean):void => {
     mainCanvasStore.setMovieMode(value);
@@ -63,18 +70,38 @@ const resizeImage = async () => {
     canvasWidth.value = width;
     await nextTick();
 }
+const startRender_ = () => {
+    const worker = new Worker(new URL('@/scripts/exportMovie.mjs', import.meta.url));
+    console.log("test1");
+    const obj1 = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition];
+    const obj2 = canvasElem.value;
+    const obj3 = sizeRefElem.value ;
+    worker.postMessage({ currentData: JSON.parse(JSON.stringify(obj1)),
+                         canvasElem: JSON.parse(JSON.stringify(obj2)), 
+                         sizeRefElem: JSON.parse(JSON.stringify(obj3))});
+    console.log("test2");
+    worker.onmessage = (e) => {
+        //aElem.value.href = window.URL.createObjectURL(e.data);
+        //sizeRefElem.value.style.display = "none";
+
+        //dialogStore.info("ダウンロードボタンのリンク先から保存してください")
+        dialogStore.info(e.data);
+    };
+}
 
 const renderLogs = async () => {
+
+    const aalist = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].aaList;
+    const current = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].currentPosition;
+    const editLogs = aalist[current].editLogs;
+
     resizeImage();
+
     const ctx = canvasElem.value.getContext('2d', { willReadFrequently: true });
     ctx.clearRect(0, 0, canvasElem.value.width, canvasElem.value.height);
     ctx.font = '16px Saitamaar';
     ctx.letterSpacing = 0;
     const lineHeight: number = 18;  //18px
-
-    const aalist = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].aaList;
-    const current = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].currentPosition;
-    const editLogs = aalist[current].editLogs;
 
     sizeRefElem.value.style.display = "inline-block";
     for(let i=0; i < editLogs.length; i++){
@@ -126,6 +153,7 @@ const renderLogs = async () => {
         //window.open(URL.createObjectURL(blob));
         aElem.value.href = window.URL.createObjectURL(blob);
         sizeRefElem.value.style.display = "none";
+
         dialogStore.info("ダウンロードボタンのリンク先から保存してください")
     });
     gif.render();
@@ -133,6 +161,19 @@ const renderLogs = async () => {
 const download = () => {
     window.open(aElem.value.href, '_blank');
 }
+const showProgressBar = () => {
+    visibleProgress.value = true;
+}
+const hideProgressBar = () => {
+    visibleProgress.value = false;
+}
+const setMaxProgress = (value: number) => {
+    progressBarElem.value.setMax(value);
+}
+const setProgress = (value: number) => {
+    progressBarElem.value.setValue(value);
+}
+
 
 </script>
 
@@ -160,9 +201,14 @@ const download = () => {
                         <IconDownload/>
                     </IconBase>
                 </ButtonWithIcon>
-                <a ref="aElem"></a>            
+                <a ref="aElem"></a>
             </div>                
         </div>    
+
+        <DialogSelect v-show="visibleProgress">
+            <div>動画生成中です。しばらくお待ちください</div>
+            <Loading/>
+        </DialogSelect>
 
         <div class="img">
             <canvas class="canvas" ref="canvasElem"></canvas>
