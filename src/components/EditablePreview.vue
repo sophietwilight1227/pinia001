@@ -19,6 +19,7 @@ const columnIndexElem: any = ref(null);
 const viewElem: any = ref(null);
 const viewScrollLeftValue: Ref<number> = ref(0);
 const hasColumnGrid: Ref<boolean> = ref(true);
+const isFocus: Ref<boolean> = ref(false);
 
 const layoutStore = useLayoutStore();
 layoutStore.$subscribe((mutation, state) => {
@@ -62,8 +63,13 @@ const viewScrollLeft = ():number => {
     }
     return width;
 }
+
 const onScroll = (e:any): void => {
+  if(layoutStore.isDragging){
+    viewElem.value.scrollLeft = viewScrollLeftValue.value;
+  }
   viewScrollLeftValue.value = viewScrollLeft();
+  
 }
 
 const mainCanvasStore = useMainCanvasStore();
@@ -118,7 +124,7 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
   width: 100%;
   height: 100%;
   flex-direction: row;
-  overflow: auto;
+  overflow-x: auto;
   position: relative;
 }
 .rowIndex {

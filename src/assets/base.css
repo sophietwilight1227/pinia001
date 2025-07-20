@@ -25,7 +25,7 @@ body {
   line-height:18px;
   letter-spacing: 0;
   text-shadow: none;
-  font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
+  font-family:'ＭＳ Ｐゴシック', 'MS PGothic', 'Saitamaar', 'IPAMonaPGothic' !important;
 }
 
 @font-face {

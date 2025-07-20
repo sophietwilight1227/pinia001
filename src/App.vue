@@ -61,11 +61,11 @@ import constLocalStorage from "./consts/constLocalStorage";
           <PanelDivider :order="0" :layout-name="'main'"/>
           <PanelContainer :order="1" :name="'main'">
             <EditablePreview>
+              <MainCanvas v-show="!isLeftPictureView" :is-picture-view="false"/>
               <div class="container" v-show="isLeftPictureView">
                 <PictureView/>             
                 <MainCanvas :is-picture-view="true"/> 
               </div>
-              <MainCanvas v-show="!isLeftPictureView" :is-picture-view="false"/>
             </EditablePreview>
           </PanelContainer>
           <PanelDivider :order="1" :layout-name="'main'"/>

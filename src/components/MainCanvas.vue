@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, nextTick, computed, type Ref, reactive } from "vue";
+import {ref, nextTick, computed, type Ref, reactive, onMounted } from "vue";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
 import { useCharSetStore } from "@/stores/charSet";
 import type { CanvasMain, EditLog } from "@/interfaces";
@@ -34,12 +34,15 @@ const caretPosition: Ref<{top: number, left: number}> = ref({top: 0, left: 0}); 
 const selectedRectTextInfo: Ref<Array<{row: number, start: number, end: number, text: string}>> = ref([]);
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
-  mainCanvasAA.value = state.asciiArt;
+  if(mainCanvasAA.value != state.asciiArt){
+    mainCanvasAA.value = state.asciiArt;
+  }
   updateArrow(mainCanvasAA.value);
   updateCaretPosition(mainCanvasAsciiArtStore.asciiArt, mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);
-  if(textAreRefElem.value != null && "TEXTAREA" != document.activeElement?.nodeName){
+  if(textAreRefElem.value != null && "TEXTAREA" != document.activeElement?.nodeName && !props.isPictureView){
     textAreaElem.value.focus();
   }
+  console.log("subscribe: ", mainCanvasAA.value);
 })
 const mainCanvasAaRef = computed(() => {
   return mainCanvasAA.value + '\u200b';//これがないとテキスト末尾の空行がうまくいかなくなる
@@ -158,7 +161,20 @@ const onChangeTextArea = async (e: any) => {
     mainCanvasAsciiArtStore.editAsciiArt("", {value:e.data, start: 0, end: 0});
   }else{
     const str:string = decodeNumericEntity(e.target.value);
-    for(let i=0; i < str.length; i++){
+    if(str != mainCanvasAsciiArtStore.asciiArt){
+      addCharSizeDic(str);
+      mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: str.length});
+      updateTextAreaWidth();
+      checkContinuousSpace(str);
+      checkHeadSpace(str);
+    }
+    onSelectionChange(e);
+  }
+  console.log("on change: ", mainCanvasAA.value);
+}
+
+const addCharSizeDic = async (str: string) => {
+for(let i=0; i < str.length; i++){
       const char = str.charAt(i);
       if(!charSetStore.$state.charSizeDic.has(char)){
         text.value = char;
@@ -168,15 +184,8 @@ const onChangeTextArea = async (e: any) => {
         }
       }
     }
-    mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: str.length});
-    onSelectionChange(e);
-    updateTextAreaWidth();
-
-    checkContinuousSpace(str);
-    checkHeadSpace(str);
-    updateArrow(str);
-  }
 }
+
 const updateArrow = async (aa: string) => {
     if(arrowContainerElem.value == null){
       return;
@@ -432,6 +441,27 @@ const onKeyDown = async (e: KeyboardEvent) => {
   }
 }
 
+const measure = (name: string, func: Function) => {
+    const start = performance.now();
+    func();
+    const end = performance.now();
+    
+    const elapsed = (end - start);
+    const elapsedStr = elapsed.toPrecision(3);
+    console.log(`${name}: ${elapsedStr}`);
+}
+
+const test = () => {
+  for(let i = 0; i < 100; i++){
+    mainCanvasAsciiArtStore.asciiArt = "test".repeat(100) + i.toString();
+  }
+}
+onMounted(() => {
+  //mainCanvasAA.value = mainCanvasAsciiArtStore.asciiArt;
+  //measure("test", test);
+})
+
+
 </script>
 
 <template>
@@ -449,7 +479,7 @@ const onKeyDown = async (e: KeyboardEvent) => {
                 v-on:mousedown="onMouseDown"
                 v-on:mousemove="onMouseMove"
                 v-on:mouseup="onMouseUp"
-                v-model="mainCanvasAA"
+                v-model="mainCanvasAsciiArtStore.asciiArt"
                 ref="textAreaElem"
                 v-bind:class="{hiddenEdit: mainCanvasAsciiArtStore.isMovieMode}"
                 ></textarea>

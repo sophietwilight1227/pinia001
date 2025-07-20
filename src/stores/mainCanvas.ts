@@ -117,7 +117,7 @@ export const useMainCanvasStore = defineStore(
                 if(aa != ""){
                     localStorage.setItem(constLocalStorage.TAG_NAME.LAST_EDIT_AA, aa);
                 }
-                console.log(aa);
+                console.log("edit", aa);
             },
             updateRowIndex(str: string): void {
                 const lineCount = str.length - str.replace(/\n/g, "").length + 1
@@ -293,15 +293,18 @@ export const useMainCanvasStore = defineStore(
                 this.editAsciiArt(aa, log);
             },
             insertCharToAsciiArt(char: string){
-                const strStart = this.asciiArt.slice(0, this.caretPosition.start);
-                const strEnd = this.asciiArt.slice(this.caretPosition.end);
+                const caretStart = this.caretPosition.start;
+                const caretEnd = this.caretPosition.end
+                const strStart = this.asciiArt.slice(0, caretStart);
+                const strEnd = this.asciiArt.slice(caretEnd);
                 const newAa = strStart + char + strEnd;
-                this.editAsciiArt(newAa, {value: char, start: this.caretPosition.start, end: this.caretPosition.end});
-                this.editCaretPosition(this.caretPosition.start + 1, this.caretPosition.start + 1);
+                this.editAsciiArt(newAa, {value: char, start: caretStart, end: caretEnd});
+                this.editCaretPosition(caretStart + 1, caretStart + 1);
             },
             editCaretPosition(start: number, end: number){
                 this.caretPosition.start = start;
                 this.caretPosition.end = end;
+                console.log("caret: ", start, end);
             },
             setRecSelectMode(isRectSelect: boolean) {
                 this.isRectSelectMode = isRectSelect;

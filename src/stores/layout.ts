@@ -6,6 +6,7 @@ interface State {
     canvasSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
     isLeftPictureView: boolean,
     hasColumnGrid: boolean,
+    isDragging: boolean
 };
 
 export const useLayoutStore = defineStore(
@@ -17,6 +18,7 @@ export const useLayoutStore = defineStore(
                 canvasSize: {height: '100%', width: '100%'},
                 isLeftPictureView: true,
                 hasColumnGrid: true,
+                isDragging: false,
             };
         },
         getters: {
@@ -41,7 +43,6 @@ export const useLayoutStore = defineStore(
                 this.widthDic.get(layoutName)![index].widthRatio = value;
                 this.widthDic.get(layoutName)![index].size.height = height;
                 this.widthDic.get(layoutName)![index].size.width = width;
-                console.log(width, "width")
             },
             updateCanvasSize(height: number, width: number) {
                 const mainCanvasIndex:number = 2; //App.vue

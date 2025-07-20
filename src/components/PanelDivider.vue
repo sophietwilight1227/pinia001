@@ -38,11 +38,23 @@ const colorStore = useColorStore();
           }
         }
     }
+    const onDragStart = (e:any) => {
+      console.log("mouse down");
+      layoutStore.isDragging = true;
+    }
+    const onDragEnd = (e:any) => {
+      console.log("mouse up");
+      layoutStore.isDragging = false;
+    }
 
 </script>
 
 <template>
-    <span class="divider" v-on:drag="move"  ref="myElement"></span>
+    <span class="divider" 
+          v-on:drag="move"
+          v-on:dragstart="onDragStart"  
+          v-on:dragend="onDragEnd"
+          ref="myElement"></span>
 </template>
 
 <style scoped>
