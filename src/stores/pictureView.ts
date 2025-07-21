@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import constPictureView from "@/consts/constPictureView";
 import constLocalStorage from "@/consts/constLocalStorage";
+import { nextTick } from "vue";
 interface State {
     imageUrl: string,
     params: Map<string, number>,
@@ -47,6 +48,7 @@ export const usePictureViewStore = defineStore(
                 this.params = new Map();
                 Object.values(constPictureView.PARAM_LIST).forEach(value => {
                     const savedValue = localStorage.getItem(constLocalStorage.PREFIX + value.id);
+                    nextTick();
                     console.log(savedValue);
                     if(savedValue == null){
                         this.params.set(value.id, value.initialValue);
