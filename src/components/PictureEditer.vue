@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref, type HTMLAttributes, type Ref} from "vue";
+import {computed, nextTick, onMounted, ref, type HTMLAttributes, type Ref} from "vue";
 import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { usePictureViewStore } from "@/stores/pictureView";
@@ -149,6 +149,7 @@ import constLocalStorage from "@/consts/constLocalStorage";
     onMounted(() => {
       
       init();
+      nextTick();
       updateValues();
     })
 </script>
