@@ -106,8 +106,11 @@ const onButtonClick = async () => {
 const updateTextAreaWidth = () => {
   //const newHeight: string = compareLength(textAreaElem.value?.scrollHeight, sizeRef100.value?.clientHeight) + "px"
   //const newWidth: string =  compareLength(textAreaElem.value?.scrollWidth, sizeRef100.value?.clientWidth) + "px"
-  const newHeight: number = textAreRefElem.value?.scrollHeight!;
-  const newWidth: number = textAreRefElem.value?.scrollWidth!;
+  const newHeight: number = baseElem.value?.scrollHeight!;
+  const newWidth: number = baseElem.value?.scrollWidth!;
+  //console.log(newHeight, newWidth, "new size");
+  textAreaElem.value.style.height = baseElem.value.scrollHeight + "px";
+  textAreaElem.value.style.width = baseElem.value.scrollWidth + "px";
   layoutStore.updateAsciiArtSize(newHeight, newWidth);
   //layoutStore.updateCanvasSize(newHeight, newWidth);
 }
@@ -617,9 +620,10 @@ onMounted(() => {
   resize: none;
   position: absolute;
   overflow:hidden;
-  field-sizing:content;
+  /*field-sizing:content;*/
   min-height: 100%;
   min-width: 100%;
+
   color: v-bind(mainCanvasFontColor);
 }
 .hiddenEdit {
