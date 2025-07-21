@@ -69,14 +69,17 @@ layoutStore.$subscribe((mutation, state) => {
 
 const pictureViewStore = usePictureViewStore();
 pictureViewStore.$subscribe((mutation, state) => {
+  updatePictureValues();
+})
+const updatePictureValues = () => {
   if(props.isPictureView){
     const r: number = pictureViewStore.getValue(constPictureView.PARAM_LIST.LINE_RED.id);
     const g: number = pictureViewStore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
     const b: number = pictureViewStore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
     mainCanvasFontColor.value = `rgb(${r},${g},${b})`;
     caretPositionColor.value = `rgb(${r},${g},${b})`;
-  }
-})
+  }  
+}
 
 const initCaretPositionColor = () => {
   if(props.isPictureView){
@@ -532,6 +535,7 @@ const test = () => {
 }
 onMounted(() => {
   //mainCanvasAA.value = mainCanvasAsciiArtStore.asciiArt;
+  updatePictureValues();
   console.log("test", mainCanvasAsciiArtStore.asciiArt, "on mounted");
 })
 

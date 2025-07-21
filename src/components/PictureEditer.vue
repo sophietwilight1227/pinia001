@@ -11,6 +11,22 @@ import constLocalStorage from "@/consts/constLocalStorage";
   const pictureViewSrtore = usePictureViewStore();
   pictureViewSrtore.initParams();
 
+  pictureViewSrtore.$subscribe((mutation, state) => {
+    updateValues();
+  })
+  const updateValues = () => {
+    const r: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_RED.id);
+    const g: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
+    const b: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
+    fontColor.value = rgbToHex(r, g, b);
+
+    Object.values(constPictureView.PARAM_LIST).forEach(value => {
+      if(componentRefs(value.id)!.value != null){
+        componentRefs(value.id)!.value.changeValue(pictureViewSrtore.getValue(value.id));
+      }
+    });  
+  }
+
   const lineRed = ref();
   const lineGreen = ref();
   const lineBlue = ref();
@@ -21,7 +37,7 @@ import constLocalStorage from "@/consts/constLocalStorage";
   const alpha = ref();
 
   //changeValue (子要素のメソッドの実行) で必要
-  const componentRefs = (id: string):Ref => {
+  const componentRefs = (id: string):Ref | null => {
     switch(id){
       case constPictureView.PARAM_LIST.LINE_RED.id:
         return lineRed;
@@ -48,22 +64,25 @@ import constLocalStorage from "@/consts/constLocalStorage";
         return alpha;
         break;
       default:
-        return ref();
+        return null;
     }
   }
 
   const params = new Map();
   const init = () => {
     Object.values(constPictureView.PARAM_LIST).forEach(value => {
-      const savedValue = localStorage.getItem(constLocalStorage.PREFIX + value.id);
-      if(savedValue == null){
-        params.set(value.id, ref(value.initialValue));
-      }else{
-        params.set(value.id, ref(savedValue));
-        if(componentRefs(value.id).value != null){
-          componentRefs(value.id).value.changeValue(savedValue);
-        }
-      }
+      //const savedValue = localStorage.getItem(constLocalStorage.PREFIX + value.id);
+      //const savedValue: number = pictureViewSrtore.getValue(value.id);
+      //if(savedValue == null){
+      //  params.set(value.id, ref(value.initialValue));
+      //}else{
+      //  params.set(value.id, savedValue);
+      //  if(componentRefs(value.id)!.value != null){
+      //    componentRefs(value.id)!.value.changeValue(savedValue);
+      //  }
+      //}
+      params.set(value.id, ref(value.initialValue));
+      //console.log("saved value", savedValue);
     });    
   }
 
@@ -110,9 +129,9 @@ import constLocalStorage from "@/consts/constLocalStorage";
       pictureViewSrtore.setValue(constPictureView.PARAM_LIST.LINE_RED.id, r);
       pictureViewSrtore.setValue(constPictureView.PARAM_LIST.LINE_GREEN.id, g);
       pictureViewSrtore.setValue(constPictureView.PARAM_LIST.LINE_BLUE.id, b);
-      componentRefs(constPictureView.PARAM_LIST.LINE_RED.id).value.changeValue(r);
-      componentRefs(constPictureView.PARAM_LIST.LINE_GREEN.id).value.changeValue(g);
-      componentRefs(constPictureView.PARAM_LIST.LINE_BLUE.id).value.changeValue(b);
+      componentRefs(constPictureView.PARAM_LIST.LINE_RED.id)!.value.changeValue(r);
+      componentRefs(constPictureView.PARAM_LIST.LINE_GREEN.id)!.value.changeValue(g);
+      componentRefs(constPictureView.PARAM_LIST.LINE_BLUE.id)!.value.changeValue(b);
     }
   }
 
@@ -124,24 +143,13 @@ import constLocalStorage from "@/consts/constLocalStorage";
     return `#${to16(r)}${to16(g)}${to16(b)}`;
   }
 
-  pictureViewSrtore.$subscribe((mutation, state) => {
-    const r: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_RED.id);
-    const g: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
-    const b: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
-    fontColor.value = rgbToHex(r, g, b);
-
-    Object.values(constPictureView.PARAM_LIST).forEach(value => {
-      if(componentRefs(value.id).value != null){
-        componentRefs(value.id).value.changeValue(pictureViewSrtore.getValue(value.id));
-      }
-    });    
-  })
-
   const fontColor: Ref<string> = ref("#000000");
 
 
     onMounted(() => {
+      
       init();
+      updateValues();
     })
 </script>
 

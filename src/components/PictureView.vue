@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, nextTick, reactive, ref, watch, type Ref} from "vue";
+import {computed, nextTick, onMounted, reactive, ref, watch, type Ref} from "vue";
 import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
@@ -41,26 +41,33 @@ const layoutStore = useLayoutStore();
 
   const cssParams: Ref<Map<string, string>> = ref(new Map());
   pictureViewSrtore.$subscribe((mutation, state) => {
+    updatePictureValues();
+  })
+  const updatePictureValues = () => {
     Object.values(constPictureView.PARAM_LIST).forEach(value => {
         cssParams.value.set(value.id, pictureViewSrtore.getCssValue(value.id));
       });
-      backgroundColor.value = state.backgroundColor;
+      backgroundColor.value = pictureViewSrtore.backgroundColor;
 
-      if(imgSource.value != state.imageUrl){
-        imgSource.value = state.imageUrl;
+      if(imgSource.value != pictureViewSrtore.imageUrl){
+        imgSource.value = pictureViewSrtore.imageUrl;
         const img = new Image();
         img.onload = function(){
           canvasSize.value.height = img.height;
           canvasSize.value.width = img.width;
           console.log(canvasSize.value.width, "image loaded");
         };
-        img.src = state.imageUrl;
+        img.src = pictureViewSrtore.imageUrl;
       }
-  })
+  }
 
 
   const backgroundColor = ref("white");
   const imgSource = ref("");
+
+  onMounted(() => {
+    updatePictureValues();
+  })
 
 </script>
 

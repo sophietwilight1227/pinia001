@@ -11,9 +11,9 @@
     const emit = defineEmits(['change']);
 
     const currentValue = ref(props.initialValue)
-    watch(currentValue, (newValue) => {
-        emit("change",props.id ,newValue);
-    })
+    //watch(currentValue, (newValue) => {
+    //    emit("change",props.id ,newValue);
+    //})
 
     const changeValue = (newValue: number):void => {
         currentValue.value = newValue;
@@ -26,13 +26,16 @@
     const decrement = ():void => {
       currentValue.value --;
     } 
+    const onChange = () => {
+      emit("change",props.id ,currentValue.value);
+    }
 </script>
 
 <template>
     <div class="menu_content">
         <span>{{ props.name }}</span>
         <button v-on:click="decrement">◀</button>
-        <input type="range" :min="props.min" :max="props.max" v-model="currentValue"/> 
+        <input type="range" :min="props.min" :max="props.max" v-model="currentValue" v-on:input="onChange"/> 
         <button v-on:click="increment">▶</button>
         <input v-model="currentValue" class="text_value"/>
     </div>
