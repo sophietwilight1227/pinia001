@@ -17,6 +17,10 @@ import { onMounted, ref, type Ref } from "vue";
 import { useColorStore } from "./stores/color";
 import { useDialogStore } from "./stores/dialog";
 import constLocalStorage from "./consts/constLocalStorage";
+import { useMainCanvasStore } from "./stores/mainCanvas";
+
+  const mainCanvasAsciiArtStore = useMainCanvasStore();
+  mainCanvasAsciiArtStore.initAsciiArt();
 
   const layoutStore = useLayoutStore();
   layoutStore.initLayout();
@@ -61,8 +65,8 @@ import constLocalStorage from "./consts/constLocalStorage";
           <PanelDivider :order="0" :layout-name="'main'"/>
           <PanelContainer :order="1" :name="'main'">
             <EditablePreview>
-              <MainCanvas v-show="!isLeftPictureView" :is-picture-view="false"/>
-              <div class="container" v-show="isLeftPictureView">
+              <MainCanvas v-if="!isLeftPictureView" :is-picture-view="false"/>
+              <div class="container" v-if="isLeftPictureView">
                 <PictureView/>             
                 <MainCanvas :is-picture-view="true"/> 
               </div>
@@ -71,8 +75,8 @@ import constLocalStorage from "./consts/constLocalStorage";
           <PanelDivider :order="1" :layout-name="'main'"/>
           <PanelContainer :order="2" :name="'main'">
             <EditablePreview>
-              <MainCanvas v-show="isLeftPictureView" :is-picture-view="false"/>
-              <div class="container" v-show="!isLeftPictureView" >
+              <MainCanvas v-if="isLeftPictureView" :is-picture-view="false"/>
+              <div class="container" v-if="!isLeftPictureView" >
                 <PictureView/> 
                 <MainCanvas :is-picture-view="true"/>      
               </div>

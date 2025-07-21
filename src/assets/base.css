@@ -3,8 +3,13 @@ body {
   font-family: 'NotoSans';
 }
 .misspelled {
-  color: red;
+  position: absolute;
   border-bottom: 2px solid red;
+  z-index: 3000;
+}
+.not_misspelled {
+  position: absolute;
+  border-bottom: 2px solid gray;
   z-index: 3000;
 }
 .selected_rect {

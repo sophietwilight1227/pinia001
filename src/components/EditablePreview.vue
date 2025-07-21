@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, nextTick, ref, watch, type Ref} from "vue";
+import {computed, nextTick, onMounted, ref, watch, type Ref} from "vue";
 import RangeSlider from "./RangeSlider.vue"
 import constPictureView from "@/consts/constPictureView";
 import { useMainCanvasStore } from "@/stores/mainCanvas";
@@ -23,16 +23,20 @@ const isFocus: Ref<boolean> = ref(false);
 
 const layoutStore = useLayoutStore();
 layoutStore.$subscribe((mutation, state) => {
-    canvasSize.value.height = state.canvasSize.height;
-    canvasSize.value.width = state.canvasSize.width;
-    let width: number = 1000;
-    if(viewElem.value != null){
-      if(viewElem.value.scrollWidth != null){
-        width = viewElem.value.scrollWidth;
-      }
-    }
-    columnIndex.value = (width - (width % 100)) / 100
-    hasColumnGrid.value = state.hasColumnGrid;
+    //.value.height = state.canvasSize.height;
+    //canvasSize.value.width = state.canvasSize.width;
+
+    //let width: number = 1000;
+    //if(viewElem.value != null){
+    //  if(viewElem.value.scrollWidth != null){
+    //    width = viewElem.value.scrollWidth;
+    //  }
+    //}
+
+    //columnIndex.value = (width - (width % 100)) / 100
+    //hasColumnGrid.value = state.hasColumnGrid;
+    rowIndexElem.value.scrollTop = state.scrollY ;
+    console.log(state.scrollY);
 })
 const rowIndexWidth = ():number => {
     let width: number = 0;
@@ -79,12 +83,18 @@ mainCanvasStore.$subscribe((mutation, state) => {
 
 const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", width: "100%"})
 
+onMounted(() => {
+  layoutStore.canvasSize.height = viewElem.value.scrollHeight;
+  layoutStore.canvasSize.width = viewElem.value.scrollWidth;
+  console.log(layoutStore.canvasSize.height, "moutn")
+})
+
 </script>
 
 <template>
   <div class="base">
     <div class="row1 size_measure_frame2">
-            <div v-for="i in columnIndex" 
+      <div v-for="i in columnIndex" 
                   class="asciiArt size_measure_node2 "
                   v-bind:style="{left: i * 100 + rowIndexWidth() - viewScrollLeftValue + 'px'}"
                   ref="columnIndexElem">{{i * 100}}</div>  
@@ -97,7 +107,7 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
                   v-bind:style="{left: i * 100 + 'px'}"
                   ref="columnIndexElem"></div>          
       </div>      
-      <div>
+      <div class="mainCanvas">
           <slot></slot>     
       </div>    
     </div>  
@@ -112,46 +122,43 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
   flex-direction: column;
   height: 100%;
   width: 100%;
+  background-color: transparent;
 }
 .row1 {
   display: flex;
   width: 100%;
   flex-direction: row;
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
+  background-color: aqua;
 }
 .row2 {
   display: flex;
-  width: 100%;
-  height: 100%;
   flex-direction: row;
-  overflow-x: auto;
+  /*overflow-x: auto;*/
   position: relative;
+  background-color: transparent;
+  height: calc(100% - 20px);
 }
 .rowIndex {
-  position: sticky;
+  position: relative;
   text-align: right;
   min-width: 30px;
+  min-height: 100%;
   white-space: pre-wrap;
   overflow: hidden;
   z-index: 1100;
   border-right: 1px solid;
-  height: v-bind(canvasSize.height);
   color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
   background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
 }
 .sticky_row {
-  position: sticky;
   top: 0;
   left: 0;
 }
 .size_measure_frame {
-  position: sticky;
   top: 0;
 }
 .size_measure_node {
-  position: absolute;
-  height: max-content;
-  min-height: 100vh;
   border-left: 1px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.MAIN_CANVAS_GRID));
 }
 .size_measure_frame2 {
@@ -166,5 +173,12 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
   position: absolute;
   height: 100%;
   border-left: 1px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.MAIN_CANVAS_BASE));
+}
+.mainCanvas {
+  background-color: transparent;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 </style>

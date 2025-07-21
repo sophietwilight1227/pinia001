@@ -3,7 +3,10 @@ import layoutList from '../assets/data/layout.json'
 import constLayout from "@/consts/constLayout";
 interface State {
     widthDic: Map<string, Array<{widthRatio: number, size: {height: number, width: number}}>>,
+    asciiArtSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
     canvasSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
+    scrollX: number,
+    scrollY: number,
     isLeftPictureView: boolean,
     hasColumnGrid: boolean,
     isDragging: boolean
@@ -15,7 +18,10 @@ export const useLayoutStore = defineStore(
         state: (): State => {
             return {
                 widthDic: new Map(),
+                asciiArtSize: {height: '100%', width: '100%'},
                 canvasSize: {height: '100%', width: '100%'},
+                scrollX: 0,
+                scrollY: 0,
                 isLeftPictureView: true,
                 hasColumnGrid: true,
                 isDragging: false,
@@ -44,7 +50,7 @@ export const useLayoutStore = defineStore(
                 this.widthDic.get(layoutName)![index].size.height = height;
                 this.widthDic.get(layoutName)![index].size.width = width;
             },
-            updateCanvasSize(height: number, width: number) {
+            _updateCanvasSize(height: number, width: number) {
                 const mainCanvasIndex:number = 2; //App.vue
                 const height100:number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.height;
                 const width100: number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.width;
@@ -59,6 +65,13 @@ export const useLayoutStore = defineStore(
                 }else{
                     this.canvasSize.width = width + "px";
                 }
+            },
+            updateAsciiArtSize(height: number, width: number) {
+                this.canvasSize.height = height + "px";
+                this.canvasSize.width = width + "px";
+                const mainCanvasIndex:number = 2; //App.vue
+                const height100:number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.height;
+                const width100: number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.width;
             },
             setPicturePosition(isLeft: boolean){
                 this.isLeftPictureView = isLeft;
