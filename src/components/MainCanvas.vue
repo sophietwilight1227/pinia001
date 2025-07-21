@@ -29,8 +29,10 @@ const charSetStore = useCharSetStore();
 const mainCanvasAsciiArtStore = useMainCanvasStore();
 //mainCanvasAsciiArtStore.initAsciiArt();
 const mainCanvasAA = ref("");
-const mainCanvasFontColor: Ref<string> = ref("rgb(0, 0, 0)")
-const caretPositionColor: Ref<string> = ref("transparent")
+const prevMainCanvasAA = ref("");
+const prevSpaceElemText: Ref<Array<string>> = ref([]);
+const mainCanvasFontColor: Ref<string> = ref("rgb(0, 0, 0)");
+const caretPositionColor: Ref<string> = ref("transparent");
 const isDragging: Ref<boolean> = ref(false);
 const caretPosition: Ref<{top: number, left: number}> = ref({top: 0, left: 0}); //座標。CSSで使う
 const selectedRectTextInfo: Ref<Array<{row: number, start: number, end: number, text: string}>> = ref([]);
@@ -38,22 +40,17 @@ const caretText: Ref<string> = ref("");
 const viewScrollLeftValue: Ref<number> = ref(0);
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
+  prevMainCanvasAA.value = mainCanvasAA.value;
   mainCanvasAA.value = mainCanvasAsciiArtStore.asciiArt;
   console.log("caret position 1:",mainCanvasAsciiArtStore.caretPosition.start, props.isPictureView)
+  updateTextAreaWidth();
   updateArrow(mainCanvasAA.value);
   updateCaretPosition(mainCanvasAA.value, mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);
   if(textAreRefElem.value != null && "TEXTAREA" != document.activeElement?.nodeName && !props.isPictureView){
     const start = mainCanvasAsciiArtStore.caretPosition.start;
     const end = mainCanvasAsciiArtStore.caretPosition.end;
-    
-    //textAreaElem.value.focus();
-
-
-    console.log("caret position 2:",mainCanvasAsciiArtStore.caretPosition.start)
     textAreaElem.value.setSelectionRange(start, end );  
   }
-  
-  console.log("subscribe: ", mainCanvasAA.value);
 })
 const mainCanvasAaRef = computed(() => {
   return mainCanvasAsciiArtStore.asciiArt + '\u200b';//これがないとテキスト末尾の空行がうまくいかなくなる
@@ -109,8 +106,8 @@ const updateTextAreaWidth = () => {
   const newHeight: number = baseElem.value?.scrollHeight!;
   const newWidth: number = baseElem.value?.scrollWidth!;
   //console.log(newHeight, newWidth, "new size");
-  textAreaElem.value.style.height = baseElem.value.scrollHeight + "px";
-  textAreaElem.value.style.width = baseElem.value.scrollWidth + "px";
+  textAreaElem.value.style.height = textAreRefElem.value.scrollHeight + "px";
+  textAreaElem.value.style.width = textAreRefElem.value.scrollWidth + "px";
   layoutStore.updateAsciiArtSize(newHeight, newWidth);
   //layoutStore.updateCanvasSize(newHeight, newWidth);
 }
@@ -181,12 +178,10 @@ const onChangeTextArea = async (e: any) => {
   }else{
     const str:string = decodeNumericEntity(e.target.value);
     if(str != mainCanvasAsciiArtStore.asciiArt){
-      addCharSizeDic(str);
+      //addCharSizeDic(str);
       mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: str.length});
-      updateTextAreaWidth();
-      //checkContinuousSpace(str);
-      //checkHeadSpace(str);
     }
+    updateArrow(mainCanvasAA.value);
     onSelectionChange(e);
   }
   console.log("on change: ", mainCanvasAsciiArtStore.asciiArt);
@@ -218,7 +213,7 @@ const updateArrow_ = async (aa: string) => {
     }
     arrowContainerElem.value.innerHTML = html;  
 }
-const updateArrow = async (aa: string) => {
+const updateArrow__ = async (aa: string) => {
     if(arrowContainerElem.value == null){
       return;
     }
@@ -248,6 +243,100 @@ const updateArrow = async (aa: string) => {
     arrowContainerElem.value.innerHTML = html;  
 }
 
+const updateArrow___ = async (aa: string) => {
+    if(arrowContainerElem.value == null || aa == prevMainCanvasAA.value){
+      return;
+    }
+    const text: Array<string> = aa.split("\n");
+    const prevText: Array<string> = prevMainCanvasAA.value.split("\n");
+    console.log("aa=", aa, "prev=", prevMainCanvasAA.value, )
+    let html: string = "";
+    let prefix = "";
+    if(props.isPictureView){
+      prefix = "aaSpaceTrue"
+    }else{
+      prefix = "aaSpaceFalse"
+    }
+    const rowHeight: number = 18;
+    for(let i=0; i < text.length; i++){
+      if((prevText.length > i && prevText[i] != text[i]) || prevText.length <= i ){
+        let children = document.getElementsByClassName(prefix + i);
+        const len = children.length;
+        if(len > 0){
+          for(let k=0; k < len; k++){
+            children[0].remove(); //childrenは動的なので常に先頭を削除する
+          }          
+        }
+        for(let j=0; j < text[i].length; j++){
+          const rowLeft: number = await charSetStore.calcStrWidth(text[i].slice(0, j));
+          switch(text[i].charAt(j)){
+            case " ":
+              if((j == 0 && text[i].charAt(j) == " ") || (j > 0 && text[i].charAt(j-1) == " ") || (j < text[i].length-1 && text[i].charAt(j+1) == " ")){
+                html += `<div class="asciiArt misspelled ${prefix + i }" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+              }else{
+                html += `<div class="asciiArt not_misspelled ${prefix + i }" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+              }
+              
+              break;
+            case "　":
+              html += `<div class="asciiArt not_misspelled ${prefix + i }" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 10px"></div> `;
+              break;
+          }
+        }        
+      }
+
+      const rowLeft: number = await charSetStore.calcStrWidth(text[i]);
+      html += `<div class="asciiArt arrowNode ${prefix + i }" style = "top: ${rowHeight * i}px; left: ${rowLeft}px;">↓</div> `;
+    }
+    arrowContainerElem.value.innerHTML = html;  
+}
+
+const updateArrow = async (aa: string) => {
+    if(arrowContainerElem.value == null || aa == prevMainCanvasAA.value){
+      return;
+    }
+    const text: Array<string> = aa.split("\n");
+    const prevText: Array<string> = prevMainCanvasAA.value.split("\n");
+    let html: string = "";
+    const rowHeight: number = 18;
+    if(text.length < prevSpaceElemText.value.length){
+      for(let i=prevSpaceElemText.value.length-1; i >= text.length; i--){
+        prevSpaceElemText.value.pop();
+      }
+    }
+    for(let i=0; i < text.length; i++){
+      //if((prevText.length > i && prevText[i] != text[i]) || prevText.length <= i ){
+      if(true ){
+        html = "";
+        for(let j=0; j < text[i].length; j++){
+          const rowLeft: number = await charSetStore.calcStrWidth(text[i].slice(0, j));
+          switch(text[i].charAt(j)){
+            case " ":
+              if((j == 0 && text[i].charAt(j) == " ") || (j > 0 && text[i].charAt(j-1) == " ") || (j < text[i].length-1 && text[i].charAt(j+1) == " ")){
+                html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+              }else{
+                html += `<div class="asciiArt not_misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+              }
+              
+              break;
+            case "　":
+              html += `<div class="asciiArt not_misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 10px"></div> `;
+              break;
+          }
+
+        }  
+        if(prevSpaceElemText.value.length <= i){
+          prevSpaceElemText.value.push()
+        }
+        prevSpaceElemText.value[i] = html;              
+      }
+
+      const rowLeft: number = await charSetStore.calcStrWidth(text[i]);
+      html = `<div class="asciiArt arrowNode" style = "top: ${rowHeight * i}px; left: ${rowLeft}px;">↓</div> `;
+    }
+    arrowContainerElem.value.innerHTML = prevSpaceElemText.value.join("") + html;  
+}
+
 const updateCaretPosition = async (rawStr: string, startPos: number, endPos: number) => {
 
   const frontStr:string = rawStr.substring(0, startPos);
@@ -274,7 +363,7 @@ const updateCaretPosition = async (rawStr: string, startPos: number, endPos: num
 
 
 const onSelectionChange = (e:any) => {
-  if(e.target != document.activeElement || props.isPictureView){
+  if(e.target != document.activeElement){
     return;
   }
   console.log("selection change", props.isPictureView, e.target.selectionStart);
@@ -500,7 +589,14 @@ const viewScrollLeft = ():number => {
     return width;
 }
 const onScroll = (e: any) => {
-  layoutStore.scrollY = e.target.scrollTop;
+  if(props.isPictureView){
+    layoutStore.scrollY_pic = e.target.scrollTop;
+    layoutStore.scrollX_pic = e.target.scrollLeft;
+  }else{
+    layoutStore.scrollY_canvas = e.target.scrollTop;
+    layoutStore.scrollX_canvas = e.target.scrollLeft;
+  }
+  
 
   //rectSelectContainerElem.scrollTop = e.target.scrollTop;
   //caretPositionElem.scrollTop = e.target.scrollTop;
@@ -516,9 +612,12 @@ const onScroll = (e: any) => {
 
 
 const updateScroll = () => {
-  const scroll = layoutStore.scrollY;
-  baseElem.value.scrollTop = scroll
-  console.log(scroll, "scroll");
+  if(props.isPictureView){
+    baseElem.value.scrollTop = layoutStore.scrollY_pic;
+  }else{
+    baseElem.value.scrollTop = layoutStore.scrollY_canvas;
+  }
+  
 }
 
 const measure = (name: string, func: Function) => {
@@ -549,7 +648,7 @@ onMounted(() => {
   <div class="base" ref="baseElem" v-on:scroll="onScroll">  
     <div class="caretPosition asciiArt blinking" ref="caretPositionElem">{{ caretText }}</div>
     <div class="measureAA asciiArt" ref="headSpaceElem"></div>
-    <div class="measureAA asciiArt" ref="textAreRefElem">{{ mainCanvasAsciiArtStore.asciiArt }}</div>
+    <div class="measureAA asciiArt" ref="textAreRefElem">{{ mainCanvasAaRef }}</div>
     <div class="asciiArt arrow" ref="arrowContainerElem"></div>
     <div class="selectRect asciiArt" ref="rectSelectContainerElem"></div>
     <textarea class="asciiArt textarea" 

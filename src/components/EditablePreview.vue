@@ -21,6 +21,10 @@ const viewScrollLeftValue: Ref<number> = ref(0);
 const hasColumnGrid: Ref<boolean> = ref(true);
 const isFocus: Ref<boolean> = ref(false);
 
+const props = defineProps<{
+    isPictureView: boolean
+}>()
+
 const layoutStore = useLayoutStore();
 layoutStore.$subscribe((mutation, state) => {
     //.value.height = state.canvasSize.height;
@@ -35,8 +39,14 @@ layoutStore.$subscribe((mutation, state) => {
 
     //columnIndex.value = (width - (width % 100)) / 100
     //hasColumnGrid.value = state.hasColumnGrid;
-    rowIndexElem.value.scrollTop = state.scrollY ;
-    console.log(state.scrollY);
+    if(props.isPictureView){
+      rowIndexElem.value.scrollTop = state.scrollY_pic ;
+      columnIndexElem.value.scrollLeft = state.scrollX_pic ;
+    }else{
+      rowIndexElem.value.scrollTop = state.scrollY_canvas ;
+      columnIndexElem.value.scrollLeft = state.scrollX_canvas ;
+    }
+
 })
 const rowIndexWidth = ():number => {
     let width: number = 0;
@@ -93,19 +103,18 @@ onMounted(() => {
 
 <template>
   <div class="base">
-    <div class="row1 size_measure_frame2">
+    <div class="row1 size_measure_frame2" ref="columnIndexElem">
       <div v-for="i in columnIndex" 
                   class="asciiArt size_measure_node2 "
                   v-bind:style="{left: i * 100 + rowIndexWidth() - viewScrollLeftValue + 'px'}"
-                  ref="columnIndexElem">{{i * 100}}</div>  
+                  >{{i * 100}}</div>  
     </div>
     <div class="row2" ref="viewElem" v-on:scroll="onScroll">
       <div class="asciiArt rowIndex sticky_row" ref="rowIndexElem">{{ rowIndex }}</div>
       <div class="size_measure_frame" v-show="hasColumnGrid">
             <div v-for="i in columnIndex" 
                   class="asciiArt size_measure_node"
-                  v-bind:style="{left: i * 100 + 'px'}"
-                  ref="columnIndexElem"></div>          
+                  v-bind:style="{left: i * 100 + 'px'}"></div>          
       </div>      
       <div class="mainCanvas">
           <slot></slot>     

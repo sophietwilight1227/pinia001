@@ -5,8 +5,10 @@ interface State {
     widthDic: Map<string, Array<{widthRatio: number, size: {height: number, width: number}}>>,
     asciiArtSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
     canvasSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
-    scrollX: number,
-    scrollY: number,
+    scrollX_pic: number,
+    scrollY_pic: number,
+    scrollX_canvas: number,
+    scrollY_canvas: number,
     isLeftPictureView: boolean,
     hasColumnGrid: boolean,
     isDragging: boolean
@@ -20,8 +22,10 @@ export const useLayoutStore = defineStore(
                 widthDic: new Map(),
                 asciiArtSize: {height: '100%', width: '100%'},
                 canvasSize: {height: '100%', width: '100%'},
-                scrollX: 0,
-                scrollY: 0,
+                scrollX_pic: 0,
+                scrollY_pic: 0,
+                scrollX_canvas: 0,
+                scrollY_canvas: 0,
                 isLeftPictureView: true,
                 hasColumnGrid: true,
                 isDragging: false,
