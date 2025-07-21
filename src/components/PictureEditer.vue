@@ -150,6 +150,8 @@ import constLocalStorage from "@/consts/constLocalStorage";
       
       init();
       nextTick();
+      nextTick();
+      nextTick();
       updateValues();
     })
 </script>
