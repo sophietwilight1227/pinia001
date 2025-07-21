@@ -231,7 +231,7 @@ const hideSetting = () => {
         <DialogSelect v-show="visibleCredit" >
             <div>info</div>
             <img src="@/assets/images/logo.png" alt="logo"><br>
-            <div>ver 0.0.2</div>
+            <div>ver 0.0.3</div>
             <div>by North Tail</div>
             <ButtonText :value="'とじる'" v-on:click="hideCredit"/>
         </DialogSelect>

@@ -9,6 +9,7 @@ import DialogSelect from './DialogSelect.vue';
 import { ref, type Ref } from 'vue';
 import { usePictureViewStore } from '@/stores/pictureView';
 import IconReload from '@/assets/icons/icon_reload.vue';
+import ButtonText from './ButtonText.vue';
 
 const pictureViewStore = usePictureViewStore();
 const colorStore = useColorStore();
@@ -62,14 +63,13 @@ const openLocalFileImage = (e: Event):void => {
             <div>
                 <div>ウェブ</div>
                 <input type="text" v-model="imageUrl"/>
-                <button v-on:click="openImage">開く</button>        
+                <ButtonText :value="'開く'" v-on:click="openImage"/>    
             </div>
             <div>
                 <div>ローカル</div>
-                <button v-on:click="onClickOpenLocalImage">参照(ローカル)</button>
+                <ButtonText :value="'参照(ローカル)'" v-on:click="onClickOpenLocalImage"/>
             </div>
-            
-            <button v-on:click="hideModalMenu">キャンセル</button>
+            <ButtonText :value="'キャンセル'" v-on:click="hideModalMenu"/>
         </DialogSelect>
 
         <input
