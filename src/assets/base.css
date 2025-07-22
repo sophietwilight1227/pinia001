@@ -9,7 +9,7 @@ body {
 }
 .not_misspelled {
   position: absolute;
-  border-bottom: 2px solid palevioletred;
+  border-bottom: 2px solid lightgray;
   z-index: 3000;
 }
 .selected_rect {
