@@ -24,7 +24,8 @@ interface State {
     setting: Setting;
     isMovieMode: boolean;
     currentMoviePosition: number,
-    holdLastEditAA: boolean
+    holdLastEditAA: boolean,
+    showSpaceWithText: boolean,
 };
 
 export const useMainCanvasStore = defineStore(
@@ -45,7 +46,8 @@ export const useMainCanvasStore = defineStore(
                 setting: {},
                 isMovieMode: false,
                 currentMoviePosition: 0,
-                holdLastEditAA: false
+                holdLastEditAA: false,
+                showSpaceWithText: true,
             };
         },
         getters: {
@@ -106,7 +108,12 @@ export const useMainCanvasStore = defineStore(
                     this.allData.splice(0);
                     this.allData.push({fileName: "new file",currentPosition: 0 , aaList: [{aaName: "last edit", asciiArt: lastAA, editLogs: []}]})
                 }
-
+                const spaceType: string | null = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE);
+                if(spaceType == null){
+                    this.showSpaceWithText = true;
+                }else{
+                    this.showSpaceWithText = (spaceType == "true");
+                }
             },
             editAsciiArt(aa: string, log: EditLog):void {
                 this.asciiArt = aa;
@@ -117,7 +124,6 @@ export const useMainCanvasStore = defineStore(
                 if(aa != ""){
                     localStorage.setItem(constLocalStorage.TAG_NAME.LAST_EDIT_AA, aa);
                 }
-                console.log("edit", aa);
             },
             updateRowIndex(str: string): void {
                 const lineCount = str.length - str.replace(/\n/g, "").length + 1
@@ -173,7 +179,7 @@ export const useMainCanvasStore = defineStore(
                 if(countHalf > countFull){
                     space = " ".repeat(countHalf - countFull) + "　 ".repeat(countFull);
                 }else{
-                    space = " 　".repeat(countHalf) + "　".repeat(countFull - countHalf);
+                    space = "　 ".repeat(countHalf) + "　".repeat(countFull - countHalf);
                 }
                 const latterText: string = this.asciiArt.slice( this.caretPosition.start, this.asciiArt.length);
 
@@ -304,7 +310,6 @@ export const useMainCanvasStore = defineStore(
             editCaretPosition(start: number, end: number){
                 this.caretPosition.start = start;
                 this.caretPosition.end = end;
-                console.log("caret: ", start, end);
             },
             setRecSelectMode(isRectSelect: boolean) {
                 this.isRectSelectMode = isRectSelect;

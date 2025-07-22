@@ -33,6 +33,7 @@ const holdLastEditAaElem: any = ref(null);
 const previewPositionElem: any = ref(null);
 const hasGridElem: any = ref(null);
 const colorSchemeElem: any = ref(null);
+const spaceTypeElem: any = ref(null);
 
 const init = () => {
     const holdLastEditAA = localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT);
@@ -65,6 +66,16 @@ const init = () => {
     }
     hasGridElem.value.options[hasGridIndex].selected = true;
     layoutStore.changeColumnGrid(hasGridIndex == 0);
+
+    const spaceType = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE);
+    let spaceTypeIndex = 0;
+    if(spaceType != null){
+        if(spaceType == "false"){
+            spaceTypeIndex = 1;
+        }
+    }
+    spaceTypeElem.value.options[spaceTypeIndex].selected = true;
+    mainCanvasAsciiArtStore.showSpaceWithText = (spaceTypeIndex == 0);
 
     const colorScheme = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.COLOR_SCHEME);
     let colorSchemeIndex: number = 0;
@@ -144,9 +155,15 @@ const changeColumnGrid = (e: any) => {
     localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.SHOW_GRID, e.target.value);
 }
 const changeHoldLastEditAA = (e: any) => {
-    const value = (e.target.value == "true")
+    const value = (e.target.value == "true");
     mainCanvasAsciiArtStore.holdLastEditAA = value;
     localStorage.setItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT, e.target.value);
+}
+const changeSpeceType = (e:any) => {
+    const value = (e.target.value == "true");
+    console.log(e.target.value);
+    mainCanvasAsciiArtStore.showSpaceWithText = value;
+    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE, e.target.value);
 }
 const showCredit = ():void => {
     visibleCredit.value = true;
@@ -195,6 +212,11 @@ const hideSetting = () => {
         
         <DialogSelect v-show="visibleSetting">
             <div>
+                <div>空白の強調表示方法</div>
+                <select name="holdLastEditAA" v-on:change="changeSpeceType" ref="spaceTypeElem">
+                    <option value="true">テキスト (軽い)</option>
+                    <option value="false">DOM要素 (重い)</option>
+                </select>  
                 <div>[最終編集AAの保持]</div>
                 <select name="holdLastEditAA" v-on:change="changeHoldLastEditAA" ref="holdLastEditAaElem">
                     <option value="true">する</option>

@@ -9,7 +9,8 @@ export default {
         SETTING: {
             IMAGE_PREVIEW_POSITION: "ahoge_editor_image_preview_position",
             SHOW_GRID: "ahoge_editor_show_grid",
-            COLOR_SCHEME: "ahoge_editor_color_scheme" 
+            COLOR_SCHEME: "ahoge_editor_color_scheme",
+            SPACE_TYPE: "ahoge_editor_space_type",
         },
         RAW_IMAGE: [
             "ahoge_editor_lineRed",

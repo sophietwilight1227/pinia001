@@ -22,6 +22,7 @@ const headSpaceElem: any = ref(null);
 const sizeRef100:Ref<HTMLElement | null> = ref(null);
 const rectSelectContainerElem: any = ref(null);
 const arrowContainerElem: any = ref(null);
+const errorContainerElem: any = ref(null);
 const caretPositionElem: any = ref(null);
 const baseElem: any = ref(null);
 
@@ -38,11 +39,13 @@ const caretPosition: Ref<{top: number, left: number}> = ref({top: 0, left: 0}); 
 const selectedRectTextInfo: Ref<Array<{row: number, start: number, end: number, text: string}>> = ref([]);
 const caretText: Ref<string> = ref("");
 const viewScrollLeftValue: Ref<number> = ref(0);
+const spacePool: Ref<Array<Array<HTMLElement>>> = ref([]);  //不使用
+const spaceErrorPool: Ref<Array<Array<HTMLElement>>> = ref([]);   //不使用
+const arrowPool: Ref<Array<HTMLElement>> = ref([]);   //不使用
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   prevMainCanvasAA.value = mainCanvasAA.value;
   mainCanvasAA.value = mainCanvasAsciiArtStore.asciiArt;
-  console.log("caret position 1:",mainCanvasAsciiArtStore.caretPosition.start, props.isPictureView)
   updateTextAreaWidth();
   updateArrow(mainCanvasAA.value);
   updateCaretPosition(mainCanvasAA.value, mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);
@@ -100,14 +103,15 @@ const onButtonClick = async () => {
   }
 };
 
-const updateTextAreaWidth = () => {
+const updateTextAreaWidth = async () => {
+  await nextTick();
   //const newHeight: string = compareLength(textAreaElem.value?.scrollHeight, sizeRef100.value?.clientHeight) + "px"
   //const newWidth: string =  compareLength(textAreaElem.value?.scrollWidth, sizeRef100.value?.clientWidth) + "px"
   const newHeight: number = baseElem.value?.scrollHeight!;
   const newWidth: number = baseElem.value?.scrollWidth!;
   //console.log(newHeight, newWidth, "new size");
   textAreaElem.value.style.height = textAreRefElem.value.scrollHeight + "px";
-  textAreaElem.value.style.width = textAreRefElem.value.scrollWidth + "px";
+  textAreaElem.value.style.width = (textAreRefElem.value.scrollWidth + 100) + "px";
   layoutStore.updateAsciiArtSize(newHeight, newWidth);
   //layoutStore.updateCanvasSize(newHeight, newWidth);
 }
@@ -178,13 +182,11 @@ const onChangeTextArea = async (e: any) => {
   }else{
     const str:string = decodeNumericEntity(e.target.value);
     if(str != mainCanvasAsciiArtStore.asciiArt){
-      //addCharSizeDic(str);
       mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: str.length});
     }
     updateArrow(mainCanvasAA.value);
     onSelectionChange(e);
   }
-  console.log("on change: ", mainCanvasAsciiArtStore.asciiArt);
 }
 
 const addCharSizeDic = async (str: string) => {
@@ -198,6 +200,13 @@ for(let i=0; i < str.length; i++){
         }
       }
     }
+}
+const updateArrow = (aa: string) => {
+  if(mainCanvasAsciiArtStore.showSpaceWithText){
+    updateArrowWithText(aa);
+  }else{
+    updateArrowWithElem(aa);
+  }
 }
 
 const updateArrow_ = async (aa: string) => {
@@ -249,7 +258,6 @@ const updateArrow___ = async (aa: string) => {
     }
     const text: Array<string> = aa.split("\n");
     const prevText: Array<string> = prevMainCanvasAA.value.split("\n");
-    console.log("aa=", aa, "prev=", prevMainCanvasAA.value, )
     let html: string = "";
     let prefix = "";
     if(props.isPictureView){
@@ -291,7 +299,7 @@ const updateArrow___ = async (aa: string) => {
     arrowContainerElem.value.innerHTML = html;  
 }
 
-const updateArrow = async (aa: string) => {
+const updateArrowWithElem  = async (aa: string) => {
     if(arrowContainerElem.value == null || aa == prevMainCanvasAA.value){
       return;
     }
@@ -336,12 +344,184 @@ const updateArrow = async (aa: string) => {
     }
     arrowContainerElem.value.innerHTML = prevSpaceElemText.value.join("") + html;  
 }
+const initSpacePool = () => {
+  for(let i=0; i < 60; i++){
+    addArrowElem();
+    spacePool.value.push([])
+    spaceErrorPool.value.push([])
+    for(let j=0; j < 10; j++){
+      addSpaceElem(true, i);
+      addSpaceElem(false, i);
+    }
+  }
+}
+const addArrowElem = () => {
+  const elem = document.createElement("span");
+  elem.classList.add("asciiArt", "arrowNode");
+  elem.style.top = "-18px";
+  elem.style.left = "0px";
+  elem.innerHTML = "↓";
+  arrowPool.value.push(elem);
+  arrowContainerElem.value.appendChild(elem);
+}
+const addSpaceElem = (isError: boolean, row: number) => {
+  const elem = document.createElement("span");
+
+  elem.style.top = "-18px";
+  elem.style.left = "0px";
+  elem.style.widows = "0px";
+  if(isError){
+    elem.classList.add("asciiArt", "misspelled");
+    spaceErrorPool.value[row].push(elem);
+  }else{
+    elem.classList.add("asciiArt", "not_misspelled");
+    spacePool.value[row].push(elem);
+  }  
+  arrowContainerElem.value.appendChild(elem);
+}
+const updateArrow_____ = async (aa: string) => {
+    if(arrowContainerElem.value == null){
+      return;
+    }
+    const text: Array<string> = aa.split("\n");
+    const rowHeight: number = 18;
+    if(text.length > arrowPool.value.length){
+      for(let i = 0; i < text.length - arrowPool.value.length; i++){
+        addArrowElem();
+        spacePool.value.push([])
+        spaceErrorPool.value.push([])
+      }
+    }
+    for(let i=0; i < arrowPool.value.length; i++){
+      if(i < text.length){
+        const rowLeft: number = await charSetStore.calcStrWidth(text[i]);
+        arrowPool.value[i].style.top = i * rowHeight + "px";
+        arrowPool.value[i].style.left = rowLeft + "px";
+        let spaceCount = 0;
+        for(let j=0; j < text[i].length; j++){
+          if(spaceCount + 1 > spacePool.value[i].length){
+            for(let k=0; k < spaceCount + 1 - spacePool.value[i].length; k++){
+              addSpaceElem(true, i);
+              addSpaceElem(false, i);
+            }
+          }
+          let rowLeft = 0;
+          switch(text[i].charAt(j)){
+            case " ":
+              rowLeft = await charSetStore.calcStrWidth(text[i].slice(0, j));
+              if((j == 0 && text[i].charAt(j) == " ") || (j > 0 && text[i].charAt(j-1) == " ") || (j < text[i].length-1 && text[i].charAt(j+1) == " ")){
+                spaceErrorPool.value[i][spaceCount].style.top = rowHeight * (i + 1) + "px";
+                spaceErrorPool.value[i][spaceCount].style.left = rowLeft + "px";
+                spaceErrorPool.value[i][spaceCount].style.width = "4px";
+              }else{
+                spacePool.value[i][spaceCount].style.top = rowHeight * (i + 1) + "px";
+                spacePool.value[i][spaceCount].style.left = rowLeft + "px";
+                spacePool.value[i][spaceCount].style.width = "4px";
+              }
+              spaceCount++;
+              break;
+            case "　":
+              rowLeft = await charSetStore.calcStrWidth(text[i].slice(0, j));
+              spacePool.value[i][spaceCount].style.top = rowHeight * (i + 1) + "px";
+              spacePool.value[i][spaceCount].style.left = rowLeft + "px";
+              spacePool.value[i][spaceCount].style.width = "10px";
+              spaceCount++;
+              break;
+          }
+        }  
+      }else{
+        arrowPool.value[i].style.top = "-" + rowHeight + "px";
+        for(let j=0; j < spacePool.value[i].length; j++){
+          //spacePool.value[i][j].style.top = "-" + rowHeight + "px";
+        }
+        for(let j=0; j < spaceErrorPool.value[i].length; j++){
+          //spaceErrorPool.value[i][j].style.top = "-" + rowHeight + "px";
+        }
+      }
+    }
+}
+const getBrancText = (len: number): string => {
+  const res: number = len % 5;
+  let halfCount: number = (len - res) / 5;
+  let thinText: string = "";
+  switch(res){
+    case 0:
+      break;
+    case 1:
+      halfCount--;
+      thinText = "&thinsp;".repeat(3);
+      break;
+    case 2:
+      thinText = "&thinsp;".repeat(1);
+      break; 
+    case 3:
+      if(halfCount == 0){
+        thinText = ".";
+      }else{
+        halfCount--;
+        thinText = "&thinsp;".repeat(4);
+      }
+      break;
+    case 4:
+      thinText = "&thinsp;".repeat(2);
+      break;
+  } 
+  
+  return " ".repeat(halfCount) + thinText;
+}
+
+const updateArrowWithText = async (aa: string) => {
+    if(arrowContainerElem.value == null){
+      return;
+    }
+    const text: Array<string> = aa.split("\n");
+    let html: string = "";
+
+    let spaceText: string = "";
+    let spaceErrorText: string = "";
+    const rowHeight: number = 18;
+    const HALF_SPACE: string = "_";
+    const FULL_SPACE: string = "　";
+    for(let i=0; i < text.length; i++){
+      let rowLeft: number = 0;
+      let prevCharIndex = -1;
+      let prevErrorCharIndex = -1;
+      for(let j=0; j < text[i].length; j++){
+        switch(text[i].charAt(j)){
+          case " ":
+            if((j == 0 && text[i].charAt(j) == " ") || (j > 0 && text[i].charAt(j-1) == " ") || (j < text[i].length-1 && text[i].charAt(j+1) == " ")){
+              rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevErrorCharIndex + 1, j));
+              spaceErrorText += getBrancText(rowLeft);
+              spaceErrorText += HALF_SPACE;
+              prevErrorCharIndex = j;
+            }else{
+              rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex + 1, j));
+              spaceText += getBrancText(rowLeft);
+              spaceText += HALF_SPACE;
+              prevCharIndex = j;
+            }
+            break;
+          case "　":
+            rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex + 1, j));
+            spaceText += getBrancText(rowLeft);
+            spaceText += FULL_SPACE;
+            prevCharIndex = j;
+            break;
+        }
+      }
+      rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex+1, text[i].length-1));
+      spaceText += getBrancText(rowLeft);
+      spaceText += "↓\n";
+      spaceErrorText += "\n";
+    }
+    arrowContainerElem.value.innerHTML = spaceText;  
+    errorContainerElem.value.innerHTML = spaceErrorText;  
+}
 
 const updateCaretPosition = async (rawStr: string, startPos: number, endPos: number) => {
 
   const frontStr:string = rawStr.substring(0, startPos);
   const strs = frontStr.split("\n");
-  console.log("caret move", startPos, endPos);
   //行数
   const lineCount:number = frontStr.length;
   //キャレットの左側の文字列
@@ -366,7 +546,6 @@ const onSelectionChange = (e:any) => {
   if(e.target != document.activeElement){
     return;
   }
-  console.log("selection change", props.isPictureView, e.target.selectionStart);
   const rawStr:string = e.target.value;
   const endPos = e.target.selectionEnd;
   const startPos:number = e.target.selectionStart;
@@ -603,7 +782,6 @@ const onScroll = (e: any) => {
   //headSpaceElem.scrollTop = e.target.scrollTop;
   //textAreRefElem.scrollTop = e.target.scrollTop;
   //arrowContainerElem.scrollTop = e.target.scrollTop;
-  console.log(layoutStore.isDragging);
   if(layoutStore.isDragging){
     baseElem.value.scrollLeft = viewScrollLeftValue.value;
   }
@@ -631,14 +809,189 @@ const measure = (name: string, func: Function) => {
 }
 
 const test = () => {
+  const rowHeight = 18;
+  let html: string = "";
   for(let i = 0; i < 100; i++){
-    mainCanvasAsciiArtStore.asciiArt = "test".repeat(100) + i.toString();
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+}
+const test2 = () => {
+  const rowHeight = 18;
+  let html: string = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+  html = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+}
+const test3 = () => {
+  const rowHeight = 18;
+  let html: string = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+  const children = arrowContainerElem.value.children;
+  for(let i=children.length-1; i >= 0; i--){
+    //children[i].remove();
+    arrowContainerElem.value.removeChild(children[i]);
+  }
+  html = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+}
+const test4 = () => {
+  const rowHeight = 18;
+  let html: string = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+  arrowContainerElem.value.innerHTML = ""
+  html = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+}
+const test5 = () => {
+  const rowHeight = 18;
+  let html: string = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+  const ele = arrowContainerElem.value;
+  while( ele.firstChild ){
+    ele.removeChild( ele.firstChild );
+  }
+  html = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+}
+
+const test6 = () => {
+  const rowHeight = 18;
+  let html: string = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled row${i.toString() + props.isPictureView}" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+  const ele = arrowContainerElem.value;
+  const children = document.getElementsByClassName(`row10${props.isPictureView}`);
+  const len = children.length;
+  if(len > 0){
+    for( let i=0; i < len; i++ ){
+      ele.removeChild( children[0] );
+    }    
+  }
+  html = "";
+  const i = 10;
+  for(let j=0; j< 100; j++){
+    const rowLeft = j * 5;
+    html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+  }
+  
+  arrowContainerElem.value.innerHTML = html
+}
+
+const test7 = () => {
+  const rowHeight = 18;
+  let html: string = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+  const children = arrowContainerElem.value.children;
+  for(let i=0; i < children.length; i++){
+    children[i].style.height += 18;
   }
 }
+const test8 = () => {
+  const rowHeight = 18;
+  let html: string = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += `<div class="asciiArt misspelled" style = "top: ${rowHeight * (i + 1)}px; left: ${rowLeft}px; width: 4px"></div> `;
+    }
+  }
+  arrowContainerElem.value.innerHTML = html
+  const children = arrowContainerElem.value.children;
+  for(let i=0; i < children.length; i++){
+    children[i].classList.remove("misspelled");
+    children[i].classList.add("not_misspelled");
+  }
+}
+const test9 = () => {
+  const rowHeight = 18;
+  let html: string = "";
+  for(let i = 0; i < 100; i++){
+    for(let j=0; j< 100; j++){
+      const rowLeft = j * 5;
+      html += ".._";
+    }
+    html += "\n";
+  }
+  arrowContainerElem.value.innerHTML = html
+}
+
 onMounted(() => {
-  //mainCanvasAA.value = mainCanvasAsciiArtStore.asciiArt;
   updatePictureValues();
-  console.log("test", mainCanvasAsciiArtStore.asciiArt, "on mounted");
+  //measure("on mounted test", test); //10
+  //measure("on mounted test2", test2); //20
+  //measure("on mounted test2", test3); //700
+  //measure("on mounted test2", test4); //20
+  //measure("on mounted test2", test5); //30
+  //measure("on mounted test2", test6); //30
+  //measure("on mounted test2", test7); //12
+  //measure("on mounted test2", test8); //18
+  //measure("on mounted test2", test9); //0.2
+
+  //initSpacePool();
+  
 })
 
 
@@ -649,7 +1002,8 @@ onMounted(() => {
     <div class="caretPosition asciiArt blinking" ref="caretPositionElem">{{ caretText }}</div>
     <div class="measureAA asciiArt" ref="headSpaceElem"></div>
     <div class="measureAA asciiArt" ref="textAreRefElem">{{ mainCanvasAaRef }}</div>
-    <div class="asciiArt arrow" ref="arrowContainerElem"></div>
+    <div class="asciiArt arrowSpace" ref="arrowContainerElem"></div>
+    <div class="asciiArt errorSpace" ref="errorContainerElem"></div>
     <div class="selectRect asciiArt" ref="rectSelectContainerElem"></div>
     <textarea class="asciiArt textarea" 
                 spellcheck=false
@@ -744,6 +1098,14 @@ onMounted(() => {
 .arrow {
   position: absolute;
   color: gray;
+}
+.arrowSpace {
+  position: absolute;
+  color: lightgray;
+}
+.errorSpace {
+  position: absolute;
+  color: red;
 }
 
 /* 点滅 */

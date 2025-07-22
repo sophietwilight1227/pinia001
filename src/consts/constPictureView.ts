@@ -52,7 +52,7 @@ export default {
                 initialValue: 0
     },
     ALPHA: {
-                id: "aplha",
+                id: "alpha",
                 name: "透過",
                 max: 100,
                 min: -100,

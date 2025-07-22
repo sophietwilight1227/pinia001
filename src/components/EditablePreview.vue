@@ -96,7 +96,6 @@ const canvasSize: Ref<{height: string, width: string}> = ref({height: "100%", wi
 onMounted(() => {
   layoutStore.canvasSize.height = viewElem.value.scrollHeight;
   layoutStore.canvasSize.width = viewElem.value.scrollWidth;
-  console.log(layoutStore.canvasSize.height, "moutn")
 })
 
 </script>

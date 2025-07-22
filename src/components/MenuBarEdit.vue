@@ -11,9 +11,14 @@ import IconDeleteHead from '@/assets/icons/icon_delete_head.vue';
 import IconDeleteEmptyRow from '@/assets/icons/icon_delete_empty_row.vue';
 import IconDeleteLast from '@/assets/icons/icon_delete_last.vue';
 import IconArrangeEnd from '@/assets/icons/icon_arrange_end.vue';
+import IconDisplay from '@/assets/icons/icon_display.vue';
+import { createApp, ref, type Ref } from 'vue';
+import Preview from './Preview.vue';
 
 const charSetStore = useCharSetStore();
 const mainCanvasStore = useMainCanvasStore();
+const otherWindow: Ref<Window | null> = ref(null);
+const previewInstance = ref();
 
 const setRectSelectMode = (value: boolean):void => {
     mainCanvasStore.setRecSelectMode(value);
@@ -36,6 +41,32 @@ const changeRectSelectType = (e: any) => {
             mainCanvasStore.isRectSelectInsertMode = false;
             break;
     }   
+}
+const showPreview = (e:any) => {
+    otherWindow.value = window.open("", "preview", "width=960, height=1080");
+    //otherWindow.value = window.open("", "_blank");
+    if(otherWindow.value != null){
+        const otherDiv = otherWindow.value.document.createElement("div");
+        otherDiv.id = "other-app"
+        otherDiv.className = "asciiArt"
+        otherWindow.value.document.body.appendChild(otherDiv);
+
+        const otherStyle = otherWindow.value.document.createElement("style");
+        otherStyle.innerHTML = `.asciiArt {
+                                    white-space: pre;
+                                    font-size:16px;
+                                    font-style: normal;
+                                    font-weight: 400;
+                                    line-height:18px;
+                                    letter-spacing: 0;
+                                    text-shadow: none;
+                                    font-family:'ＭＳ Ｐゴシック', 'MS PGothic', 'Saitamaar', 'IPAMonaPGothic' !important;
+                                    }`
+        otherWindow.value.document.head.appendChild(otherStyle);
+        // 3, vueインスタンスを生成しコンポーネントを乗せる （インスタンス情報はvue変数に代入する）
+        previewInstance.value = createApp(Preview).mount(otherDiv);        
+    }
+
 }
 
 </script>
@@ -87,6 +118,12 @@ const changeRectSelectType = (e: any) => {
                 <IconDeleteLast/>
             </IconBase>
         </ButtonWithIcon>
+        <ButtonWithIcon :value="'プレビュー'" v-on:click="showPreview">
+            <IconBase>
+                <IconDisplay/>
+            </IconBase>
+        </ButtonWithIcon>
+        <router-link></router-link>
     </div>
 </template>
 

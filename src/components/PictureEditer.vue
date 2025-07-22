@@ -15,7 +15,6 @@ import constLocalStorage from "@/consts/constLocalStorage";
     updateValues();
   })
   const updateValues = () => {
-    console.log("update value picture");
     const r: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_RED.id);
     const g: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
     const b: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);

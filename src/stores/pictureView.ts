@@ -49,7 +49,6 @@ export const usePictureViewStore = defineStore(
                 Object.values(constPictureView.PARAM_LIST).forEach(value => {
                     const savedValue = localStorage.getItem(constLocalStorage.PREFIX + value.id);
                     nextTick();
-                    console.log(savedValue);
                     if(savedValue == null){
                         this.params.set(value.id, value.initialValue);
                     }else{
