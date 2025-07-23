@@ -1,5 +1,6 @@
 <script setup lang="ts">
-  import {ref, watch} from "vue";
+  import { usePictureViewStore } from "@/stores/pictureView";
+import {onMounted, ref, watch} from "vue";
     const props = defineProps<{
     id: string,
     name: string,
@@ -9,6 +10,8 @@
     }>()
 
     const emit = defineEmits(['change']);
+
+    const pictureViewSrtore = usePictureViewStore();
 
     const currentValue = ref(props.initialValue)
     //watch(currentValue, (newValue) => {
@@ -29,6 +32,10 @@
     const onChange = () => {
       emit("change",props.id ,currentValue.value);
     }
+
+    onMounted(()=> {
+      changeValue(pictureViewSrtore.getValue(props.id))
+    })
 </script>
 
 <template>

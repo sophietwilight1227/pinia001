@@ -30,7 +30,8 @@ body {
   line-height:18px;
   letter-spacing: 0;
   text-shadow: none;
-  font-family:'ＭＳ Ｐゴシック', 'MS PGothic', 'Saitamaar', 'IPAMonaPGothic' !important;
+  font-weight:normal;
+  font-family:'UnicodeException','Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic',  'IPAMonaPGothic' !important;
 }
 
 @font-face {
@@ -46,6 +47,11 @@ body {
 @font-face {
   font-family: 'NotoSans';
   src: url('@/assets/fonts/NotoSansJP-VariableFont_wght.ttf') format('truetype');
+}
+@font-face {
+  font-family: "UnicodeException";
+  src: local("ＭＳ Ｐゴシック");
+  unicode-range: U+2225; /* 0-9 */
 }
 /* color palette from <https://github.com/vuejs/theme> */
 /*

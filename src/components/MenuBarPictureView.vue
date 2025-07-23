@@ -6,10 +6,11 @@ import PictureEditer from './PictureEditer.vue';
 import constColor from '@/consts/constColor';
 import { useColorStore } from '@/stores/color';
 import DialogSelect from './DialogSelect.vue';
-import { ref, type Ref } from 'vue';
+import { nextTick, onMounted, ref, type Ref } from 'vue';
 import { usePictureViewStore } from '@/stores/pictureView';
 import IconReload from '@/assets/icons/icon_reload.vue';
 import ButtonText from './ButtonText.vue';
+import { connect, put, get } from "@/scripts/indexeddb"
 
 const pictureViewStore = usePictureViewStore();
 const colorStore = useColorStore();
@@ -18,9 +19,10 @@ const imageUrl: Ref<string> = ref("");
 const visibleModalMenu: Ref<boolean> = ref(false);
 const inputLocalImageButton: any = ref(null); 
 
-const openImage = () => {
+const openImage = async () => {
     pictureViewStore.setImage(imageUrl.value);
     hideModalMenu();
+    saveUrl();
 }
 
 const showModalMenu = ():void => {
@@ -40,8 +42,50 @@ const openLocalFileImage = (e: Event):void => {
     if(inputLocalImageButton.value != null){
         imageUrl.value = URL.createObjectURL(inputLocalImageButton.value.files[0]);
         openImage();
+        saveCurrentImage();
     } 
 }
+const saveCurrentImage = async () => {
+    const canvas: HTMLCanvasElement = document.createElement('canvas');
+    const ctx: any = canvas.getContext('2d');
+    const image = await loadImage(imageUrl.value);
+    ctx.drawImage(image, 0, 0);
+    const blob: any = await new Promise(resolve => canvas.toBlob(resolve));
+    const reader: any = await readFile(blob);
+    const db: any = await connect("ahoge_editor", 1, "trace_picture", "id");
+    await put(db,"trace_picture" , {id: "prev", value: reader.result})
+}
+const loadImage = (src: string) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = (e) => reject(e);
+    img.src = src;
+  });
+}
+
+const readFile = (value: Blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader);
+    reader.onerror = (e) => reject(e);
+    reader.readAsDataURL(value);
+  });
+}
+const loadPrevImage = async () => {
+    const db: any = await connect("ahoge_editor", 1, "trace_picture", "id");
+    //await put(db,"trace_picture" , {id: "prev", value: "test_name"})
+    const obj: {id: string, value: string} = await get(db, "trace_picture", "prev");
+    imageUrl.value = obj.value;
+    openImage();
+}
+const saveUrl = async () => {
+    const db: any = await connect("ahoge_editor", 1, "trace_picture", "id");
+    await put(db,"trace_picture" , {id: "prev", value: imageUrl.value})
+}
+onMounted(() => {
+    loadPrevImage();
+})
 
 </script>
 

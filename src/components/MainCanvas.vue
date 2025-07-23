@@ -484,32 +484,40 @@ const updateArrowWithText = async (aa: string) => {
     const FULL_SPACE: string = "　";
     for(let i=0; i < text.length; i++){
       let rowLeft: number = 0;
-      let prevCharIndex = -1;
-      let prevErrorCharIndex = -1;
+      let prevCharIndex = 0;
+      let prevErrorCharIndex = 0;
       for(let j=0; j < text[i].length; j++){
         switch(text[i].charAt(j)){
           case " ":
-            if((j == 0 && text[i].charAt(j) == " ") || (j > 0 && text[i].charAt(j-1) == " ") || (j < text[i].length-1 && text[i].charAt(j+1) == " ")){
-              rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevErrorCharIndex + 1, j));
+            if(j == 0){
+              spaceErrorText += HALF_SPACE;
+              prevErrorCharIndex = j;
+            }else if(j > 0 && text[i].charAt(j-1) == " "){
+              spaceErrorText += HALF_SPACE;
+              prevErrorCharIndex = j + 1;
+              console.log("|" + text[i].slice(prevErrorCharIndex , j)+ "|");
+            }else if(j < text[i].length-1 && text[i].charAt(j+1) == " "){
+              rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevErrorCharIndex , j));
               spaceErrorText += getBrancText(rowLeft);
               spaceErrorText += HALF_SPACE;
               prevErrorCharIndex = j;
+              console.log("|" + text[i].slice(prevErrorCharIndex , j)+ "|", rowLeft);
             }else{
-              rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex + 1, j));
+              rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex+1, j));
               spaceText += getBrancText(rowLeft);
               spaceText += HALF_SPACE;
               prevCharIndex = j;
             }
             break;
           case "　":
-            rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex + 1, j));
+            rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex+1, j));
             spaceText += getBrancText(rowLeft);
             spaceText += FULL_SPACE;
             prevCharIndex = j;
             break;
         }
       }
-      rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex+1, text[i].length-1));
+      rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex+1, text[i].length));
       spaceText += getBrancText(rowLeft);
       spaceText += "↓\n";
       spaceErrorText += "\n";

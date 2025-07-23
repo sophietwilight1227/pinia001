@@ -4,12 +4,14 @@ import { useMainCanvasStore } from '@/stores/mainCanvas';
 import { ref, type Ref } from 'vue';
 import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
+import FilesTab from './FilesTab.vue';
 
 const colorStore = useColorStore();
 
 const currentRow: Ref<number> = ref(1);
 const maxRow: Ref<number> = ref(1);
 const currentDot: Ref<number> = ref(0);
+const fileSize: Ref<number> = ref(0);
 const mainCanvasStore = useMainCanvasStore();
 const charSetStore = useCharSetStore();
 
@@ -17,6 +19,7 @@ mainCanvasStore.$subscribe(async (mutation, state) => {
   currentRow.value = mainCanvasStore.currentRow;
   maxRow.value = state.maxRow;
   currentDot.value = await charSetStore.calcStrWidth(mainCanvasStore.halfStrCurrentRow);
+  fileSize.value = new Blob([mainCanvasStore.asciiArt]).size;
 })
 
 </script>
@@ -33,7 +36,10 @@ mainCanvasStore.$subscribe(async (mutation, state) => {
             <span>　[dot]: </span>
             <span>{{ currentDot }}</span>
         </span>
-        <span>　[file size]　</span>
+        <span>
+            <span>　[file size]: </span>
+            <span>{{ fileSize }}</span>
+        </span>
         <span>　[ここに操作の説明など]</span>
     </div>
 </template>

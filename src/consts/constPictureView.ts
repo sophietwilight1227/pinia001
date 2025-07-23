@@ -26,15 +26,15 @@ export default {
     POS_X: {
                 id: "posX",
                 name: "X",
-                max: 500,
-                min: -500,
+                max: 2000,
+                min: -2000,
                 initialValue: 0
     },
     POS_Y: {
                 id: "posY",
                 name: "Y",
-                max: 500,
-                min: -500,
+                max: 2000,
+                min: -2000,
                 initialValue: 0
     },
     SIZE_RATE: {
