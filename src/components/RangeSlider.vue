@@ -46,7 +46,7 @@ import {onMounted, ref, watch} from "vue";
         <button v-on:click="decrement">◀</button>
         <input type="range" :min="props.min" :max="props.max" v-model="currentValue" v-on:input="onChange"/> 
         <button v-on:click="increment">▶</button>
-        <input v-model="currentValue" class="text_value"/>
+        <input v-model="currentValue" v-on:change="onChange" class="text_value"/>
     </div>
 </template>
 
