@@ -9,15 +9,21 @@ import { useLayoutStore } from "@/stores/layout";
 
 const layoutStore = useLayoutStore();
   layoutStore.$subscribe((mutation, state) => {
-    //canvasSize.value.height = state.canvasSize.height;
-    //canvasSize.value.width = state.canvasSize.width;
+    //baseElem.value.style.height =state.scrollY_pic ;
+    //baseElem.value.style.width = state.scrollX_pic ;
+    //baseElem.value.style.left = state.scrollX_pic;
+    //baseElem.value.style.top   = state.scrollY_pic ;
+   // imgElem.value.style.top +=  state.scrollY_pic;
+    canvasPos.value.top = - state.scrollY_pic;
+    canvasPos.value.left = - state.scrollX_pic;
   })
-  const canvasSize: Ref<{height: number, width: number}> = ref({height: 0, width: 0})
-
+  const canvasSize: Ref<{height: number, width: number}> = ref({height: 0, width: 0});
+  const canvasPos: Ref<{top: number, left: number}> = ref({top: 0, left: 0});
   
   const pictureViewSrtore = usePictureViewStore();
 
   const imgElem: any = ref(null);
+  const baseElem: any = ref(null);
   const lineRed = ref();
   const lineGreen = ref();
   const lineBlue = ref();
@@ -55,7 +61,6 @@ const layoutStore = useLayoutStore();
         img.onload = function(){
           canvasSize.value.height = img.height;
           canvasSize.value.width = img.width;
-          console.log(canvasSize.value.width, "image loaded");
         };
         img.src = pictureViewSrtore.imageUrl;
       }
@@ -65,6 +70,10 @@ const layoutStore = useLayoutStore();
   const backgroundColor = ref("white");
   const imgSource = ref("");
 
+const onScroll = () => {
+  console.log("scroll image")
+}
+
   onMounted(() => {
     updatePictureValues();
   })
@@ -72,7 +81,7 @@ const layoutStore = useLayoutStore();
 </script>
 
 <template>
-  <div class="base">
+  <div class="base" ref="baseElem" v-on:scroll="onScroll">
     <img :src="imgSource" class="mainImage" ref="imgElem"/>   
   </div>
 </template>
@@ -82,18 +91,20 @@ const layoutStore = useLayoutStore();
 .base {     
   min-height: 100%;
   min-width: 100%;
-  overflow:hidden;
+  overflow: hidden;
   position: absolute;
-  flex-grow: 1;  
   height: v-bind(canvasSize.height * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
   width: v-bind(canvasSize.width * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
+  /*height: v-bind(layoutStore.canvasSize.height);*/
+  /*width: v-bind(canvasSize.width + "px");*/
   background-color: v-bind(backgroundColor);
 }
 
 .mainImage {
   object-fit: none;
-  left: v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_X.id));
-  top: v-bind(cssParams.get(constPictureView.PARAM_LIST.POS_Y.id));
+  overflow: hidden;
+  left: v-bind((canvasPos.left - pictureViewSrtore.getValue(constPictureView.PARAM_LIST.POS_X.id)) + "px");
+  top: v-bind((canvasPos.top -  pictureViewSrtore.getValue(constPictureView.PARAM_LIST.POS_Y.id)) + "px");
   background: url(v-bind(imgSource));
   position: absolute;
   z-index: 0;

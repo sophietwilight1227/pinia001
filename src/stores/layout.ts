@@ -3,7 +3,7 @@ import layoutList from '../assets/data/layout.json'
 import constLayout from "@/consts/constLayout";
 interface State {
     widthDic: Map<string, Array<{widthRatio: number, size: {height: number, width: number}}>>,
-    asciiArtSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
+    asciiArtSize: {height: number, width: number}, //AA表示部のサイズ。単位なし
     canvasSize: {height: string, width: string}, //AA表示部のサイズ。単位つき
     scrollX_pic: number,
     scrollY_pic: number,
@@ -20,7 +20,7 @@ export const useLayoutStore = defineStore(
         state: (): State => {
             return {
                 widthDic: new Map(),
-                asciiArtSize: {height: '100%', width: '100%'},
+                asciiArtSize: {height: 0, width: 0},
                 canvasSize: {height: '100%', width: '100%'},
                 scrollX_pic: 0,
                 scrollY_pic: 0,
@@ -54,7 +54,7 @@ export const useLayoutStore = defineStore(
                 this.widthDic.get(layoutName)![index].size.height = height;
                 this.widthDic.get(layoutName)![index].size.width = width;
             },
-            _updateCanvasSize(height: number, width: number) {
+            updateCanvasSize(height: number, width: number) {
                 const mainCanvasIndex:number = 2; //App.vue
                 const height100:number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.height;
                 const width100: number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.width;
@@ -73,6 +73,8 @@ export const useLayoutStore = defineStore(
             updateAsciiArtSize(height: number, width: number) {
                 this.canvasSize.height = height + "px";
                 this.canvasSize.width = width + "px";
+                this.asciiArtSize.height = height;
+                this.asciiArtSize.width = width;
                 const mainCanvasIndex:number = 2; //App.vue
                 const height100:number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.height;
                 const width100: number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.width;

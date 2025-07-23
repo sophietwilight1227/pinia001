@@ -109,10 +109,12 @@ const updateTextAreaWidth = async () => {
   //const newWidth: string =  compareLength(textAreaElem.value?.scrollWidth, sizeRef100.value?.clientWidth) + "px"
   const newHeight: number = baseElem.value?.scrollHeight!;
   const newWidth: number = baseElem.value?.scrollWidth!;
+  console.log(baseElem.value?.scrollHeight, "height")
   //console.log(newHeight, newWidth, "new size");
   textAreaElem.value.style.height = textAreRefElem.value.scrollHeight + "px";
   textAreaElem.value.style.width = (textAreRefElem.value.scrollWidth + 100) + "px";
   layoutStore.updateAsciiArtSize(newHeight, newWidth);
+  //layoutStore.updateCanvasSize(newHeight, newWidth);
   //layoutStore.updateCanvasSize(newHeight, newWidth);
 }
 const compareLength = (value: number | undefined, reference: number | undefined): number => {
@@ -779,9 +781,11 @@ const onScroll = (e: any) => {
   if(props.isPictureView){
     layoutStore.scrollY_pic = e.target.scrollTop;
     layoutStore.scrollX_pic = e.target.scrollLeft;
+    console.log("scroll", e.target.scrollTop)
   }else{
     layoutStore.scrollY_canvas = e.target.scrollTop;
     layoutStore.scrollX_canvas = e.target.scrollLeft;
+    
   }
   
 
@@ -794,6 +798,9 @@ const onScroll = (e: any) => {
     baseElem.value.scrollLeft = viewScrollLeftValue.value;
   }
   viewScrollLeftValue.value = viewScrollLeft();  
+
+  layoutStore.canvasSize.height = baseElem.value.height;
+  layoutStore.canvasSize.width = baseElem.value.width;
 }
 
 
