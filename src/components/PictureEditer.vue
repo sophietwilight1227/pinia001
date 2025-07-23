@@ -23,6 +23,7 @@ import constLocalStorage from "@/consts/constLocalStorage";
     Object.values(constPictureView.PARAM_LIST).forEach(value => {
       if(componentRefs(value.id)!.value != null){
         componentRefs(value.id)!.value.changeValue(pictureViewSrtore.getValue(value.id));
+        console.log(value.id, "update")
       }
     });  
   }

@@ -25,9 +25,11 @@ import {onMounted, ref, watch} from "vue";
     
     const increment = ():void => {
       currentValue.value ++;
+      onChange();
     }
     const decrement = ():void => {
       currentValue.value --;
+      onChange();
     } 
     const onChange = () => {
       emit("change",props.id ,currentValue.value);
