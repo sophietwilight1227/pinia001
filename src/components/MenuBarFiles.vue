@@ -11,6 +11,7 @@ import { useColorStore } from '@/stores/color';
 import { useDialogStore } from '@/stores/dialog';
 import DialogSelect from './DialogSelect.vue';
 import ButtonText from './ButtonText.vue';
+import { decodeNumericEntity } from '@/scripts/encode';
 
 const colorStore = useColorStore();
 const dialogStore = useDialogStore();

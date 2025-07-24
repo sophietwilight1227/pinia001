@@ -14,11 +14,17 @@ import IconArrangeEnd from '@/assets/icons/icon_arrange_end.vue';
 import IconDisplay from '@/assets/icons/icon_display.vue';
 import { createApp, ref, type Ref } from 'vue';
 import Preview from './Preview.vue';
+import textCss from '@/assets/base.txt';
+import { convertSjis } from '@/scripts/encode';
+import IconCopy from '@/assets/icons/icon_copy.vue';
+import { useDialogStore } from '@/stores/dialog';
+import "../assets/base.css";
 
 const charSetStore = useCharSetStore();
 const mainCanvasStore = useMainCanvasStore();
 const otherWindow: Ref<Window | null> = ref(null);
 const previewInstance = ref();
+const dialogStore = useDialogStore();
 
 const setRectSelectMode = (value: boolean):void => {
     mainCanvasStore.setRecSelectMode(value);
@@ -42,36 +48,68 @@ const changeRectSelectType = (e: any) => {
             break;
     }   
 }
-const showPreview = (e:any) => {
+const showPreview = async (e:any) => {
     otherWindow.value = window.open("", "preview", "width=960, height=1080");
     //otherWindow.value = window.open("", "_blank");
     if(otherWindow.value != null){
-        const otherDiv = otherWindow.value.document.createElement("div");
+        const otherDiv = otherWindow.value.document.createElement('#app');
         otherDiv.id = "other-app"
         otherDiv.className = "asciiArt"
         otherWindow.value.document.body.appendChild(otherDiv);
 
         const otherStyle = otherWindow.value.document.createElement("style");
-        otherStyle.innerHTML = `.asciiArt {
-                                    white-space: pre;
-                                    font-size:16px;
-                                    font-style: normal;
-                                    font-weight: 400;
-                                    line-height:18px;
-                                    letter-spacing: 0;
-                                    text-shadow: none;
-                                    font-family:'ＭＳ Ｐゴシック', 'MS PGothic', 'Saitamaar', 'IPAMonaPGothic' !important;
-                                    }`
+        const response = await fetch(textCss);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+        otherStyle.innerHTML = text;
         otherWindow.value.document.head.appendChild(otherStyle);
         // 3, vueインスタンスを生成しコンポーネントを乗せる （インスタンス情報はvue変数に代入する）
-        previewInstance.value = createApp(Preview).mount(otherDiv);        
+        previewInstance.value = createApp(Preview).mount(otherDiv);
+    }else{
+        dialogStore.error("プレビューが開けませんでした")
     }
 
+}
+const copyToClipBoartWithShiftJis = async () => {
+    if (!navigator.clipboard) {
+        alert("残念。このブラウザは対応していません...");
+        return;
+    }
+    const aa: string = mainCanvasStore.asciiArt;
+    const sjisText = convertSjis(aa);
+    navigator.clipboard.writeText(sjisText);
+    dialogStore.info("クリップボードにコピーしました")
+}
+const copyToClipBoartWithUtf8 = async () => {
+    if (!navigator.clipboard) {
+        alert("残念。このブラウザは対応していません...");
+        return;
+    }
+    const aa: string = mainCanvasStore.asciiArt;
+    navigator.clipboard.writeText(aa);
+    dialogStore.info("クリップボードにコピーしました")
 }
 
 </script>
 <template>
     <div class="base">
+        <ButtonWithIcon :value="'コピー(Shift-JIS)'" v-on:click="copyToClipBoartWithShiftJis">
+            <IconBase>
+                <IconCopy/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'コピー(UTF-8)'" v-on:click="copyToClipBoartWithUtf8">
+            <IconBase>
+                <IconCopy/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'プレビュー'" v-on:click="showPreview">
+            <IconBase>
+                <IconDisplay/>
+            </IconBase>
+        </ButtonWithIcon>
         <div>
             <div>矩形選択</div>
             <ToggleButton v-on:click="setRectSelectMode"/>                
@@ -118,12 +156,6 @@ const showPreview = (e:any) => {
                 <IconDeleteLast/>
             </IconBase>
         </ButtonWithIcon>
-        <ButtonWithIcon :value="'プレビュー'" v-on:click="showPreview">
-            <IconBase>
-                <IconDisplay/>
-            </IconBase>
-        </ButtonWithIcon>
-        <router-link></router-link>
     </div>
 </template>
 

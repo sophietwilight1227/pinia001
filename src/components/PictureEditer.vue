@@ -23,7 +23,6 @@ import constLocalStorage from "@/consts/constLocalStorage";
     Object.values(constPictureView.PARAM_LIST).forEach(value => {
       if(componentRefs(value.id)!.value != null){
         componentRefs(value.id)!.value.changeValue(pictureViewSrtore.getValue(value.id));
-        console.log(value.id, "update")
       }
     });  
   }
@@ -114,7 +113,6 @@ import constLocalStorage from "@/consts/constLocalStorage";
   const imgSource = ref("");
   
   const changeSliderValue = (id: string, newValue: number):void => {
-    console.log("catch: " + id + " / " + newValue);
     pictureViewSrtore.setValue(id, newValue);
   }
 

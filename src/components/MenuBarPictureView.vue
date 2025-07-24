@@ -26,14 +26,10 @@ const openImage = async () => {
 }
 
 const showModalMenu = ():void => {
-    if(openImageElem.value != null){
-        openImageElem.value.show();
-    }
+    visibleModalMenu.value = true;
 }
 const hideModalMenu = ():void => {
-    if(openImageElem.value != null){
-        openImageElem.value.hide();
-    }
+    visibleModalMenu.value = false;
 }
 const onClickOpenLocalImage = ():void => {
     inputLocalImageButton.value!.click();
@@ -48,7 +44,9 @@ const openLocalFileImage = (e: Event):void => {
 const saveCurrentImage = async () => {
     const canvas: HTMLCanvasElement = document.createElement('canvas');
     const ctx: any = canvas.getContext('2d');
-    const image = await loadImage(imageUrl.value);
+    const image:any = await loadImage(imageUrl.value);
+    canvas.height = image.height;
+    canvas.width = image.width;
     ctx.drawImage(image, 0, 0);
     const blob: any = await new Promise(resolve => canvas.toBlob(resolve));
     const reader: any = await readFile(blob);
@@ -83,6 +81,9 @@ const saveUrl = async () => {
     const db: any = await connect("ahoge_editor", 1, "trace_picture", "id");
     await put(db,"trace_picture" , {id: "prev", value: imageUrl.value})
 }
+const setURL = (e: any) => {
+    imageUrl.value = e.target.value;
+}
 onMounted(() => {
     loadPrevImage();
 })
@@ -102,11 +103,11 @@ onMounted(() => {
             </IconBase>
         </ButtonWithIcon>
         <PictureEditer/>
-        <DialogSelect ref="openImageElem">
+        <DialogSelect v-show="visibleModalMenu">
             <div>画像選択</div>
             <div>
                 <div>ウェブ</div>
-                <input type="text" v-model="imageUrl"/>
+                <input type="text" v-on:change="setURL"/>
                 <ButtonText :value="'開く'" v-on:click="openImage"/>    
             </div>
             <div>

@@ -1,4 +1,4 @@
- 
+ import { convertSjis, decodeNumericEntity } from "./encode";
 
 const showOpenFileDialog = (acceptType: string) => new Promise<FileList | null>(resolve => {
 	const input = document.createElement('input');
@@ -37,7 +37,8 @@ export const openText = async (fileType: Array<string>): Promise<{isValid: boole
                 content = await files[0].text();
             }else{
                 const textDecoder = new TextDecoder('shift-jis');
-                content = textDecoder.decode(await bytes);                
+                content = textDecoder.decode(await bytes);       
+                content = decodeNumericEntity(content);         
             }
             isValid = true;     
             errorMessage = ""; 
@@ -92,7 +93,7 @@ const getShiftJisTable = () => {
 }
 
 
-const encodeShiftJis = (content: string) => {
+export const encodeShiftJis = (content: string) => {
     const table = getShiftJisTable();
     let buffer = [];
     for (let i = 0; i < content.length; i++) {
@@ -123,8 +124,9 @@ const encodeShiftJis = (content: string) => {
 };
 
 export const writeAaTextFile = (text: string, filename: string ,filetype: string , encode: string): void => {
+    const convertedText = convertSjis(text);
     // SHIFT-JISにエンコード
-    const sjisData = encodeShiftJis(text);
+    const sjisData = encodeShiftJis(convertedText);
     if(sjisData == null){
         return;
     }
@@ -139,7 +141,7 @@ export const writeAaTextFile = (text: string, filename: string ,filetype: string
             break;
     }
     // Blobでデータを作成
-    const blob = new Blob([sjisData], { type: 'text/plain;charset=shift-jis;' });
+    const blob = new Blob([sjisData], { type: encodeOption});
 
     // ダウンロードリンクを作成
     const link = document.createElement('a');

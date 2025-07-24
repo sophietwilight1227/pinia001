@@ -9,11 +9,6 @@ import { useLayoutStore } from "@/stores/layout";
 
 const layoutStore = useLayoutStore();
   layoutStore.$subscribe((mutation, state) => {
-    //baseElem.value.style.height =state.scrollY_pic ;
-    //baseElem.value.style.width = state.scrollX_pic ;
-    //baseElem.value.style.left = state.scrollX_pic;
-    //baseElem.value.style.top   = state.scrollY_pic ;
-   // imgElem.value.style.top +=  state.scrollY_pic;
     canvasPos.value.top = - state.scrollY_pic;
     canvasPos.value.left = - state.scrollX_pic;
   })
@@ -95,8 +90,6 @@ const onScroll = () => {
   position: absolute;
   height: v-bind(canvasSize.height * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
   width: v-bind(canvasSize.width * cssParams.get(constPictureView.PARAM_LIST.SIZE_RATE.id) + "px");
-  /*height: v-bind(layoutStore.canvasSize.height);*/
-  /*width: v-bind(canvasSize.width + "px");*/
   background-color: v-bind(backgroundColor);
 }
 

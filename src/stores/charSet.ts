@@ -1,6 +1,7 @@
 import { writeAaTextFile } from "@/scripts/fileIO";
 import {defineStore} from "pinia";
 import { nextTick } from "vue";
+import { decodeNumericEntity } from "@/scripts/encode";
 
 interface State {
     charSizeDic: Map<string, number>;
@@ -81,7 +82,8 @@ export const useCharSetStore = defineStore(
                 this.charPalette[indexNo].charList.splice(charNo, 0, {value: charValue, width: width})
             },
             addCharToCurrentPalette(charNo: number, charValue: string, width: number): void {
-                this.charPalette[this.currentIndex].charList.splice(charNo, 0, {value: charValue, width: width})
+                const char = decodeNumericEntity(charValue);
+                this.charPalette[this.currentIndex].charList.splice(charNo, 0, {value: char, width: width})
             },
             removeCharFromCurrentPalette(charNo: number): void {
                 this.charPalette[this.currentIndex].charList.splice(charNo, 1);
@@ -127,7 +129,9 @@ export const useCharSetStore = defineStore(
                         if(widthPromis != null){
                             width = widthPromis.valueOf();
                         }
-                        list[list.length - 1].list.push({value: char, width: width.valueOf()});
+                        let convertedChar: string = decodeNumericEntity(char);
+
+                        list[list.length - 1].list.push({value: convertedChar, width: width.valueOf()});
                     }
                 }
                 this.readAaList(list);

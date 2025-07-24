@@ -34,6 +34,7 @@ const previewPositionElem: any = ref(null);
 const hasGridElem: any = ref(null);
 const colorSchemeElem: any = ref(null);
 const spaceTypeElem: any = ref(null);
+const useUnicodeSpaceElem: any = ref(null);
 
 const init = () => {
     const holdLastEditAA = localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT);
@@ -87,6 +88,16 @@ const init = () => {
         }
     }
     colorSchemeElem.value.options[colorSchemeIndex].selected = true;
+
+    const useUnicodeSpace = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE);
+    let useUnicodeSpaceIndex = 0;
+    if(spaceType != null){
+        if(useUnicodeSpace == "false"){
+            useUnicodeSpaceIndex = 1;
+        }
+    }
+    useUnicodeSpaceElem.value.options[useUnicodeSpaceIndex].selected = true;
+    mainCanvasAsciiArtStore.useUnicodeSpace = (spaceTypeIndex == 0);
 }
 
 const onClickReadAaList = ():void => {
@@ -165,6 +176,12 @@ const changeSpeceType = (e:any) => {
     mainCanvasAsciiArtStore.showSpaceWithText = value;
     localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE, e.target.value);
 }
+const changeUseUnicodeSpace = (e:any) => {
+    const value = (e.target.value == "true");
+    mainCanvasAsciiArtStore.useUnicodeSpace = value;
+    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE, e.target.value);
+}
+
 const showCredit = ():void => {
     visibleCredit.value = true;
 }
@@ -212,6 +229,11 @@ const hideSetting = () => {
         
         <DialogSelect v-show="visibleSetting">
             <div>
+                <div>Unicode空白の使用(ドットずらし時)</div>
+                <select name="useUnicodeSpace" v-on:change="changeUseUnicodeSpace" ref="useUnicodeSpaceElem">
+                    <option value="true">使う</option>
+                    <option value="false">使わない</option>
+                </select>  
                 <div>空白の強調表示方法</div>
                 <select name="holdLastEditAA" v-on:change="changeSpeceType" ref="spaceTypeElem">
                     <option value="true">テキスト (軽い)</option>
@@ -253,7 +275,7 @@ const hideSetting = () => {
         <DialogSelect v-show="visibleCredit" >
             <div>info</div>
             <img src="@/assets/images/logo.png" alt="logo"><br>
-            <div>ver 0.0.4</div>
+            <div>ver 0.0.5</div>
             <div>by North Tail</div>
             <ButtonText :value="'とじる'" v-on:click="hideCredit"/>
         </DialogSelect>

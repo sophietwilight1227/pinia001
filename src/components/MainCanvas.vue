@@ -8,6 +8,7 @@ import { useLayoutStore } from "@/stores/layout";
 import { usePictureViewStore } from "@/stores/pictureView";
 import constPictureView from "@/consts/constPictureView";
 import constLocalStorage from "@/consts/constLocalStorage";
+import { decodeNumericEntity } from "@/scripts/encode";
 
 const props = defineProps<{
   isPictureView: boolean,
@@ -54,6 +55,10 @@ mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
     const end = mainCanvasAsciiArtStore.caretPosition.end;
     textAreaElem.value.setSelectionRange(start, end );  
   }
+  //const start = mainCanvasAsciiArtStore.caretPosition.start;
+  //const end = mainCanvasAsciiArtStore.caretPosition.end;
+  //console.log("selection change", start, end)
+  //textAreaElem.value.setSelectionRange(start, end );  
 })
 const mainCanvasAaRef = computed(() => {
   return mainCanvasAsciiArtStore.asciiArt + '\u200b';//これがないとテキスト末尾の空行がうまくいかなくなる
@@ -105,38 +110,13 @@ const onButtonClick = async () => {
 
 const updateTextAreaWidth = async () => {
   await nextTick();
-  //const newHeight: string = compareLength(textAreaElem.value?.scrollHeight, sizeRef100.value?.clientHeight) + "px"
-  //const newWidth: string =  compareLength(textAreaElem.value?.scrollWidth, sizeRef100.value?.clientWidth) + "px"
   const newHeight: number = baseElem.value?.scrollHeight!;
   const newWidth: number = baseElem.value?.scrollWidth!;
-  console.log(baseElem.value?.scrollHeight, "height")
-  //console.log(newHeight, newWidth, "new size");
   textAreaElem.value.style.height = textAreRefElem.value.scrollHeight + "px";
   textAreaElem.value.style.width = (textAreRefElem.value.scrollWidth + 100) + "px";
   layoutStore.updateAsciiArtSize(newHeight, newWidth);
-  //layoutStore.updateCanvasSize(newHeight, newWidth);
-  //layoutStore.updateCanvasSize(newHeight, newWidth);
-}
-const compareLength = (value: number | undefined, reference: number | undefined): number => {
-  if(value != null && reference != null){
-    if(value > reference){
-      return value;
-    }else{
-      return reference;
-    }
-  }else{
-    return 0;
-  }
 }
 
-//MenuBarにも同じのがある。共通化する
-const decodeNumericEntity = (str: string) => {
-    var re = /&#([0-9a-fA-F]+);/g;
-    return str.replace(re, function(m) {
-      var cp = parseInt(arguments[1], 10);
-      return String.fromCodePoint(cp);
-    }); 
-}
 const checkContinuousSpace_ = (text: string): void => {
   if(!text.includes("  ")){
     return;
@@ -497,13 +477,11 @@ const updateArrowWithText = async (aa: string) => {
             }else if(j > 0 && text[i].charAt(j-1) == " "){
               spaceErrorText += HALF_SPACE;
               prevErrorCharIndex = j + 1;
-              console.log("|" + text[i].slice(prevErrorCharIndex , j)+ "|");
             }else if(j < text[i].length-1 && text[i].charAt(j+1) == " "){
               rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevErrorCharIndex , j));
               spaceErrorText += getBrancText(rowLeft);
               spaceErrorText += HALF_SPACE;
               prevErrorCharIndex = j;
-              console.log("|" + text[i].slice(prevErrorCharIndex , j)+ "|", rowLeft);
             }else{
               rowLeft = await charSetStore.calcStrWidth(text[i].slice(prevCharIndex+1, j));
               spaceText += getBrancText(rowLeft);
@@ -781,19 +759,11 @@ const onScroll = (e: any) => {
   if(props.isPictureView){
     layoutStore.scrollY_pic = e.target.scrollTop;
     layoutStore.scrollX_pic = e.target.scrollLeft;
-    console.log("scroll", e.target.scrollTop)
   }else{
     layoutStore.scrollY_canvas = e.target.scrollTop;
     layoutStore.scrollX_canvas = e.target.scrollLeft;
     
   }
-  
-
-  //rectSelectContainerElem.scrollTop = e.target.scrollTop;
-  //caretPositionElem.scrollTop = e.target.scrollTop;
-  //headSpaceElem.scrollTop = e.target.scrollTop;
-  //textAreRefElem.scrollTop = e.target.scrollTop;
-  //arrowContainerElem.scrollTop = e.target.scrollTop;
   if(layoutStore.isDragging){
     baseElem.value.scrollLeft = viewScrollLeftValue.value;
   }

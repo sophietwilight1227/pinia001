@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import type { EditLog, Setting } from "@/interfaces";
 import constLocalStorage from "@/consts/constLocalStorage";
+import { decodeNumericEntity } from "@/scripts/encode";
 
 
 interface State {
@@ -26,6 +27,7 @@ interface State {
     currentMoviePosition: number,
     holdLastEditAA: boolean,
     showSpaceWithText: boolean,
+    useUnicodeSpace: boolean
 };
 
 export const useMainCanvasStore = defineStore(
@@ -48,6 +50,7 @@ export const useMainCanvasStore = defineStore(
                 currentMoviePosition: 0,
                 holdLastEditAA: false,
                 showSpaceWithText: true,
+                useUnicodeSpace: false,
             };
         },
         getters: {
@@ -114,6 +117,13 @@ export const useMainCanvasStore = defineStore(
                 }else{
                     this.showSpaceWithText = (spaceType == "true");
                 }
+
+                const useUnicodeSpace: string | null = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE);
+                if(useUnicodeSpace == null){
+                    this.useUnicodeSpace = true;
+                }else{
+                    this.useUnicodeSpace = (spaceType == "true");
+                }
             },
             editAsciiArt(aa: string, log: EditLog):void {
                 this.asciiArt = aa;
@@ -134,6 +144,27 @@ export const useMainCanvasStore = defineStore(
                 this.rowIndex = index;
                 this.maxRow = lineCount;
             },
+            moveCaretToEndOfSpace(){
+                const halfLatterText: string = this.asciiArt.slice(this.caretPosition.start, this.asciiArt.length);
+                let notSpacePos: number = -1;
+                for(let i=0;i < halfLatterText.length; i++){
+                    switch(halfLatterText.charAt(i)){
+                        case(" "):
+                        case("　"):
+                        case("&thinsp;"):
+                        console.log("space")
+                            break;
+                        default:
+                            notSpacePos = i;
+                            break;
+                    }
+                    if(notSpacePos >= 0){
+                        this.caretPosition.start += notSpacePos;
+                        this.caretPosition.end += notSpacePos;
+                        return;
+                    }
+                }
+            },
             getLastSpaceWidth(): {text: string, width: number} {
                 const halfText: string = this.asciiArt.slice(0, this.caretPosition.start);
                 const rowStartPosition = halfText.lastIndexOf("\n") + 1;
@@ -148,13 +179,160 @@ export const useMainCanvasStore = defineStore(
                         case "　":
                             width += 11; //スペースの幅
                             break;
+                        case " ":
+                            width += 2;
+                            break;
                         default:
                             return {text: prevBlock + halfRow.slice(0, i + 1), width: width};
                     }
                 }
                 return {text: prevBlock, width: width};
             },
-            changeDot(delta: number): void{
+            changeDot(delta: number): void {
+                this.moveCaretToEndOfSpace();
+                if(this.useUnicodeSpace){
+                    this.changeDotWithUnicode(delta);
+                }else{
+                    this.changeDotWithoutUnicode(delta);
+                }
+            },
+            changeDotWithUnicode(delta: number): void {
+                const currentRowInfo:{text: string, width: number} = this.getLastSpaceWidth();
+                const targetWidth: number = currentRowInfo.width + delta;
+                let res: number = targetWidth % 11
+                let countFull: number = (targetWidth - res) / 11; //全角スペースの個数
+                let countHalf: number = 0;
+                let countThin: number = 0;
+                const thinsp: string = "&#8201;"
+                switch(res){
+                    case 0:
+                        break;
+                    case 1:
+                        countFull--;
+                        if(countFull > 0){
+                            countHalf = 2;
+                            countThin = 1
+                        }else{
+                            countHalf = 0;
+                            countThin = 6;                           
+                        }
+                        break;
+                    case 2:
+                        if(countFull >= 10){
+                            countFull -= 3;
+                            countHalf = 7
+                        }else{
+                            countThin = 1;
+                        }
+                        break;
+                    case 3:
+                        if(countFull >= 7){
+                            countFull -= 2;
+                            countHalf = 5;
+                        }else if(countFull >= 1){
+                            countFull--;
+                            countHalf = 2;
+                            countThin = 2
+                        }else{
+                            console.log("error?")
+                            return; //不可
+                        }
+                        break;
+                    case 4:
+                        if(countFull >= 4){
+                            countFull--;
+                            countHalf = 3;
+                        }else{
+                            countThin = 2;
+                        }
+                        break;
+                    case 5:
+                        countHalf = 1;
+                        break;
+                    case 6:
+                        countHalf = 1;
+                        if(countFull > 0){
+                            countFull--;
+                            if(countFull > 0){
+                                countHalf += 2;
+                                countThin = 1
+                            }else{
+                                countThin = 6;                           
+                            }
+                        }
+                        break;
+                    case 7:
+                        countHalf = 1;
+                        if(countFull >= 10){
+                            countFull -= 3;
+                            countHalf += 7
+                        }else{
+                            countThin = 1;
+                        }
+                        break;
+                    case 8:
+                        if(countFull >= 8){
+                            countFull -= 2;
+                            countHalf = 6;
+                        }else if(countFull >= 2){
+                            countFull--;
+                            countHalf = 3;
+                            countThin = 2
+                        }else{
+                            countThin = 4;
+                        }
+                        break;
+                    case 9:
+                        if(countFull >= 5){
+                            countFull--;
+                            countHalf = 4;
+                        }else{
+                            countHalf = 1;
+                            countThin = 2;
+                        }
+                        break;
+                    case 10:
+                        if(countFull > 2){
+                            countHalf = 2;
+                        }else{
+                            countThin = 5;
+                        }
+                        break;
+                }
+
+                //半角スペースがなるべく連続しないように
+                let space: string = "";
+                if(countHalf > countFull + countThin){
+                    space = "　 ".repeat(countFull) + (thinsp + " ").repeat(countThin) + " ".repeat(countHalf - countFull - countThin) ;
+                }else{
+                    if(countFull >= countHalf){
+                        space = "　".repeat(countFull - countHalf) + "　 ".repeat(countHalf) + thinsp.repeat(countThin);
+                    }else if(countThin >= countHalf){
+                        space = "　".repeat(countFull) + thinsp.repeat(countThin - countHalf) + (thinsp + " ").repeat(countHalf);
+                    }else{
+                        if(countFull + countThin >= countHalf){
+                            space = "　 ".repeat(countFull) + (thinsp + " ").repeat(countHalf - countFull) + thinsp.repeat(countThin + countFull - countHalf);
+                        }else{
+                            space = "　 ".repeat(countFull) + (thinsp + " ").repeat(countThin) + " ".repeat(countHalf - countThin - countFull);
+                        }
+                    }
+                }
+                const latterText: string = this.asciiArt.slice( this.caretPosition.start, this.asciiArt.length);
+
+                space = decodeNumericEntity(space);
+
+
+
+                const aa = currentRowInfo.text + space + latterText;
+                const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
+                this.editAsciiArt(aa, log);
+
+                const pos: number = (currentRowInfo.text + space).length;
+                this.caretPosition.start = pos;
+                this.caretPosition.end = pos;                
+
+            },
+            changeDotWithoutUnicode(delta: number): void {
                 const currentRowInfo:{text: string, width: number} = this.getLastSpaceWidth();
                 const targetWidth: number = currentRowInfo.width + delta;
                 let res: number = targetWidth % 11
@@ -191,7 +369,6 @@ export const useMainCanvasStore = defineStore(
                 const aa = currentRowInfo.text + space + latterText;
                 const log: EditLog = {value: aa, start: 0, end: aa.length - 1};
                 this.editAsciiArt(aa, log);
-                console.log(aa, "dot");
             },
             addSpaceToEndOfLine(){
                 const text: Array<string> = this.asciiArt.split("\n");
