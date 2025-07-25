@@ -27,7 +27,8 @@ interface State {
     currentMoviePosition: number,
     holdLastEditAA: boolean,
     showSpaceWithText: boolean,
-    useUnicodeSpace: boolean
+    useUnicodeSpace: boolean,
+    showSpaceArrow: boolean,
 };
 
 export const useMainCanvasStore = defineStore(
@@ -48,9 +49,10 @@ export const useMainCanvasStore = defineStore(
                 setting: {},
                 isMovieMode: false,
                 currentMoviePosition: 0,
-                holdLastEditAA: false,
+                holdLastEditAA: true,
                 showSpaceWithText: true,
                 useUnicodeSpace: false,
+                showSpaceArrow: false,
             };
         },
         getters: {
@@ -91,14 +93,16 @@ export const useMainCanvasStore = defineStore(
             },
         },
         actions: {
-            initAsciiArt(): void {
-                let lastAA = null;
-                const holdLastAA = localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT);
-                if(holdLastAA == null){
-                    this.holdLastEditAA = false;
+            isTrue(value: string | null): boolean {
+                if(value == null){
+                    return true;
                 }else{
-                    this.holdLastEditAA = (holdLastAA == "true");
+                    return value == "true";
                 }
+            },
+            initAsciiArt(): void {
+                this.holdLastEditAA = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT));
+                let lastAA = null;
                 if(this.holdLastEditAA){
                     lastAA = localStorage.getItem(constLocalStorage.TAG_NAME.LAST_EDIT_AA);
                 }
@@ -111,21 +115,15 @@ export const useMainCanvasStore = defineStore(
                     this.allData.splice(0);
                     this.allData.push({fileName: "new file",currentPosition: 0 , aaList: [{aaName: "last edit", asciiArt: lastAA, editLogs: []}]})
                 }
-                const spaceType: string | null = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE);
-                if(spaceType == null){
-                    this.showSpaceWithText = true;
-                }else{
-                    this.showSpaceWithText = (spaceType == "true");
-                }
 
-                const useUnicodeSpace: string | null = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE);
-                if(useUnicodeSpace == null){
-                    this.useUnicodeSpace = true;
-                }else{
-                    this.useUnicodeSpace = (spaceType == "true");
-                }
+                this.showSpaceWithText = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE));
+                this.useUnicodeSpace = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE));
+                this.showSpaceArrow = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SHOW_SPACE_ARROW));
             },
             editAsciiArt(aa: string, log: EditLog):void {
+                if(this.asciiArt == aa){
+                    return;
+                }
                 this.asciiArt = aa;
                 const currentPosition: number = this.allData[this.currentFileNamePosition].currentPosition;
                 this.allData[this.currentFileNamePosition].aaList[currentPosition].asciiArt = this.asciiArt;

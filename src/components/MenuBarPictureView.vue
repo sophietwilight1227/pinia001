@@ -103,8 +103,7 @@ onMounted(() => {
             </IconBase>
         </ButtonWithIcon>
         <PictureEditer/>
-        <DialogSelect v-show="visibleModalMenu">
-            <div>画像選択</div>
+        <DialogSelect v-show="visibleModalMenu" :title="'画像選択'">
             <div>
                 <div>ウェブ</div>
                 <input type="text" v-on:change="setURL"/>

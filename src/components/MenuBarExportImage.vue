@@ -21,6 +21,9 @@ const sizeRefAA: Ref<string> = ref("");
 const canvasHeight: Ref<string> = ref("0px");
 const canvasWidth: Ref<string> = ref("0px");
 const previewSource: Ref<string> = ref("");
+const fontColor: Ref<string> = ref("#000000");
+const backgroundColor: Ref<string> = ref("#ffffff");
+const isTransparent: Ref<boolean> = ref(false);
 
 const render = async () => {
     sizeRefElem.value.style.display = "inline-block";
@@ -34,8 +37,15 @@ const render = async () => {
     imageElem.value.width = sizeRefElem.value.scrollWidth;
 
     const ctx = canvasElem.value.getContext('2d');
-    ctx.clearRect(0, 0, canvasElem.value.width, canvasElem.value.height);
-    ctx.font = '16px Saitamaar';
+    
+    if(isTransparent.value){
+        ctx.fillStyle = "transparent"
+    }else{
+        ctx.fillStyle = backgroundColor.value;
+    }
+    ctx.fillRect(0, 0, canvasElem.value.width, canvasElem.value.height);
+    ctx.fillStyle = fontColor.value;
+    ctx.font = '16px Saitamaar ' ;
     const lineHeight: number = 18;  //18px
     const textArray: Array<string> = mainCanvasStore.asciiArt.split("\n");
     for(let i = 0; i < textArray.length; i++){
@@ -86,6 +96,24 @@ const download = () => {
             </div>
             <div class="asciiArt ref" ref="sizeRefElem">{{ sizeRefAA }}</div>
         </div>
+        <div>
+            <div class="row">
+                <label for="fontColor">
+                    <input type="color" id="backgroundColor" v-model="fontColor">   
+                    文字色
+                </label>  
+            </div>
+            <div class="row">
+                <label for="backgroundColor">
+                    <input type="color" id="fontColor" v-model="backgroundColor">  
+                    背景色
+                </label>
+                <label for="transparent">
+                    <input type="checkbox" id="transparent" v-model="isTransparent">
+                    透明色
+                </label>
+            </div>
+        </div>
     </div>
 
 </template>
@@ -115,5 +143,10 @@ const download = () => {
         max-height: 100%;
         max-width: 100%;
         background-color: white;
+    }
+    .row {
+        display: flex;
+        flex-direction: row;
+        align-items:center; 
     }
 </style>

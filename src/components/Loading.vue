@@ -1,56 +1,93 @@
 <script setup lang="ts">
+import { useColorStore } from '@/stores/color';
 import { computed, ref, type Ref } from 'vue';
+import constColor from '@/consts/constColor';
 
+const colorStore = useColorStore();
+const loadingElem: any = ref(null);
+const text: Ref<string> = ref("loading...")
 
-const maxValue: Ref<number> = ref(100);
-const currentValue: Ref<number> = ref(0); 
-
-const setMax = (value: number) => {
-    maxValue.value = value;
+const show = (txt: string) => {
+  text.value = txt;
+  loadingElem.value.classList.remove("loaded");
 }
-const setValue = (value: number) => {
-    currentValue.value = value;
+const hide = () => {
+  loadingElem.value.classList.add("loaded");
 }
-defineExpose({ setValue, setMax });
+defineExpose({ show, hide });
 
-const percentage = computed(() => {
-    return currentValue.value / maxValue.value * 100 + "%";
-})
 </script>
 <template>
-    <div class="loading">
-        <span class="circle"></span>
-    </div> 
+  <div class="loading loaded" ref="loadingElem">
+    <p class="loading-text">{{ text }}</p>
+    <div class="spinner"></div>
+  </div>
 </template>
 <style scoped>
-.loading {
-  position: fixed;
-  z-index: 1000;
-  width: 100%;
-  height: 100vh;
-  margin: 0;
-  padding: 0;
-  background: #fdfdfd;
-}
-.loading.hide {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 500ms;
-}
-.loading.circle {
-  display: block;
-  position: relative;
-  top: cacl(50% - 20px);
-  width: 40px;
-  height: 40px;
-  margin: 0 auto;
-  border: 8px solid #e0e0e0;
-  border-top: 7px solid #fffccc;
-  border-radius: 50px;
-  animation: loading 700ms linear 0ms infinite normal both;
-}
-@keyframes loading {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+
+    .loading {
+    /*ローディング画面の縦横幅を画面いっぱいになるように指定*/
+    width: 100vw;
+    height: 100vh;
+    /*ローディング画面の表示位置を固定*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    /*ローディング画面を0.5秒かけて非表示にする*/
+    transition: all 0.5s linear;
+    z-index: 4000;
+    }
+
+    /*ローディング画面を非表示にする*/
+    .loading.loaded {
+    /*0.5秒かけてopacityを0にする*/
+    opacity: 0;
+    visibility: hidden;
+    }
+
+    .loading-text {
+    color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+    }
+
+    .spinner {
+    display: block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 4px solid v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    border-left-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
+    /* アニメーションを1秒かけて実行 */
+    animation: spinner-rotation 1s linear infinite;
+    }
+
+    /* アニメーションの設定 */
+    @keyframes spinner-rotation {
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+    }
+
+    .content {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+    .content-text {
+    color:#333;
+    }
 </style>

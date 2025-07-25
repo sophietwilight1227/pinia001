@@ -4,7 +4,7 @@ import IconBase from '@/assets/icons/icon_base.vue';
 import IconAalist from '@/assets/icons/icon_aalist.vue';
 import constColor from '@/consts/constColor';
 import { useColorStore } from '@/stores/color';
-import { nextTick, ref, type Ref } from 'vue';
+import { nextTick, onMounted, reactive, ref, useTemplateRef, type Ref } from 'vue';
 import { isValidFileType, openText } from '@/scripts/fileIO';
 import { useCharSetStore } from '@/stores/charSet';
 import { useLayoutStore } from '@/stores/layout';
@@ -16,7 +16,9 @@ import { useMainCanvasStore } from '@/stores/mainCanvas';
 import constLocalStorage from '@/consts/constLocalStorage';
 import constLayout from '@/consts/constLayout';
 import { useDialogStore } from '@/stores/dialog';
-
+import router from '@/router';
+import manualTxt from "@/assets/manual.txt"
+import IconCopy from '@/assets/icons/icon_copy.vue';
 
 const dialogStore = useDialogStore();
 const colorStore = useColorStore();
@@ -35,48 +37,24 @@ const hasGridElem: any = ref(null);
 const colorSchemeElem: any = ref(null);
 const spaceTypeElem: any = ref(null);
 const useUnicodeSpaceElem: any = ref(null);
+const showSpaceArrowElem: any = ref(null);
+const child: any = ref(null);
 
-const init = () => {
-    const holdLastEditAA = localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT);
-    if(holdLastEditAA == null){
-        holdLastEditAaElem.value.options[1].selected = true;
+const isTrue = (value: string | null): boolean => {
+    if(value == null){
+        return true;
     }else{
-        if(holdLastEditAA == "true"){
-            holdLastEditAaElem.value.options[0].selected = true;
-        }else{
-            holdLastEditAaElem.value.options[1].selected = true;
-        }        
+        return value == "true";
     }
-    
-    const previewPos = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.IMAGE_PREVIEW_POSITION);
-    let previewPosIndex: number = 0;
-    if(previewPos != null){
-        if(previewPos == "right"){
-            previewPosIndex = 1;
-        }
-    }
-    previewPositionElem.value.options[previewPosIndex].selected = true;
-    layoutStore.setPicturePosition(previewPosIndex == 0);
+}
+const init = () => {
+    mainCanvasAsciiArtStore.holdLastEditAA = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT));
+    layoutStore.isLeftPictureView = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.IMAGE_PREVIEW_POSITION));
+    layoutStore.changeColumnGrid(isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SHOW_GRID)));
 
-    const hasGrid = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SHOW_GRID);
-    let hasGridIndex = 0;
-    if(hasGrid != null){
-        if(hasGrid == "false"){
-            hasGridIndex = 1;
-        }
-    }
-    hasGridElem.value.options[hasGridIndex].selected = true;
-    layoutStore.changeColumnGrid(hasGridIndex == 0);
-
-    const spaceType = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE);
-    let spaceTypeIndex = 0;
-    if(spaceType != null){
-        if(spaceType == "false"){
-            spaceTypeIndex = 1;
-        }
-    }
-    spaceTypeElem.value.options[spaceTypeIndex].selected = true;
-    mainCanvasAsciiArtStore.showSpaceWithText = (spaceTypeIndex == 0);
+    mainCanvasAsciiArtStore.showSpaceWithText = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE));
+    mainCanvasAsciiArtStore.useUnicodeSpace = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE));
+    mainCanvasAsciiArtStore.showSpaceArrow = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SHOW_SPACE_ARROW));
 
     const colorScheme = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.COLOR_SCHEME);
     let colorSchemeIndex: number = 0;
@@ -88,16 +66,6 @@ const init = () => {
         }
     }
     colorSchemeElem.value.options[colorSchemeIndex].selected = true;
-
-    const useUnicodeSpace = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE);
-    let useUnicodeSpaceIndex = 0;
-    if(spaceType != null){
-        if(useUnicodeSpace == "false"){
-            useUnicodeSpaceIndex = 1;
-        }
-    }
-    useUnicodeSpaceElem.value.options[useUnicodeSpaceIndex].selected = true;
-    mainCanvasAsciiArtStore.useUnicodeSpace = (spaceTypeIndex == 0);
 }
 
 const onClickReadAaList = ():void => {
@@ -153,8 +121,8 @@ async function writeFile(fileHandle: any, contents: string) {
 }
 
 const changePictureViewPosition = (e: any) => {
-    layoutStore.setPicturePosition(e.target.value == "left");
-    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.IMAGE_PREVIEW_POSITION, e.target.value);
+    layoutStore.isLeftPictureView = isTrue(e.target.value);
+    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.IMAGE_PREVIEW_POSITION, e.target.value.toString());
 }
 
 const changeColorScheme = (e: any) => {
@@ -162,24 +130,19 @@ const changeColorScheme = (e: any) => {
     localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.COLOR_SCHEME, e.target.value);
 }
 const changeColumnGrid = (e: any) => {
-    layoutStore.changeColumnGrid(e.target.value == "true");
-    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.SHOW_GRID, e.target.value);
+    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.SHOW_GRID, layoutStore.hasColumnGrid.toString());
 }
 const changeHoldLastEditAA = (e: any) => {
-    const value = (e.target.value == "true");
-    mainCanvasAsciiArtStore.holdLastEditAA = value;
-    localStorage.setItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT, e.target.value);
+    localStorage.setItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT, mainCanvasAsciiArtStore.holdLastEditAA.toString());
 }
 const changeSpeceType = (e:any) => {
-    const value = (e.target.value == "true");
-    console.log(e.target.value);
-    mainCanvasAsciiArtStore.showSpaceWithText = value;
-    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE, e.target.value);
+    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE, mainCanvasAsciiArtStore.showSpaceWithText.toString());
 }
 const changeUseUnicodeSpace = (e:any) => {
-    const value = (e.target.value == "true");
-    mainCanvasAsciiArtStore.useUnicodeSpace = value;
-    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE, e.target.value);
+    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE, mainCanvasAsciiArtStore.useUnicodeSpace.toString());
+}
+const changeShowSpaceArrow = (e:any) => {
+    localStorage.setItem(constLocalStorage.TAG_NAME.SETTING.SHOW_SPACE_ARROW, mainCanvasAsciiArtStore.showSpaceArrow.toString());
 }
 
 const showCredit = ():void => {
@@ -194,6 +157,24 @@ const showSetting = () => {
 }
 const hideSetting = () => {
     visibleSetting.value = false;
+
+}
+const showManual = async () => {
+
+    const response = await fetch(manualTxt);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const text = await response.text();
+
+    let resolvedRoute = router.resolve({
+        name: "manual",
+    });
+    child.value = window.open(resolvedRoute.href, '_blank');
+    const timer = setInterval(() => {
+        child.value.postMessage(text);
+        clearInterval(timer);
+    }, 100);
 }
 </script>
 
@@ -219,6 +200,11 @@ const hideSetting = () => {
                 <IconInfo/>
             </IconBase>
         </ButtonWithIcon>
+        <ButtonWithIcon :value="'マニュアル'" v-on:click="showManual">
+            <IconBase>
+                <IconCopy/>
+            </IconBase>
+        </ButtonWithIcon>
 
         <input
             style="display: none;"
@@ -227,55 +213,82 @@ const hideSetting = () => {
             accept=".txt"
             v-on:change="openAaList">   
         
-        <DialogSelect v-show="visibleSetting">
-            <div>
-                <div>Unicode空白の使用(ドットずらし時)</div>
-                <select name="useUnicodeSpace" v-on:change="changeUseUnicodeSpace" ref="useUnicodeSpaceElem">
-                    <option value="true">使う</option>
-                    <option value="false">使わない</option>
-                </select>  
-                <div>空白の強調表示方法</div>
-                <select name="holdLastEditAA" v-on:change="changeSpeceType" ref="spaceTypeElem">
-                    <option value="true">テキスト (軽い)</option>
-                    <option value="false">DOM要素 (重い)</option>
-                </select>  
-                <div>[最終編集AAの保持]</div>
-                <select name="holdLastEditAA" v-on:change="changeHoldLastEditAA" ref="holdLastEditAaElem">
-                    <option value="true">する</option>
-                    <option value="false">しない</option>
-                </select>           
+        <DialogSelect :title="'設定'" v-show="visibleSetting">
+            <div class="table">
+                <div class="row">
+                    <div class="cell">Unicode空白の使用(ドットずらし時)</div>
+                    <div class="cell">
+                        <input type="radio" id="useUnicodeSpace_true" value=true v-model="mainCanvasAsciiArtStore.useUnicodeSpace" v-on:change="changeUseUnicodeSpace"/>
+                        <label for="useUnicodeSpace_true">使う　</label>
+                        <input type="radio" id="useUnicodeSpace_false" value=false v-model="mainCanvasAsciiArtStore.useUnicodeSpace" v-on:change="changeUseUnicodeSpace"/>
+                        <label for="useUnicodeSpace_false">使わない</label>                               
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="cell">空白の強調表示・行末表示</div>
+                    <div class="cell">
+                        <input type="radio" id="showSpaceArrow_true" value=true v-model="mainCanvasAsciiArtStore.showSpaceArrow" v-on:change="changeShowSpaceArrow"/>
+                        <label for="showSpaceArrow_true">する(重い)　</label>
+                        <input type="radio" id="showSpaceArrow_false" value=false v-model="mainCanvasAsciiArtStore.showSpaceArrow" v-on:change="changeShowSpaceArrow"/>
+                        <label for="showSpaceArrow_false">エラー時のみ(軽い)</label>                               
+                    </div>                      
+                </div>
+                <div class="row">
+                    <div class="cell" ref="cellHeaderElem_2">空白の強調表示方法</div>
+                    <div class="cell">
+                        <input type="radio" id="spaceType_true" value=true v-model="mainCanvasAsciiArtStore.showSpaceWithText" v-on:change="changeSpeceType"/>
+                        <label for="spaceType_true">テキスト(軽い)　</label>
+                        <input type="radio" id="spaceType_false" value=false v-model="mainCanvasAsciiArtStore.showSpaceWithText" v-on:change="changeSpeceType"/>
+                        <label for="spaceType_false">DOM要素(重い)</label>                               
+                    </div>                        
+                </div>
+                <div class="row">
+                    <div class="cell">[最終編集AAの保持]</div>
+                    <div class="cell">
+                        <input type="radio" id="holdLastEditAA_true" value=true v-model="mainCanvasAsciiArtStore.holdLastEditAA" v-on:change="changeHoldLastEditAA"/>
+                        <label for="holdLastEditAA_true">する　</label>
+                        <input type="radio" id="holdLastEditAA_false" value=false v-model="mainCanvasAsciiArtStore.holdLastEditAA" v-on:change="changeHoldLastEditAA"/>
+                        <label for="holdLastEditAA_false">しない</label>                               
+                    </div>                             
+                </div>
+                <div class="row">
+                    <div class="cell">[画像プレビュー位置]</div>
+                    <div class="cell">
+                        <input type="radio" id="isLeftPicture_true" value=true v-model="layoutStore.isLeftPictureView" v-on:change="changePictureViewPosition"/>
+                        <label for="isLeftPicture_true">左　　</label>
+                        <input type="radio" id="isLeftPicture_false" value=false v-model="layoutStore.isLeftPictureView" v-on:change="changePictureViewPosition"/>
+                        <label for="isLeftPicture_false">右</label>                               
+                    </div>    
+                </div>
+                <div class="row">
+                    <div class="cell">[グリッドの表示]</div>
+                    <div class="cell">
+                        <input type="radio" id="changeColumnGrid_true" value=true v-model="layoutStore.hasColumnGrid" v-on:change="changeColumnGrid"/>
+                        <label for="changeColumnGrid_true">する　</label>
+                        <input type="radio" id="changeColumnGrid_false" value=false v-model="layoutStore.hasColumnGrid" v-on:change="changeColumnGrid"/>
+                        <label for="changeColumnGrid_false">しない</label>                               
+                    </div>          
+                </div>
+                <div class="row">
+                    <div class="cell">[配色]</div>
+                    <select class="cell" name="colorScheme" v-on:change="changeColorScheme" ref="colorSchemeElem">
+                        <option value="test">テスト</option>
+                        <option value="light">ライト</option>
+                        <option value="dark">ダーク</option>
+                        <option value="classic">クラシック</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <div>[画像プレビュー位置]</div>
-                <select name="isLeftPicture" v-on:change="changePictureViewPosition" ref="previewPositionElem">
-                    <option value="left">左</option>
-                    <option value="right">右</option>
-                </select>
+            <div class="underBar" >
+                <ButtonText :value="'とじる'" v-on:click="hideSetting" style="justify-content: flex-end; margin: 10px;"/>
             </div>
-            <div>
-                <div>[グリッドの表示]</div>
-                <select name="hasGrid" v-on:change="changeColumnGrid" ref="hasGridElem">
-                    <option value="true">する</option>
-                    <option value="false">しない</option>
-                </select>           
-            </div>
-            <div>
-                <div>[配色]</div>
-                <select name="colorScheme" v-on:change="changeColorScheme" ref="colorSchemeElem">
-                    <option value="test">テスト</option>
-                    <option value="light">ライト</option>
-                    <option value="dark">ダーク</option>
-                    <option value="classic">クラシック</option>
-                </select>
-            </div>
-            <ButtonText :value="'とじる'" v-on:click="hideSetting"/>
         </DialogSelect>
 
         
-        <DialogSelect v-show="visibleCredit" >
+        <DialogSelect :title="'info'" v-show="visibleCredit" >
             <div>info</div>
             <img src="@/assets/images/logo.png" alt="logo"><br>
-            <div>ver 0.0.5</div>
+            <div>ver 0.0.6</div>
             <div>by North Tail</div>
             <ButtonText :value="'とじる'" v-on:click="hideCredit"/>
         </DialogSelect>
@@ -289,5 +302,23 @@ const hideSetting = () => {
         display: flex;
         flex-direction: row;
         color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    }
+    .table {
+    }
+    .row {
+        display: flex;
+    }
+    .cell {
+        white-space: nowrap;
+        display: flex;
+        flex: 1;
+        justify-content:left;
+        align-items: center;
+        width: 300px;
+    }
+    .underBar {
+        width: 100%; 
+        display: flex; 
+        justify-content: flex-end;
     }
 </style>

@@ -11,7 +11,8 @@ export default {
             SHOW_GRID: "ahoge_editor_show_grid",
             COLOR_SCHEME: "ahoge_editor_color_scheme",
             SPACE_TYPE: "ahoge_editor_space_type",
-            USE_UNICODE_SPACE: "ahoge_editor_use_unicode_space"
+            USE_UNICODE_SPACE: "ahoge_editor_use_unicode_space",
+            SHOW_SPACE_ARROW: "ahoge_editor_show_space_arow"
         },
         RAW_IMAGE: [
             "ahoge_editor_lineRed",

@@ -82,8 +82,7 @@ const hideModalMenu = () => {
             </ButtonWithIcon>
         </div>
 
-        <DialogSelect ref="saveFileElem">
-            <div>出力設定</div>
+        <DialogSelect ref="saveFileElem" :title="'出力設定'">
             <div>
                 <div>ファイル形式</div>
                 <label v-for="(option, index) in optionsFileType" :key="index">

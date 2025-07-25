@@ -4,6 +4,9 @@ import { useColorStore } from '@/stores/color';
 import { ref, type Ref } from 'vue';
 
 const colorStore = useColorStore();
+const props = defineProps<{
+                            title: string
+                        }>()
 
 const visibleModalMenu: Ref<boolean> = ref(false);
 
@@ -20,14 +23,22 @@ defineExpose({ show, hide });
 <template>
     <div v-show="visibleModalMenu" class="modalMenuFrame">
         <div class="modalMenuBackground"></div>
+
         <div class="modalMenu">
-            <slot></slot>
+            <div class="title">{{ props.title }}</div>
+            <div class="content">
+                <slot></slot>
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-
+    .title {
+        border-bottom: 1px solid;
+        padding-left: 10px;
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
+    }
     .modalMenu {
         position: absolute;
         top: 50%;
@@ -35,9 +46,11 @@ defineExpose({ show, hide });
         transform: translate(-50%,-50%);
         z-index: 2000;
         box-shadow: 0 10px 25px 0 rgba(0, 0, 0, .5);
-        padding: 10px;
         color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
         background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
+    }
+    .content {
+        padding: 10px;
     }
     .modalMenuBackground {
         position: fixed;

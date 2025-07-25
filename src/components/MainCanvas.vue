@@ -184,10 +184,27 @@ for(let i=0; i < str.length; i++){
     }
 }
 const updateArrow = (aa: string) => {
+  if(!mainCanvasAsciiArtStore.showSpaceArrow){
+    if(!hasErrorSpace()){
+      arrowContainerElem.value.innerHTML = "";  
+      errorContainerElem.value.innerHTML = "";  
+      return;
+    }
+  }
+
   if(mainCanvasAsciiArtStore.showSpaceWithText){
     updateArrowWithText(aa);
   }else{
     updateArrowWithElem(aa);
+  }
+}
+
+const hasErrorSpace = (): boolean => {
+  if(mainCanvasAA.value.indexOf("  ") > 0 || mainCanvasAA.value.indexOf("\n ") > 0 || mainCanvasAA.value.charAt(0) == " "){
+    console.log(mainCanvasAA.value.indexOf("  "), mainCanvasAA.value.indexOf("\n ") )
+    return true;
+  }else{
+    return false;
   }
 }
 

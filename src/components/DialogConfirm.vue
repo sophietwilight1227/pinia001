@@ -77,7 +77,7 @@ const reset = ():void => {
 
 <template>
     <div class="base" v-show="isShown">
-        <div class="title">*確認*</div>
+        <div class="title">確認</div>
         <div>
             <IconBase  v-show="showImage(constDialog.DIALOG_TYPE.INFO)">
                 <IconInfo/>

@@ -14,17 +14,29 @@ import IconArrangeEnd from '@/assets/icons/icon_arrange_end.vue';
 import IconDisplay from '@/assets/icons/icon_display.vue';
 import { createApp, ref, type Ref } from 'vue';
 import Preview from './Preview.vue';
-import textCss from '@/assets/base.txt';
+import textCss from '@/assets/manual.txt';
 import { convertSjis } from '@/scripts/encode';
 import IconCopy from '@/assets/icons/icon_copy.vue';
 import { useDialogStore } from '@/stores/dialog';
 import "../assets/base.css";
+import router from '@/router';
 
 const charSetStore = useCharSetStore();
 const mainCanvasStore = useMainCanvasStore();
 const otherWindow: Ref<Window | null> = ref(null);
 const previewInstance = ref();
 const dialogStore = useDialogStore();
+const child: any = ref(null);
+
+mainCanvasStore.$subscribe((mutation, state) => {
+    let resolvedRoute = router.resolve({
+        name: "preview",
+    });
+    if(child.value != null){
+        console.log(location.origin + resolvedRoute.href)
+        child.value.postMessage(mainCanvasStore.asciiArt)
+    }
+})
 
 const setRectSelectMode = (value: boolean):void => {
     mainCanvasStore.setRecSelectMode(value);
@@ -48,11 +60,11 @@ const changeRectSelectType = (e: any) => {
             break;
     }   
 }
-const showPreview = async (e:any) => {
+const showPreview_ = async (e:any) => {
     otherWindow.value = window.open("", "preview", "width=960, height=1080");
-    //otherWindow.value = window.open("", "_blank");
+    //otherWindow.value = window.open("/Preview", "_blank", "width=960, height=1080");
     if(otherWindow.value != null){
-        const otherDiv = otherWindow.value.document.createElement('#app');
+        const otherDiv = otherWindow.value.document.createElement("div");
         otherDiv.id = "other-app"
         otherDiv.className = "asciiArt"
         otherWindow.value.document.body.appendChild(otherDiv);
@@ -72,6 +84,17 @@ const showPreview = async (e:any) => {
     }
 
 }
+const showPreview = () => {
+    let resolvedRoute = router.resolve({
+        name: "preview",
+    });
+    child.value = window.open(resolvedRoute.href, '_blank');
+    const timer = setInterval(() => {
+        child.value.postMessage(mainCanvasStore.asciiArt)
+        clearInterval(timer);
+    }, 100);
+}
+
 const copyToClipBoartWithShiftJis = async () => {
     if (!navigator.clipboard) {
         alert("残念。このブラウザは対応していません...");

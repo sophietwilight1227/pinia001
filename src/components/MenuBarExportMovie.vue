@@ -12,6 +12,7 @@ import ProgressBar from './ProgressBar.vue';
 import DialogSelect from './DialogSelect.vue';
 import Loading from './Loading.vue';
 import ButtonText from './ButtonText.vue';
+import { useLoadingStore } from '@/stores/loading';
 
 
 
@@ -24,8 +25,10 @@ const sizeRefElem: any = ref(null);
 const imageElem: any = ref(null);
 const canvasWidth: Ref<number> = ref(0);
 const canvasHeight: Ref<number> = ref(0);
-const visibleProgress: Ref<boolean> = ref(false);
-const progressBarElem: any = ref(null);
+const loadingStore = useLoadingStore();
+const fontColor: Ref<string> = ref("#000000");
+const backgroundColor: Ref<string> = ref("#ffffff");
+const isTransparent: Ref<boolean> = ref(false);
 
 const setMovieMode = (value: boolean):void => {
     mainCanvasStore.setMovieMode(value);
@@ -91,6 +94,8 @@ const startRender_ = () => {
 
 const renderLogs = async () => {
 
+    loadingStore.show("動画作成中 (数分かかります)");
+
     const aalist = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].aaList;
     const current = mainCanvasStore.allData[mainCanvasStore.currentFileNamePosition].currentPosition;
     const editLogs = aalist[current].editLogs;
@@ -133,9 +138,14 @@ const renderLogs = async () => {
         if(aa != null ){
             const textArray: Array<string> = aa.split("\n");
             
-            ctx.fillStyle = "white";
+            if(isTransparent.value){
+                ctx.fillStyle = "transparent";
+            }else{
+                ctx.fillStyle = backgroundColor.value;
+            }
+            
             ctx.fillRect(0, 0, canvasWidth.value, canvasHeight.value);
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = fontColor.value;
             for(let j = 0; j < textArray.length; j++){
                 ctx.fillText(textArray[j], 0,  (j + 0.5) * lineHeight);
             }       
@@ -154,6 +164,7 @@ const renderLogs = async () => {
         aElem.value.href = window.URL.createObjectURL(blob);
         sizeRefElem.value.style.display = "none";
 
+        loadingStore.hide();
         dialogStore.info("ダウンロードボタンのリンク先から保存してください")
     });
     gif.render();
@@ -161,20 +172,6 @@ const renderLogs = async () => {
 const download = () => {
     window.open(aElem.value.href, '_blank');
 }
-const showProgressBar = () => {
-    visibleProgress.value = true;
-}
-const hideProgressBar = () => {
-    visibleProgress.value = false;
-}
-const setMaxProgress = (value: number) => {
-    progressBarElem.value.setMax(value);
-}
-const setProgress = (value: number) => {
-    progressBarElem.value.setValue(value);
-}
-
-
 </script>
 
 <template>
@@ -202,13 +199,26 @@ const setProgress = (value: number) => {
                     </IconBase>
                 </ButtonWithIcon>
                 <a ref="aElem"></a>
-            </div>                
+            </div>     
+            <div>
+                <div class="row">
+                    <label for="fontColor">
+                        <input type="color" id="backgroundColor" v-model="fontColor">   
+                        文字色
+                    </label>  
+                </div>
+                <div class="row">
+                    <label for="backgroundColor">
+                        <input type="color" id="fontColor" v-model="backgroundColor">  
+                        背景色
+                    </label>
+                    <label for="transparent">
+                        <input type="checkbox" id="transparent" v-model="isTransparent">
+                        透明色
+                    </label>
+                </div>
+            </div>           
         </div>    
-
-        <DialogSelect v-show="visibleProgress">
-            <div>動画生成中です。しばらくお待ちください</div>
-            <Loading/>
-        </DialogSelect>
 
         <div class="img">
             <canvas class="canvas" ref="canvasElem"></canvas>
@@ -248,5 +258,10 @@ const setProgress = (value: number) => {
         display: flex;
         flex-direction: row;
         align-items: center;
+    }
+    .row {
+        display: flex;
+        flex-direction: row;
+        align-items:center; 
     }
 </style>

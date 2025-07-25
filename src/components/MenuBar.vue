@@ -21,6 +21,7 @@ import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
 import { useDialogStore } from "@/stores/dialog";
 import ToggleButton from "./ToggleButton.vue";
+import { decodeNumericEntity } from "@/scripts/encode";
 
 const menuButtonInfoList = [{id: "file", name: "ファイル"},
                             {id: "image", name: "元画像"},
@@ -156,15 +157,6 @@ const onClickReadAaList = ():void => {
     inputAaListButton.value.click();
 }
 
-//maincanvas にも同じのがある。あとで共通化する
-const decodeNumericEntity = (str: string) => {
-    var re = /&#([0-9a-fA-F]+);/g;
-    return str.replace(re, function(m) {
-      var cp = parseInt(arguments[1], 10);
-      return String.fromCodePoint(cp);
-    }); 
-}
-
 const openAaList = (e: any):void => {
     if(inputAaListButton.value != null){
         const file = inputAaListButton.value.files[0];
@@ -249,7 +241,7 @@ const isValidFileType = (fileName: string, allowedFiletype: Array<string>): bool
 }
 
 const changePictureViewPosition = (e: any) => {
-    layoutStore.setPicturePosition(e.target.value == "left");
+    layoutStore.isLeftPictureView = (e.target.value == "true");
 }
 
 const changeColorScheme = (e: any) => {

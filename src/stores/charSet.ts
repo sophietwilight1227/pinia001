@@ -66,27 +66,34 @@ export const useCharSetStore = defineStore(
             },
             addCharPaletteIndex(indexNo: number, indexName: string): void{
                 this.charPalette.splice(indexNo,0, {indexName: indexName, charList: []});
+                this.saveCharPaletteLocalStorage()
             },
             removeCharPaletteIndex(indexNo: number): void{
                 this.charPalette.splice(indexNo, 1);
+                this.saveCharPaletteLocalStorage()
             },
             renameCharPaletteIndex(name: string): void{
                 this.charPalette[this.currentIndex].indexName = name;
+                this.saveCharPaletteLocalStorage()
             },
             moveCharPaletteIndex(indexFrom: number, indexTo: number): void {
                 const elem = this.charPalette[indexFrom];
                 this.charPalette.splice(indexFrom, 1);
                 this.charPalette.splice(indexTo,0, elem);
+                this.saveCharPaletteLocalStorage()
             },
             addCharPalette(indexNo: number, charNo: number, charValue: string, width: number): void {
                 this.charPalette[indexNo].charList.splice(charNo, 0, {value: charValue, width: width})
+                this.saveCharPaletteLocalStorage()
             },
             addCharToCurrentPalette(charNo: number, charValue: string, width: number): void {
                 const char = decodeNumericEntity(charValue);
                 this.charPalette[this.currentIndex].charList.splice(charNo, 0, {value: char, width: width})
+                this.saveCharPaletteLocalStorage()
             },
             removeCharFromCurrentPalette(charNo: number): void {
                 this.charPalette[this.currentIndex].charList.splice(charNo, 1);
+                this.saveCharPaletteLocalStorage()
             },
             readAaList(list: Array<{name: string, list: Array<{value: string, width: number}>}>): void {
                 //this.charPalette.splice(0);

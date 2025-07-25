@@ -39,6 +39,7 @@ mainCanvasStore.$subscribe(async (mutation, state) => {
         <span>
             <span>　[file size]: </span>
             <span>{{ fileSize }}</span>
+            <span> byte</span>
         </span>
         <span>　[ここに操作の説明など]</span>
     </div>

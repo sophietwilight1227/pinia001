@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import layoutList from '../assets/data/layout.json'
 import constLayout from "@/consts/constLayout";
+import constLocalStorage from "@/consts/constLocalStorage";
 interface State {
     widthDic: Map<string, Array<{widthRatio: number, size: {height: number, width: number}}>>,
     asciiArtSize: {height: number, width: number}, //AA表示部のサイズ。単位なし
@@ -35,6 +36,13 @@ export const useLayoutStore = defineStore(
 
         },
         actions: {
+            isTrue(value: string | null): boolean {
+                if(value == null){
+                    return true;
+                }else{
+                    return value == "true";
+                }
+            },
             initLayout(): void {
                 for(let i=0; i < layoutList.length; i++){
                     const lst = [];
@@ -43,7 +51,7 @@ export const useLayoutStore = defineStore(
                     }
                     this.widthDic.set(layoutList[i].layoutName, lst);
                 }
-                this.isLeftPictureView = true;
+                this.isLeftPictureView = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.IMAGE_PREVIEW_POSITION));
             },
             initSize(height: number, width: number, index: number):void {
                 this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![index].size.width = width;
@@ -78,9 +86,6 @@ export const useLayoutStore = defineStore(
                 const mainCanvasIndex:number = 2; //App.vue
                 const height100:number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.height;
                 const width100: number = this.widthDic.get(constLayout.LAYOUT_NAME.MAIN)![mainCanvasIndex].size.width;
-            },
-            setPicturePosition(isLeft: boolean){
-                this.isLeftPictureView = isLeft;
             },
             changeColumnGrid(value: boolean){
                 this.hasColumnGrid = value;

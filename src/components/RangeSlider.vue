@@ -1,6 +1,8 @@
 <script setup lang="ts">
-  import { usePictureViewStore } from "@/stores/pictureView";
+import { usePictureViewStore } from "@/stores/pictureView";
 import {onMounted, ref, watch} from "vue";
+import ButtonText from "./ButtonText.vue";
+
     const props = defineProps<{
     id: string,
     name: string,
@@ -43,9 +45,9 @@ import {onMounted, ref, watch} from "vue";
 <template>
     <div class="menu_content">
         <span>{{ props.name }}</span>
-        <button v-on:click="decrement">◀</button>
+        <ButtonText :value="'◀'" v-on:click="decrement"/>
         <input type="range" :min="props.min" :max="props.max" v-model="currentValue" v-on:input="onChange"/> 
-        <button v-on:click="increment">▶</button>
+        <ButtonText :value="'▶'" v-on:click="increment"/>
         <input v-model="currentValue" v-on:change="onChange" class="text_value"/>
     </div>
 </template>

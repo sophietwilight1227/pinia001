@@ -120,6 +120,7 @@ import constLocalStorage from "@/consts/constLocalStorage";
     if(e != null && e.target != null){
       const hexValue = e.target.value.replace('#', '');
       const isOmit = hexValue.length === 3; // #fffなどの省略記法か
+      console.log(e.target.value)
 
       const [r, g, b] = hexValue
         .match(isOmit ? /./g : /.{2}/g)
@@ -189,8 +190,6 @@ import constLocalStorage from "@/consts/constLocalStorage";
   flex-direction: column;
   justify-content: space-between;
   overflow-x: scroll;
-  overflow-y: scroll;
-
 }
 .menu {
   z-index: 10;
