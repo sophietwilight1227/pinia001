@@ -41,20 +41,26 @@ const incrementMagnification = () => {
 
 </script>
 <template>
+  <div class="base">
     <div class="menu">
       <span>線色</span>
       <input type="color" v-model="fontColor"/>
       <span>背景色</span>
       <input type="color" v-model="backgroundColor"/>
       <span>表示倍率</span>
-      <ButtonText :value="'◀'" v-on:click="decrementMagnification"/>
+      <button v-on:click="decrementMagnification">◀</button>
       <input type="range" :min="0" :max="500" v-model="magnification" v-on:input="changeMagnification"/> 
-      <ButtonText :value="'▶'" v-on:click="incrementMagnification"/>
+      <button v-on:click="incrementMagnification">▶</button>
       <input v-model="magnification" v-on:change="changeMagnification"/>
     </div>
-    <div class="asciiArt preview">{{ previewAA }}</div>
+    <div class="asciiArt preview">{{ previewAA }}</div>    
+  </div>
+
 </template>
 <style scoped>
+.base {
+  background-color: white;
+}
   .menu {
     background-color: white;
     border-bottom: 1px solid black;

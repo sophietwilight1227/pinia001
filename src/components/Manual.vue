@@ -22,10 +22,10 @@ window.addEventListener("message", (event) => {
 <style scoped>
 .base {
     padding: 30px;
-    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
+    background-color: white;
 }
 .title {
-    background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
+    background-color: white;
 }
 .manual {
     white-space: pre;
