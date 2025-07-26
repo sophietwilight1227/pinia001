@@ -8,8 +8,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build",
-    "deploy": "cd dist && cp index.html 404.html"
+    "type-check": "vue-tsc --build"
   },
   "dependencies": {
     "create-vite": "^7.0.0",

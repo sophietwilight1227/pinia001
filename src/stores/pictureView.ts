@@ -59,6 +59,7 @@ export const usePictureViewStore = defineStore(
             resetParams(){
                 Object.values(constPictureView.PARAM_LIST).forEach(value => {
                     this.setValue(value.id, value.initialValue);
+                    this.params.set(value.id, value.initialValue);
                 });
             },
             getValue(id: string): number {
