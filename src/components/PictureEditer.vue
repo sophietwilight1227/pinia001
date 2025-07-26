@@ -11,27 +11,6 @@ import constLocalStorage from "@/consts/constLocalStorage";
   const pictureViewSrtore = usePictureViewStore();
   pictureViewSrtore.initParams();
 
-  pictureViewSrtore.$subscribe((mutation, state) => {
-    updateValues();
-  })
-  const updateValues = () => {
-    const r: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_RED.id);
-    const g: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
-    const b: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
-    fontColor.value = rgbToHex(r, g, b);
-
-    Object.values(constPictureView.PARAM_LIST).forEach(value => {
-      console.log(componentRefs(value.id));
-      if(componentRefs(value.id) != null){
-        if(pictureViewSrtore.getValue(value.id) == null){
-          componentRefs(value.id)!.value.changeValue(value.initialValue);
-        }else{
-          componentRefs(value.id)!.value.changeValue(pictureViewSrtore.getValue(value.id));   
-        }
-      }
-    });  
-  }
-
   const lineRed = ref();
   const lineGreen = ref();
   const lineBlue = ref();
@@ -72,6 +51,29 @@ import constLocalStorage from "@/consts/constLocalStorage";
         return null;
     }
   }
+
+
+  pictureViewSrtore.$subscribe((mutation, state) => {
+    updateValues();
+  })
+  const updateValues = () => {
+    const r: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_RED.id);
+    const g: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_GREEN.id);
+    const b: number = pictureViewSrtore.getValue(constPictureView.PARAM_LIST.LINE_BLUE.id);
+    fontColor.value = rgbToHex(r, g, b);
+
+    Object.values(constPictureView.PARAM_LIST).forEach(value => {
+      console.log(componentRefs(value.id)!.value);
+      if(componentRefs(value.id) != null && componentRefs(value.id)!.value != null){
+        if(pictureViewSrtore.getValue(value.id) == null){
+          componentRefs(value.id)!.value.changeValue(value.initialValue);
+        }else{
+          componentRefs(value.id)!.value.changeValue(pictureViewSrtore.getValue(value.id));   
+        }
+      }
+    });  
+  }
+
 
   const params = new Map();
   const init = () => {
