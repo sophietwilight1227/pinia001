@@ -74,7 +74,9 @@ const loadPrevImage = async () => {
     const db: any = await connect("ahoge_editor", 1, "trace_picture", "id");
     //await put(db,"trace_picture" , {id: "prev", value: "test_name"})
     const obj: {id: string, value: string} = await get(db, "trace_picture", "prev");
-    imageUrl.value = obj.value;
+    if(obj != null && obj.value != null){
+        imageUrl.value = obj.value;
+    }
     openImage();
 }
 const saveUrl = async () => {

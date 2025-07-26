@@ -21,7 +21,7 @@ import constLocalStorage from "@/consts/constLocalStorage";
   const alpha = ref();
 
   //changeValue (子要素のメソッドの実行) で必要
-  const componentRefs = (id: string):Ref | null => {
+  const componentRefs = (id: string):any => {
     switch(id){
       case constPictureView.PARAM_LIST.LINE_RED.id:
         return lineRed;
@@ -63,12 +63,12 @@ import constLocalStorage from "@/consts/constLocalStorage";
     fontColor.value = rgbToHex(r, g, b);
 
     Object.values(constPictureView.PARAM_LIST).forEach(value => {
-      console.log(componentRefs(value.id)!.value);
-      if(componentRefs(value.id) != null && componentRefs(value.id)!.value != null){
+      console.log(componentRefs(value.id));
+      if(componentRefs(value.id) != null){
         if(pictureViewSrtore.getValue(value.id) == null){
-          componentRefs(value.id)!.value.changeValue(value.initialValue);
+          componentRefs(value.id).value.changeValue(value.initialValue);
         }else{
-          componentRefs(value.id)!.value.changeValue(pictureViewSrtore.getValue(value.id));   
+          componentRefs(value.id).value.changeValue(pictureViewSrtore.getValue(value.id));   
         }
       }
     });  
