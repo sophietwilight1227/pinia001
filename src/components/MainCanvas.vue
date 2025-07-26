@@ -45,15 +45,25 @@ const spaceErrorPool: Ref<Array<Array<HTMLElement>>> = ref([]);   //不使用
 const arrowPool: Ref<Array<HTMLElement>> = ref([]);   //不使用
 
 mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
+  if(mainCanvasAsciiArtStore.lastInputViewIsPictureView == props.isPictureView){
+    //const caretPosition = mainCanvasAsciiArtStore.caretPosition;
+    //textAreaElem.value.focus();
+    //mainCanvasAsciiArtStore.caretPosition = caretPosition;
+    //textAreaElem.value.selectionStart = caretPosition.start;
+    //textAreaElem.value.selectionEnd = caretPosition.end;
+  }
   prevMainCanvasAA.value = mainCanvasAA.value;
   mainCanvasAA.value = mainCanvasAsciiArtStore.asciiArt;
   updateTextAreaWidth();
   updateArrow(mainCanvasAA.value);
   updateCaretPosition(mainCanvasAA.value, mainCanvasAsciiArtStore.caretPosition.start, mainCanvasAsciiArtStore.caretPosition.end);
-  if(textAreRefElem.value != null && "TEXTAREA" != document.activeElement?.nodeName && !props.isPictureView){
+  if(textAreRefElem.value != null && "TEXTAREA" != document.activeElement?.nodeName && mainCanvasAsciiArtStore.lastInputViewIsPictureView == props.isPictureView){
     const start = mainCanvasAsciiArtStore.caretPosition.start;
     const end = mainCanvasAsciiArtStore.caretPosition.end;
-    textAreaElem.value.setSelectionRange(start, end );  
+    setTimeout(function(){
+      textAreaElem.value.focus();
+      textAreaElem.value.setSelectionRange(start, end );  
+    },0);
   }
   //const start = mainCanvasAsciiArtStore.caretPosition.start;
   //const end = mainCanvasAsciiArtStore.caretPosition.end;
@@ -162,6 +172,7 @@ const onChangeTextArea = async (e: any) => {
   if(e.target == null){
     mainCanvasAsciiArtStore.editAsciiArt("", {value:e.data, start: 0, end: 0});
   }else{
+    mainCanvasAsciiArtStore.lastInputViewIsPictureView = props.isPictureView;
     const str:string = decodeNumericEntity(e.target.value);
     if(str != mainCanvasAsciiArtStore.asciiArt){
       mainCanvasAsciiArtStore.editAsciiArt(str, {value:str, start: 0, end: str.length});

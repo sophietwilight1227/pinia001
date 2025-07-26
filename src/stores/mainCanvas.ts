@@ -29,6 +29,7 @@ interface State {
     showSpaceWithText: boolean,
     useUnicodeSpace: boolean,
     showSpaceArrow: boolean,
+    lastInputViewIsPictureView: boolean,
 };
 
 export const useMainCanvasStore = defineStore(
@@ -53,6 +54,7 @@ export const useMainCanvasStore = defineStore(
                 showSpaceWithText: true,
                 useUnicodeSpace: false,
                 showSpaceArrow: false,
+                lastInputViewIsPictureView: false
             };
         },
         getters: {
