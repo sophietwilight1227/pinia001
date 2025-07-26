@@ -58,8 +58,15 @@ export const usePictureViewStore = defineStore(
             },
             resetParams(){
                 Object.values(constPictureView.PARAM_LIST).forEach(value => {
-                    this.setValue(value.id, value.initialValue);
-                    this.params.set(value.id, value.initialValue);
+                    if(value.id == constPictureView.PARAM_LIST.LINE_BLUE.id ||
+                        value.id == constPictureView.PARAM_LIST.LINE_RED.id ||
+                        value.id == constPictureView.PARAM_LIST.LINE_GREEN.id){
+                        //何もしない
+                    }else{
+                        this.setValue(value.id, value.initialValue);
+                        this.params.set(value.id, value.initialValue);                        
+                    }
+
                 });
             },
             getValue(id: string): number {
