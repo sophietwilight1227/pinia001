@@ -21,7 +21,7 @@ import constLocalStorage from "@/consts/constLocalStorage";
     fontColor.value = rgbToHex(r, g, b);
 
     Object.values(constPictureView.PARAM_LIST).forEach(value => {
-      if(componentRefs(value.id)!.value != null){
+      if(componentRefs(value.id) != null){
         componentRefs(value.id)!.value.changeValue(pictureViewSrtore.getValue(value.id));
       }
     });  
