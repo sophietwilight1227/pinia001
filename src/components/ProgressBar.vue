@@ -18,23 +18,12 @@ const percentage = computed(() => {
 })
 </script>
 <template>
-    <div class="progress">
-        <div class="progressBar"></div>
-    </div>        
+    <!-- ローディング画面 -->
+    <div class="loading loaded" ref="loadingElem">
+        <p class="loading-text">Loading...</p>
+        <div class="spinner"></div>
+    </div>
 </template>
 <style scoped>
-.progress{
-    position: relative;
-    width: 100%;
-    height: 40px;
-    background-color: white;
-}
-.progressBar{
-        position:absolute;
-        top: 0px;
-        left: 0px;
-        height: 100%;
-        background-color: red;
-        width: v-bind(percentage);
-}
+
 </style>
