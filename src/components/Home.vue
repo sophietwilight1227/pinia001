@@ -43,6 +43,18 @@ import { useLoadingStore } from "@/stores/loading";
   const loadingElem:any = ref(null);
   const loadingStore = useLoadingStore();
   
+document.addEventListener('keydown', function(e) {
+  if(e.altKey){
+    switch(e.key){
+      case 'ArrowLeft':
+        e.preventDefault();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        break;
+    }
+  }
+});
 
   onMounted(() => {
     dialogStore.initStore(dialog.value);

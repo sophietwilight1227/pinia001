@@ -60,9 +60,13 @@ mainCanvasAsciiArtStore.$subscribe((mutation, state) => {
   if(textAreRefElem.value != null && "TEXTAREA" != document.activeElement?.nodeName && mainCanvasAsciiArtStore.lastInputViewIsPictureView == props.isPictureView){
     const start = mainCanvasAsciiArtStore.caretPosition.start;
     const end = mainCanvasAsciiArtStore.caretPosition.end;
+    const scrollTop = baseElem.value.scrollTop;
+    const scrollLeft = baseElem.value.scrollLeft;
     setTimeout(function(){
       textAreaElem.value.focus();
       textAreaElem.value.setSelectionRange(start, end );  
+      baseElem.value.scrollTop = scrollTop;
+      baseElem.value.scrollLeft = scrollLeft;
     },0);
   }
   //const start = mainCanvasAsciiArtStore.caretPosition.start;
