@@ -5,6 +5,7 @@ import { ref, type Ref } from 'vue';
 import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
 import FilesTab from './FilesTab.vue';
+import { useExplanationStore } from '@/stores/explanation';
 
 const colorStore = useColorStore();
 
@@ -21,6 +22,8 @@ mainCanvasStore.$subscribe(async (mutation, state) => {
   currentDot.value = await charSetStore.calcStrWidth(mainCanvasStore.halfStrCurrentRow);
   fileSize.value = new Blob([mainCanvasStore.asciiArt]).size;
 })
+
+const explanationStore = useExplanationStore();
 
 </script>
 
@@ -41,7 +44,8 @@ mainCanvasStore.$subscribe(async (mutation, state) => {
             <span>{{ fileSize }}</span>
             <span> byte</span>
         </span>
-        <span>　[ここに操作の説明など]</span>
+        <span>　[detail]</span>
+        <span>{{ explanationStore.sentence }}</span>
     </div>
 </template>
 

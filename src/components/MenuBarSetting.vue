@@ -47,13 +47,20 @@ const isTrue = (value: string | null): boolean => {
         return value == "true";
     }
 }
+const isFalse = (value: string | null): boolean => {
+    if(value == null){
+        return false;
+    }else{
+        return value == "true";
+    }
+}
 const init = () => {
     mainCanvasAsciiArtStore.holdLastEditAA = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT));
     layoutStore.isLeftPictureView = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.IMAGE_PREVIEW_POSITION));
     layoutStore.changeColumnGrid(isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SHOW_GRID)));
 
     mainCanvasAsciiArtStore.showSpaceWithText = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE));
-    mainCanvasAsciiArtStore.useUnicodeSpace = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE));
+    mainCanvasAsciiArtStore.useUnicodeSpace = isFalse(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE));
     mainCanvasAsciiArtStore.showSpaceArrow = isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SHOW_SPACE_ARROW));
 
     const colorScheme = localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.COLOR_SCHEME);
@@ -286,11 +293,14 @@ const showManual = async () => {
 
         
         <DialogSelect :title="'info'" v-show="visibleCredit" >
-            <div>info</div>
-            <img src="@/assets/images/logo.png" alt="logo"><br>
-            <div>ver 0.0.6</div>
-            <div>by North Tail</div>
-            <ButtonText :value="'とじる'" v-on:click="hideCredit"/>
+            <div class="table">
+                <img src="@/assets/images/logo.png" alt="logo"><br>
+                <div>ver 0.0.7</div>
+                <div>by North Tail</div>
+            </div>
+            <div class="underBar">
+                <ButtonText :value="'とじる'" v-on:click="hideCredit"/>
+            </div>
         </DialogSelect>
 
         <span class="asciiArt sizeRef" ref="sizeRefElem">{{ textSizeRef }}</span>
@@ -304,6 +314,7 @@ const showManual = async () => {
         color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
     }
     .table {
+        padding: 10px;
     }
     .row {
         display: flex;
@@ -320,5 +331,6 @@ const showManual = async () => {
         width: 100%; 
         display: flex; 
         justify-content: flex-end;
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
     }
 </style>

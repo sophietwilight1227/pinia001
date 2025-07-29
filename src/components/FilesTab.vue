@@ -7,8 +7,11 @@ import DraggableListNode from "./DraggableListNode.vue";
 import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
 import { useDialogStore } from "@/stores/dialog";
+import LabelText from "./LabelText.vue";
+import { useExplanationStore } from "@/stores/explanation";
 
 const dialogStore = useDialogStore();
+const explanationStore = useExplanationStore();
 
 const mainCanvasAsciiArtStore = useMainCanvasStore();
 const colorStore = useColorStore();
@@ -179,13 +182,16 @@ const onMouseOver = (e: MouseEvent, index: number) => {
 const onMouseOut = (e: Event) => {
     isVisiblePreview.value = false;
 }
+const showExplanation = () => {
+    explanationStore.changeSentence("【ダブルクリック】名前の変更 【D & D】順番を入れ替える");
+}
 </script>
 
 <template>
   <div class="base">    
     <div class="filelist">
-        <div>ファイル</div>
-        <div class="namelist">
+        <LabelText :value="'ファイル'"/>
+        <div class="namelist" v-on:mouseover="showExplanation">
             <div v-for="(data, i) in fileNameList">
                 <DraggableListNode ref="fileNameDragListRef"
                                     v-on:dragstart="onDragStartFileList(i)"
@@ -204,8 +210,8 @@ const onMouseOut = (e: Event) => {
         </div>      
     </div>
     <div class="filelist">
-        <div>AA</div>
-        <div class="namelist">
+        <LabelText :value="'AA'"/>
+        <div class="namelist" v-on:mouseover="showExplanation">
             <div v-for="(data, i) in aaNameList">
                 <DraggableListNode ref="aaNameDragListRef"
                                     v-on:mouseover="onMouseOver($event, i)"

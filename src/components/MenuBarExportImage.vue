@@ -9,6 +9,7 @@ import IconCamera from '@/assets/icons/icon_camera.vue';
 import IconDownload from '@/assets/icons/icon_download.vue';
 import IconImage from '@/assets/icons/icon_image.vue';
 import { useDialogStore } from '@/stores/dialog';
+import LabelText from './LabelText.vue';
 
 const dialogStore = useDialogStore();
 const mainCanvasStore = useMainCanvasStore();
@@ -91,7 +92,7 @@ const download = () => {
                 </IconBase>
             </ButtonWithIcon>
             <div v-show="previewSource != ''">
-                <div>プレビュー</div>
+                <LabelText :value="'プレビュー'"/>
                 <img v-bind:src="previewSource" alt="canvas_image" ref="imageElem">
             </div>
             <div class="asciiArt ref" ref="sizeRefElem">{{ sizeRefAA }}</div>
@@ -100,17 +101,17 @@ const download = () => {
             <div class="row">
                 <label for="fontColor">
                     <input type="color" id="backgroundColor" v-model="fontColor">   
-                    文字色
+                    <LabelText :value="'文字色'"/>
                 </label>  
             </div>
             <div class="row">
                 <label for="backgroundColor">
                     <input type="color" id="fontColor" v-model="backgroundColor">  
-                    背景色
+                    <LabelText :value="'背景色'"/>
                 </label>
                 <label for="transparent">
                     <input type="checkbox" id="transparent" v-model="isTransparent">
-                    透明色
+                    <LabelText :value="'透明色'"/>
                 </label>
             </div>
         </div>

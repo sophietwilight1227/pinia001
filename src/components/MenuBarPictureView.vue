@@ -11,6 +11,7 @@ import { usePictureViewStore } from '@/stores/pictureView';
 import IconReload from '@/assets/icons/icon_reload.vue';
 import ButtonText from './ButtonText.vue';
 import { connect, put, get } from "@/scripts/indexeddb"
+import LabelText from './LabelText.vue';
 
 const pictureViewStore = usePictureViewStore();
 const colorStore = useColorStore();
@@ -106,16 +107,20 @@ onMounted(() => {
         </ButtonWithIcon>
         <PictureEditer/>
         <DialogSelect v-show="visibleModalMenu" :title="'画像選択'">
-            <div>
-                <div>ウェブ</div>
-                <input type="text" v-on:change="setURL"/>
-                <ButtonText :value="'開く'" v-on:click="openImage"/>    
+            <div class="content">
+                <div>
+                    <div>ウェブ</div>
+                    <input type="text" v-on:change="setURL"/>
+                    <ButtonText :value="'開く'" v-on:click="openImage"/>    
+                </div>
+                <div>
+                    <div>ローカル</div>
+                    <ButtonText :value="'参照(ローカル)'" v-on:click="onClickOpenLocalImage"/>
+                </div>                
             </div>
-            <div>
-                <div>ローカル</div>
-                <ButtonText :value="'参照(ローカル)'" v-on:click="onClickOpenLocalImage"/>
+            <div class="underBar">
+                <ButtonText :value="'キャンセル'" v-on:click="hideModalMenu" class="button"/>
             </div>
-            <ButtonText :value="'キャンセル'" v-on:click="hideModalMenu"/>
         </DialogSelect>
 
         <input
@@ -132,5 +137,17 @@ onMounted(() => {
         display: flex;
         flex-direction: row;
         color: v-bind(colorStore.getColor(constColor.COLOR_NAME.TEXT));
+    }
+    .content {
+        padding: 10px;
+    }
+    .underBar {
+        width: 100%; 
+        display: flex; 
+        justify-content: flex-end;
+        background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.PRIMARY));
+    }
+    .button {
+        margin: 5px;
     }
 </style>

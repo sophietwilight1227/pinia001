@@ -13,7 +13,7 @@ import DialogSelect from './DialogSelect.vue';
 import Loading from './Loading.vue';
 import ButtonText from './ButtonText.vue';
 import { useLoadingStore } from '@/stores/loading';
-
+import LabelText from './LabelText.vue';
 
 
 const dialogStore = useDialogStore();
@@ -176,7 +176,7 @@ const download = () => {
 
 <template>
     <div>
-        <div>動画モード</div>
+        <LabelText :value="'動画モード'"/>
         <ToggleButton v-on:click="setMovieMode"/>        
         <div v-show="mainCanvasStore.isMovieMode" class="buttons">
             <button v-on:click="decrementMovie">＜</button>
@@ -204,17 +204,17 @@ const download = () => {
                 <div class="row">
                     <label for="fontColor">
                         <input type="color" id="backgroundColor" v-model="fontColor">   
-                        文字色
+                        <LabelText :value="'文字色'"/>
                     </label>  
                 </div>
                 <div class="row">
                     <label for="backgroundColor">
                         <input type="color" id="fontColor" v-model="backgroundColor">  
-                        背景色
+                        <LabelText :value="'背景色'"/>
                     </label>
                     <label for="transparent">
                         <input type="checkbox" id="transparent" v-model="isTransparent">
-                        透明色
+                        <LabelText :value="'透明色'"/>
                     </label>
                 </div>
             </div>           

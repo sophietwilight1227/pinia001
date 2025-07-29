@@ -6,6 +6,7 @@ import { usePictureViewStore } from "@/stores/pictureView";
 import { useColorStore } from "@/stores/color";
 import constColor from "@/consts/constColor";
 import constLocalStorage from "@/consts/constLocalStorage";
+import LabelText from "./LabelText.vue";
 
   const colorStore = useColorStore();
   const pictureViewSrtore = usePictureViewStore();
@@ -165,7 +166,7 @@ import constLocalStorage from "@/consts/constLocalStorage";
     <div class="menu">
       <div>
         <div>
-          <span>線色</span>
+          <LabelText :value="'線色'" />
           <input type="color" v-on:input="changeFontColor" :value="fontColor"/>
         </div>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.LINE_RED" v-on:change="changeSliderValue" ref="lineRed"/>
@@ -173,13 +174,13 @@ import constLocalStorage from "@/consts/constLocalStorage";
         <RangeSlider v-bind="constPictureView.PARAM_LIST.LINE_BLUE" v-on:change="changeSliderValue" ref="lineBlue"/>
       </div>
       <div>
-        <div>位置</div>
+        <LabelText :value="'位置'" />
         <RangeSlider v-bind="constPictureView.PARAM_LIST.POS_X" v-on:change="changeSliderValue" ref="posX"/>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.POS_Y" v-on:change="changeSliderValue" ref="posY"/>
 
       </div>
       <div>
-        <div>その他</div>
+        <LabelText :value="'その他'" />
         <RangeSlider v-bind="constPictureView.PARAM_LIST.SIZE_RATE" v-on:change="changeSliderValue" ref="sizeRate"/>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.ROTE_ANGLE" v-on:change="changeSliderValue" ref="roteAngle"/>
         <RangeSlider v-bind="constPictureView.PARAM_LIST.ALPHA" v-on:change="changeSliderValue" ref="alpha"/>        

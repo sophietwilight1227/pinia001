@@ -102,6 +102,13 @@ export const useMainCanvasStore = defineStore(
                     return value == "true";
                 }
             },
+            isFalse(value: string | null): boolean {
+                if(value == null){
+                    return false;
+                }else{
+                    return value == "true";
+                }
+            },
             initAsciiArt(): void {
                 this.holdLastEditAA = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.HOLD_LAST_EDIT));
                 let lastAA = null;
@@ -119,7 +126,7 @@ export const useMainCanvasStore = defineStore(
                 }
 
                 this.showSpaceWithText = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SPACE_TYPE));
-                this.useUnicodeSpace = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE));
+                this.useUnicodeSpace = this.isFalse(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.USE_UNICODE_SPACE));
                 this.showSpaceArrow = this.isTrue(localStorage.getItem(constLocalStorage.TAG_NAME.SETTING.SHOW_SPACE_ARROW));
             },
             editAsciiArt(aa: string, log: EditLog):void {
@@ -481,7 +488,8 @@ export const useMainCanvasStore = defineStore(
                 const strStart = this.asciiArt.slice(0, caretStart);
                 const strEnd = this.asciiArt.slice(caretEnd);
                 const newAa = strStart + char + strEnd;
-                this.editAsciiArt(newAa, {value: char, start: caretStart, end: caretEnd});
+                //this.editAsciiArt(newAa, {value: char, start: caretStart, end: caretEnd});
+                this.editAsciiArt(newAa, {value: newAa, start: 0, end: newAa.length - 1});
                 this.editCaretPosition(caretStart + 1, caretStart + 1);
             },
             editCaretPosition(start: number, end: number){

@@ -12,8 +12,11 @@ import { useColorStore } from '@/stores/color';
 import constColor from '@/consts/constColor';
 import { useDialogStore } from "@/stores/dialog";
 import aalist from '@/assets/data/aalist.json'
+import ButtonContextText from "./ButtonContextText.vue";
+import { useExplanationStore } from "@/stores/explanation";
 
 const dialogStore = useDialogStore();
+const explanationStore = useExplanationStore();
 
 const colorStore = useColorStore();
 
@@ -171,6 +174,9 @@ const onDragEnter = (index: number):void => {
 const onDragLeave = ():void => {
   
 }
+const showExplanation = () => {
+    explanationStore.changeSentence("【ダブルクリック】名前の変更 【右クリック】追加・削除 【D & D】順番を入れ替える");
+}
 onMounted(() => {
   charSetStore.setTextSizeRef(spanElem.value);
 })
@@ -179,7 +185,7 @@ onMounted(() => {
 <template>
   <div class="base">    
     <PanelContainer :order="0" :name="'charList'">
-      <div class="charIndexList" v-on:contextmenu.prevent="onRightClick">
+      <div class="charIndexList" v-on:contextmenu.prevent="onRightClick" v-on:mouseover="showExplanation">
         <div v-for="(data, i) in charIndexList">
           <DraggableListNode ref="nameDragListRef"
                             v-on:dragstart="onDragStart(i)"
@@ -204,8 +210,8 @@ onMounted(() => {
 
   <div v-show="menuPosition.show" class="contextMenu">
     <div>リスト編集</div>
-    <div v-on:click="addCharIndex">追加</div>
-    <div v-on:click="removeCharIndex" v-show="charIndexList.length > 0">削除</div>
+    <ButtonContextText :value="'+ 追加'" v-on:click="addCharIndex"/>
+    <ButtonContextText :value="'- 削除'" v-on:click="removeCharIndex" v-show="charIndexList.length > 0"/>
   </div>    
 
 </template>

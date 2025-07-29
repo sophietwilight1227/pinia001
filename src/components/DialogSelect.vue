@@ -50,7 +50,7 @@ defineExpose({ show, hide });
         background-color: v-bind(colorStore.getColor(constColor.COLOR_NAME.SECONDARY));
     }
     .content {
-        padding: 10px;
+        /*padding: 10px;*/
     }
     .modalMenuBackground {
         position: fixed;

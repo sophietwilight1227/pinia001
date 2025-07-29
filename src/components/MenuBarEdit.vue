@@ -20,6 +20,9 @@ import IconCopy from '@/assets/icons/icon_copy.vue';
 import { useDialogStore } from '@/stores/dialog';
 import "../assets/base.css";
 import router from '@/router';
+import IconLeft from '@/assets/icons/icon_left.vue';
+import IconRight from '@/assets/icons/icon_right.vue';
+import LabelText from './LabelText.vue';
 
 const charSetStore = useCharSetStore();
 const mainCanvasStore = useMainCanvasStore();
@@ -118,6 +121,16 @@ const copyToClipBoartWithUtf8 = async () => {
 </script>
 <template>
     <div class="base">
+        <ButtonWithIcon :value="'1ドット左'" v-on:click="mainCanvasStore.changeDot(-1)">
+            <IconBase>
+                <IconLeft/>
+            </IconBase>
+        </ButtonWithIcon>
+        <ButtonWithIcon :value="'1ドット右'" v-on:click="mainCanvasStore.changeDot(1)">
+            <IconBase>
+                <IconRight/>
+            </IconBase>
+        </ButtonWithIcon>
         <ButtonWithIcon :value="'コピー(Shift-JIS)'" v-on:click="copyToClipBoartWithShiftJis">
             <IconBase>
                 <IconCopy/>
@@ -134,11 +147,11 @@ const copyToClipBoartWithUtf8 = async () => {
             </IconBase>
         </ButtonWithIcon>
         <div>
-            <div>矩形選択</div>
+            <LabelText :value="'矩形選択'"/>
             <ToggleButton v-on:click="setRectSelectMode"/>                
         </div>
         <div>
-            <div>挿入 / 上書</div>
+            <LabelText :value="'挿入 / 上書'"/>
             <select name="rectSelectType" v-on:change="changeRectSelectType">
                 <option value="insert">挿入</option>
                 <option value="update">上書</option>

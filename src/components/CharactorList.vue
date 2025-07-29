@@ -5,8 +5,13 @@ import { nextTick, reactive, ref, type Ref } from 'vue';
 import { useColorStore } from '@/stores/color';
 import constColor from '@/consts/constColor';
 import { useDialogStore } from "@/stores/dialog";
+import ButtonContextText from './ButtonContextText.vue';
+import ButtonText from './ButtonText.vue';
+import LabelText from './LabelText.vue';
+import { useExplanationStore } from '@/stores/explanation';
 
 const dialogStore = useDialogStore();
+const explanationStore = useExplanationStore();
 
 const colorStore = useColorStore();
 const charSetStore = useCharSetStore();
@@ -66,6 +71,7 @@ charSetStore.$subscribe((mutation, state) => {
 
 const onMouseOver = (index: number):void => {
   charList.value[index].isMouseOver = "block";
+  showExplanation();
 }
 const onMouseOut = (index: number):void => {
   charList.value[index].isMouseOver = "none";
@@ -92,12 +98,15 @@ const showAddCharMenu = () => {
 const hideAddCharMenu = () => {
   menuAddChar.show = false;
 }
-
+const showExplanation = () => {
+    explanationStore.changeSentence("【右クリック】追加・削除 ");
+}
 
 </script>
 
 <template>
-  <div class="base" v-on:contextmenu.prevent="onRightClick($event, charList.length)">    
+  <div class="base" 
+      v-on:contextmenu.prevent="onRightClick($event, charList.length)">    
     <span v-for="(data, i) in charList" class="charChip" >
         <div class="asciiArt" 
           v-on:mouseover="onMouseOver(i)" 
@@ -112,17 +121,19 @@ const hideAddCharMenu = () => {
   <div>
     <div v-show="menuPosition.show" class="contextMenu">
       <div>リスト編集</div>
-      <div v-on:click="showAddCharMenu">追加</div>
-      <div v-on:click="removeChar" v-show="canRemove(menuPosition.currentIndex)">削除</div>
+      <ButtonContextText :value="'+ 追加'" v-on:click="showAddCharMenu"/>
+      <ButtonContextText :value="'- 削除'" v-on:click="removeChar" v-show="canRemove(menuPosition.currentIndex)"/>
     </div>    
 
     <span class="asciiArt" ref="spanElem">{{ text }}</span>
 
     <div v-show="menuAddChar.show" class="menuAddChar">
-      <div>追加したい文字列</div>
+      <LabelText :value="'追加したい文字列'"/><br/>
       <input type="text" v-model="menuAddChar.text"/>
-      <button v-on:click="addChar">add</button>
-      <button v-on:click="hideAddCharMenu">cancel</button>
+      <div>
+        <ButtonContextText :value="'追加'" v-on:click="addChar" style="display: inline-block;"/>
+        <ButtonContextText :value="'キャンセル'" v-on:click="hideAddCharMenu" style="display: inline-block;"/>        
+      </div>
     </div>    
   </div>
 

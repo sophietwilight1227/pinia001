@@ -9,6 +9,7 @@ import { usePictureViewStore } from "@/stores/pictureView";
 import constPictureView from "@/consts/constPictureView";
 import constLocalStorage from "@/consts/constLocalStorage";
 import { decodeNumericEntity } from "@/scripts/encode";
+import { useExplanationStore } from "@/stores/explanation";
 
 const props = defineProps<{
   isPictureView: boolean,
@@ -85,6 +86,8 @@ layoutStore.$subscribe((mutation, state) => {
 //  canvasSize.value.width = state.canvasSize.width;
   updateScroll();
 })
+
+const explanationStore = useExplanationStore();
 
 const pictureViewStore = usePictureViewStore();
 pictureViewStore.$subscribe((mutation, state) => {
@@ -582,6 +585,7 @@ const onMouseDown = (e:MouseEvent) => {
   mainCanvasAsciiArtStore.rectSelectPosition.start = {x: e.offsetX, y: e.offsetY};
   isDragging.value = true;
   rectSelectContainerElem.value.innerHTML = "";
+  explanationStore.sentence = "【Alt + ← or →】1ドットずらす"
 }
 
 const onMouseMove = async (e: MouseEvent) => {
